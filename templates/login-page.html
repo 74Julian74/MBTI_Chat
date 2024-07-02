@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login-page.css') }}" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="e355dc75c2e90373cb295-hero20v-group">
+        <img
+          class="e355dc75c2e90373cb295-hero20v-icon1"
+          loading="lazy"
+          alt=""
+          src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
+        />
+
+        <h1 class="h1">登入</h1>
+      </div>
+      <div class="login-page-child"></div>
+      <div class="frame-group">
+        <div class="frame-child"></div>
+        <div class="login-form">
+          <div class="login-form-child"></div>
+          <div class="welcome-message">
+            <h3 class="welcome">welcome!</h3>
+            <div class="log-in">Log in</div>
+          </div>
+          <form method="POST" action="{{ url_for('login-page') }}">
+            <div class="username-field">
+              <div class="parent">
+                <div class="div2">使用者名稱</div>
+                <div class="username-input">
+                  <div class="username-border-parent">
+                    <div class="username-border"></div>
+                    <div class="enter-your-user">Enter your user name</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="password-field">
+              <div class="password-input">
+                <div class="password-content">
+                  <div class="password-parent">
+                    <input
+                      class="password"
+                      placeholder="Enter your Password"
+                      type="text"
+                    />
+  
+                    <div class="password-box">
+                      <div class="password-border-parent">
+                        <div class="password-border"></div>
+                        <div class="enter-your-password">Enter your Password</div>
+                      </div>
+                    </div>
+                  </div>
+                  <img
+                    class="invisible-1-icon"
+                    alt=""
+                    src="{{url_for('static', filename='image/invisible-1.svg')}}"
+                  />
+                </div>
+                <div class="login-options">
+                  <input class="remember-me" type="checkbox" />
+  
+                  <div class="remember-me-label">
+                    <div class="div3">記住我</div>
+                  </div>
+                  <div class="div4">忘記密碼？</div>
+                </div>
+              </div>
+              <div class="login-button">
+                <div
+                  class="login-button-background"
+                  id="loginButtonBackground"
+                ></div>
+                <div class="div5">登入</div>
+              </div>
+            </div>
+          </form>
+          
+          <div class="group">
+            <div class="div6">是否有帳號?</div>
+            <div class="div7" id="text5">註冊</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var loginButtonBackground = document.getElementById("loginButtonBackground");
+      if (loginButtonBackground) {
+        loginButtonBackground.addEventListener("click", function (e) {
+          window.location.href = "./main-page.html";
+        });
+      }
+      
+      var text5 = document.getElementById("text5");
+      if (text5) {
+        text5.addEventListener("click", function (e) {
+          window.location.href = "./register.html";
+        });
+      }
+      </script>
+  </body>
+</html>

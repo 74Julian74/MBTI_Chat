@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-room.css') }}" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <div class="chat-room">
+      <div class="wrapper4">
+        <a class="a6">聊天室</a>
+      </div>
+      <main class="chatroom-content">
+        <section class="chat">
+          <div class="chat-components">
+            <div class="profile1">
+              <div class="profile-components">
+                <div class="button">
+                  <h1 class="h12">情感分析區</h1>
+                </div>
+              </div>
+              <div class="profile-child"></div>
+              <div class="list-parent">
+                <div class="list">
+                  <div class="menu-item">
+                    <img
+                      class="search-icon"
+                      loading="lazy"
+                      alt=""
+                      src="{{url_for('static', filename='image/search.svg')}}"
+                    />
+
+                    <div class="div14">搜尋</div>
+                  </div>
+                  <div class="menu-item1">
+                    <img class="image-icon" alt="" src="{{url_for('static', filename='image/image.svg')}}" />
+
+                    <div class="div15">傳送圖片</div>
+                  </div>
+                  <div class="menu-item2">
+                    <img
+                      class="more-horizontal-icon"
+                      alt=""
+                      src="{{url_for('static', filename='image/morehorizontal.svg')}}"
+                    />
+
+                    <div class="div16">更多</div>
+                  </div>
+                </div>
+                <div class="person-wrapper">
+                  <div class="person">
+                    <div class="avatar-wrapper">
+                      <img
+                        class="avatar-icon"
+                        loading="lazy"
+                        alt=""
+                        src="{{url_for('static', filename='image/avatar@2x.png')}}"
+                      />
+                    </div>
+                    <div class="name-status">
+                      <div class="helena">Helena</div>
+                      <div class="div17">20分鐘前上線</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list1">
+              <div class="chat-list-header">
+                <h1 class="h13">聊天列表</h1>
+              </div>
+              <div class="chat-list-search">
+                <div class="search-bar">
+                  <div class="search1">
+                    <img
+                      class="search-icon1"
+                      alt=""
+                      src="{{url_for('static', filename='image/search-1.svg')}}"
+                    />
+
+                    <input class="label" placeholder="搜尋" type="text" />
+                  </div>
+                </div>
+                <div class="chat-list">
+                  <div class="conversation">
+                    <img
+                      class="avatar-icon1"
+                      loading="lazy"
+                      alt=""
+                      src="{{url_for('static', filename='image/avatar-1@2x.png')}}"
+                    />
+
+                    <div class="conversation-preview">
+                      <div class="text">
+                        <div class="helena-hills">Helena Hills</div>
+                        <div class="will-head-to">
+                          Will head to the Help Center...
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation1">
+                    <div class="avatar">
+                      <img
+                        class="avatar-child"
+                        loading="lazy"
+                        alt=""
+                        
+                        src="{{url_for('static', filename='image/rectangle-1@2x.png')}}"
+                      />
+                    </div>
+                    <div class="text-wrapper">
+                      <div class="text1">
+                        <div class="oscar-davis">Oscar Davis</div>
+                        <div class="trueeeeee">Trueeeeee</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation2">
+                    <img
+                      class="avatar-icon2"
+                      alt=""
+                      
+                      src="{{url_for('static', filename='image/avatar-2@2x.png')}}"
+                      />
+
+                    <div class="text-container">
+                      <div class="text2">
+                        <div class="daniel-jay-park">Daniel Jay Park</div>
+                        <div class="lol-yeah-are">
+                          lol yeah, are you coming to the lunch on the 13th?
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation3">
+                    <img
+                      class="avatar-icon3"
+                      alt=""
+                      
+                      src="{{url_for('static', filename='image/avatar-3@2x.png')}}"
+                    />
+
+                    <div class="text-frame">
+                      <div class="text3">
+                        <div class="mark-rojas">Mark Rojas</div>
+                        <div class="great-catching-up">
+                          great catching up over dinner!!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation4">
+                    <img
+                      class="avatar-icon4"
+                      loading="lazy"
+                      alt=""
+                      src="{{url_for('static', filename='image/avatar-4@2x.png')}}"
+                    />
+
+                    <div class="text-wrapper1">
+                      <div class="text4">
+                        <div class="giannis-constantinou">
+                          Giannis Constantinou
+                        </div>
+                        <div class="yep">yep 🫡🫡</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation5">
+                    <img
+                      class="avatar-icon5"
+                      loading="lazy"
+                      alt=""
+                      src="{{url_for('static', filename='image/avatar-5@2x.png')}}"
+                    />
+
+                    <div class="text-wrapper2">
+                      <div class="text5">
+                        <div class="briana-lewis">Briana Lewis</div>
+                        <div class="when-are-you">
+                          When are you coming back to town? Would love to catch
+                          up.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation6">
+                    <img
+                      class="avatar-icon6"
+                      loading="lazy"
+                      alt=""
+                      
+                      src="{{url_for('static', filename='image/avatar-6@2x.png')}}"
+                    />
+
+                    <div class="text-wrapper3">
+                      <div class="text6">
+                        <div class="mom">Mom</div>
+                        <div class="thanks">Thanks!</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="conversation7">
+                    <img
+                      class="avatar-icon7"
+                      loading="lazy"
+                      alt=""
+                      
+                      src="{{url_for('static', filename='image/avatar-7@2x.png')}}"
+                    />
+
+                    <div class="text-wrapper4">
+                      <div class="text7">
+                        <div class="sherry-roy">Sherry Roy</div>
+                        <div class="jack-needs-to">
+                          Jack needs to find a sitter for the dog and I don’t
+                          know who’s good
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="conversation8">
+            <div class="chat-header">
+              <div class="person1">
+                <img
+                  class="avatar-icon8"
+                  loading="lazy"
+                  alt=""
+                  
+                  src="{{url_for('static', filename='image/avatar-8@2x.png')}}"
+                />
+
+                <div class="text8">
+                  <div class="helena-hills1">Helena Hills</div>
+                  <div class="div18">20分鐘前上線</div>
+                </div>
+              </div>
+              <div class="call-icons">
+                <div class="icons">
+                  <img
+                    class="phone-icon"
+                    loading="lazy"
+                    alt=""
+                    
+                    src="{{url_for('static', filename='image/phone.svg')}}"
+                  />
+
+                  <img
+                    class="video-icon"
+                    loading="lazy"
+                    alt=""
+                    src="{{url_for('static', filename='image/video.svg')}}"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="messages-parent">
+              <div class="messages">
+                <div class="bubble">
+                  <button class="last-user-message-content">
+                    <div class="no-honestly-im">
+                      No honestly I’m thinking of a career pivot
+                    </div>
+                  </button>
+                  <div class="last-user-message-content1">
+                    <div class="this-is-the">
+                      This is the main chat template
+                    </div>
+                  </div>
+                </div>
+                <div class="date">Nov 30, 2023, 9:41 AM</div>
+                <div class="bubbles">
+                  <div class="user-messages">
+                    <div class="oh">Oh?</div>
+                  </div>
+                  <div class="contact-messages">
+                    <div class="cool">Cool</div>
+                  </div>
+                  <div class="user-detailed-messages">
+                    <div class="how-does-it">How does it work?</div>
+                  </div>
+                </div>
+                <div class="bubbles1">
+                  <button class="simple-wrapper">
+                    <div class="simple">Simple</div>
+                  </button>
+                  <div class="you-just-edit-any-text-to-type-wrapper">
+                    <div class="you-just-edit">
+                      You just edit any text to type in the conversation you
+                      want to show, and delete any bubbles you don’t want to use
+                    </div>
+                  </div>
+                  <div class="boom-wrapper">
+                    <div class="boom">Boom</div>
+                  </div>
+                </div>
+                <div class="bubbles2">
+                  <div class="hmmm-wrapper">
+                    <div class="hmmm">Hmmm</div>
+                  </div>
+                  <button class="i-think-i-get-it-wrapper">
+                    <div class="i-think-i">I think I get it</div>
+                  </button>
+                  <div class="will-head-to-the-help-center-i-wrapper">
+                    <div class="will-head-to1">
+                      Will head to the Help Center if I have more questions tho
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="reply">
+                <div class="label1">Enter your message</div>
+                <img
+                  class="mic-icon"
+                  loading="lazy"
+                  alt=""
+                  
+                  src="{{url_for('static', filename='image/mic.svg')}}"
+                />
+
+                <img
+                  class="smile-icon"
+                  loading="lazy"
+                  alt=""
+                  
+                  src="{{url_for('static', filename='image/smile.svg')}}"
+                />
+
+                <img
+                  class="image-icon1"
+                  loading="lazy"
+                  alt=""
+                  
+                  src="{{url_for('static', filename='image/image-1.svg')}}"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <div class="analysis-area">
+          <div class="analysis-content">
+            <a class="a7">情感分析區</a>
+          </div>
+          <div class="analysis-input">
+            <div class="analysis-input-child"></div>
+            <h1 class="h14">
+              輸入或上傳聊天對話讓我們幫助你分析對方的情感狀態
+            </h1>
+            <div class="analysis-button">
+              <div class="run-analysis" id="runAnalysisContainer">
+                <h1 class="h15">分析</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <div class="background"></div>
+    </div>
+
+    <script>
+      var runAnalysisContainer = document.getElementById("runAnalysisContainer");
+      if (runAnalysisContainer) {
+        runAnalysisContainer.addEventListener("click", function (e) {
+          window.location.href = "./sentiment-analysis.html";
+        });
+      }
+      </script>
+  </body>
+</html>

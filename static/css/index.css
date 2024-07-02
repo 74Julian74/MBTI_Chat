@@ -1,0 +1,204 @@
+.e355dc75c2e90373cb295-hero20v-icon {
+  height: 225px;
+  flex: 1;
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  object-fit: cover;
+}
+.figtext {
+  align-self: stretch;
+  width: 319.7px;
+  position: relative;
+}
+.figtext-wrapper {
+  width: 539.7px;
+  height: 135.9px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 var(--padding-xl);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.div,
+.div1 {
+  position: relative;
+}
+.div {
+  align-self: stretch;
+  font-weight: 600;
+}
+.div1 {
+  font-size: var(--font-size-13xl);
+  font-weight: 500;
+  font-family: var(--presets-body2);
+  color: var(--palette-white);
+  text-align: left;
+  display: inline-block;
+  min-width: 64px;
+}
+.login-button-container {
+  cursor: pointer;
+  border: 0;
+  padding: 20.5px var(--padding-xl);
+  background-color: var(--color-black);
+  flex: 1;
+  border-radius: var(--br-3xs);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.login-button-container:hover {
+  background-color: var(--color-darkslategray-200);
+}
+.login-button-container-wrapper,
+.login-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.login-button-container-wrapper {
+  align-self: stretch;
+  flex-direction: row;
+  padding: 0 7px 0 var(--padding-5xs);
+  box-sizing: border-box;
+  max-width: 100%;
+  cursor: pointer;
+}
+.login-container {
+  width: 540px;
+  flex-direction: column;
+  gap: 71px;
+  max-width: calc(100% - 22px);
+}
+.vector-icon,
+.vector-icon1 {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+.vector-icon1 {
+  top: 0;
+  left: 1px;
+  width: 1px;
+  height: 2px;
+}
+.vector-parent {
+  width: 2px;
+  height: 22px;
+  position: relative;
+}
+.frame-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-5xl) 0 0;
+}
+.login-container-parent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 100%;
+  gap: var(--gap-xl);
+}
+.frame-parent,
+.frame-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+.frame-parent {
+  width: 950px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20.1px;
+  max-width: 100%;
+}
+.frame-wrapper {
+  width: 1010px;
+  margin: 0 !important;
+  position: absolute;
+  right: -391px;
+  bottom: -283px;
+  flex-direction: row;
+  align-items: center;
+  z-index: 1;
+  text-align: left;
+  font-size: var(--font-size-17xl);
+  color: var(--color-black);
+  font-family: var(--presets-body2);
+}
+.e355dc75c2e90373cb295-hero20v-parent,
+.home-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  max-width: 100%;
+}
+.e355dc75c2e90373cb295-hero20v-parent {
+  width: 698px;
+  justify-content: flex-start;
+  position: relative;
+}
+.home-inner {
+  align-self: stretch;
+  justify-content: center;
+  padding: 0 var(--padding-41xl) 0 var(--padding-xl);
+  box-sizing: border-box;
+}
+.home-child {
+  width: 350px;
+  position: relative;
+  max-height: 100%;
+  max-width: 100%;
+}
+.home {
+  width: 100%;
+  position: relative;
+  background-color: var(--palette-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 164px 0 0;
+  box-sizing: border-box;
+  gap: 410px;
+  letter-spacing: normal;
+  line-height: normal;
+}
+@media screen and (max-width: 750px) {
+  .div {
+    font-size: var(--font-size-10xl);
+  }
+  .div1 {
+    font-size: var(--font-size-7xl);
+  }
+  .home-inner {
+    padding-right: var(--padding-11xl);
+    box-sizing: border-box;
+  }
+  .home {
+    gap: 205px;
+  }
+}
+@media screen and (max-width: 450px) {
+  .div {
+    font-size: var(--font-size-3xl);
+  }
+  .div1 {
+    font-size: var(--font-size-lgi);
+  }
+  .home {
+    gap: 102px;
+  }
+}
