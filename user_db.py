@@ -1,19 +1,87 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://your_username:your_password@your_host/user_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'your_secret_key'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    mbti = db.Column(db.String(4), nullable=False)
+class UserACC(db.Model):
+    UserID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.Varchar(20), unique=True, nullable=False)
+    email = db.Column(db.Varchar(120), unique=True, nullable=False)
+    password = db.Column(db.Varchar(60), nullable=False)
+    ProfilePicture = db.column(db.Varchar(120))
+    LastActive = db.column(db.DateTime)
+    MBTI = db.column(db.Varchar(5))
+    RespondType = db.column(db.Varchar(20))
+    BD = db.column(db.Date)
+    AGE = db.column(db.Integer)
+    StarSign = db.column(db.Vanchar(5))
+
+
+class UserMSG(db.Model):
+    GroupID = db.column(db.int, primary_key=True, nullable=False)
+    MessageID = db.column(db.int, nullable=False)
+    SenderID = db.relationship("UserID", nullable=False)
+    ChatContentID = db.column(db.varchar(50), nullable=False)
+    TimeStamp = db.column(db.timestamp, nullable=False)
+    Emotion = db.column(db.varchar(10), nullable=False)
+
+
+class Relation(db.Model):
+    UserID1 = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    UserID2 = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    Status = db.column(db.boolean, nullable=False)
+    TimeStamp = db.column(db.datetime, nullable=False)
+
+    user1 = db.relationship('User', foreign_keys=[UserID1])
+    user2 = db.relationship('User', foreign_keys=[UserID2])
+
+
+class VerifyMSG(db.Model):
+    GroupID1 = db.column(db.int, primary_key=True, nullable=False)
+    FilterType = db.column(db.varchar(10))
+    Enable = db.coumn(db.boolean, nullable=False)
+
+
+class Chat(db.Model):
+    GroupID = db.column(db.int, primary_key=True, nullable=False)
+    GroupName = db.column(db.varchar(20), nullable=False)
+    CreatorID = db.relationship("UserID", nullable=False)
+    CreateAt = db.column(db.datetime, nullable=False)
+    FilterType = db.column(db.boolean, nullable=False)
+
+
+class ChatMember(db.Model):
+    GroupID = db.column(db.int, primary_key=True, nullable=False)
+    UserID = db.relationship("UserID", nullable=False)
+    Role = db.column(db.varchar(10), nullable=False)
+    NiceName = db.column(db.varchar(10), nullable=False)
+
+
+class Setting(db.Model):
+    UserID = db.column(db.int, primary_key=True, nullable=False)
+    NotificationSound = db.column(db.boolean)
+    #    Theme = db.column(db.blob, nullable=False)
+    Language = db.column(db.varchar(20), nullable=False)
+
+
+class Notifiation(db.Model):
+    NotificattionID = db.column(db.int, primary_key=True, nullable=False)
+    UserID = db.relationship("UserID", nullable=False)
+    NotificationType = db.column(db.varchar(10), nullable=False)
+    Content = db.column(db.varchar(20), nullable=False)
+    TimeStamp = db.column(db.timestamp, nullable=False)
+    IsRead = db.column(db.boolean, nullable=False)
+
+
+with app.app_context():
+    db.create_all()
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -33,12 +101,12 @@ def register():
             flash('Passwords do not match', 'error')
             return redirect(url_for('register'))
 
-        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        existing_user = UserACC.query.filter((UserACC.username == username) | (UserACC.email == email)).first()
         if existing_user:
             flash('Username or email already registered', 'error')
             return redirect(url_for('register'))
 
-        new_user = User(username=username, email=email, mbti=mbti)
+        new_user = UserACC(username=username, email=email, mbti=mbti)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -46,6 +114,6 @@ def register():
         flash('Registration successful', 'success')
         return redirect(url_for('login_page'))
 
-    return render_template('web_html/auth/auth-register-cover.html')
+    return render_template('')
 if __name__ == '__main__':
     app.run(debug=True)
