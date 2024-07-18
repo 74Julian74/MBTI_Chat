@@ -46,7 +46,7 @@
   display: inline-block;
 }
 .sign-in {
-  width: 121px;
+  width: auto;
   font-size: var(--font-size-12xl);
   font-weight: 500;
   white-space: pre-wrap;

@@ -33,7 +33,7 @@
 .div1 {
   font-size: var(--font-size-13xl);
   font-weight: 500;
-  font-family: var(--presets-body2);
+  font-family: 'Poppins', sans-serif;
   color: var(--palette-white);
   text-align: left;
   display: inline-block;
@@ -135,7 +135,7 @@
   text-align: left;
   font-size: var(--font-size-17xl);
   color: var(--color-black);
-  font-family: var(--presets-body2);
+  font-family: 'Poppins', sans-serif;
 }
 .e355dc75c2e90373cb295-hero20v-parent,
 .home-inner {

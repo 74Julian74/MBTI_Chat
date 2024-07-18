@@ -16,7 +16,7 @@
   font-family: inherit;
   display: inline-block;
   min-width: 128px;
-  z-index: 1;
+  text-align: center;
 }
 .e355dc75c2e90373cb295-hero20v-group {
   width: 729px;
@@ -66,7 +66,7 @@
   font-family: inherit;
 }
 .log-in {
-  width: 119.9px;
+  width: auto;
   position: relative;
   font-size: var(--font-size-12xl);
   font-weight: 500;
@@ -78,9 +78,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 13px;
   max-width: 100%;
+  text-align: center;
 }
 .div2 {
   position: relative;
@@ -93,36 +94,14 @@
   position: absolute;
   margin: 0 !important;
 }
-.username-border {
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border-radius: var(--br-7xs);
-  background-color: var(--palette-white);
-  border: 0.6px solid var(--color-gray-400);
-  box-sizing: border-box;
-}
+
 .enter-your-user {
   top: 32.2%;
   left: 6.38%;
   font-weight: 300;
   z-index: 1;
 }
-.username-border-parent {
-  margin-top: -3px;
-  height: 59px;
-  flex: 1;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: var(--padding-lgi) var(--padding-11xl);
-  box-sizing: border-box;
-  position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
+
 .parent,
 .username-border-parent,
 .username-input {
@@ -139,11 +118,29 @@
   box-sizing: border-box;
   font-size: var(--font-size-sm);
   color: var(--color-darkgray);
+  border: none;
+  outline: none;
 }
 .parent {
   flex: 1;
   flex-direction: column;
   align-items: flex-start;
+}
+.input-field {
+  width: 480px;
+  height: 56px; /* 设置统一的高度 */
+  padding: 10px; /* 内边距，确保文字不贴边 */
+  border: 1px solid #ccc; /* 边框颜色 */
+  border-radius: 4px; /* 圆角 */
+  font-size: 16px; /* 字体大小 */
+  font-family: 'Poppins', sans-serif; /* 字体，与页面其他部分一致 */
+  background: #fff; /* 背景颜色 */
+  box-sizing: border-box; /* 包括内边距和边框在内计算宽度 */
+  outline: none; /* 去掉输入框点击后的默认高亮 */
+}
+
+.input-field:focus {
+  border-color: #007bff; /* 聚焦时的边框颜色 */
 }
 .password,
 .username-field {
@@ -162,7 +159,6 @@
 .password {
   border: 0;
   outline: 0;
-  font-family: var(--font-poppins);
   background-color: transparent;
   position: relative;
   color: var(--color-black);
@@ -171,20 +167,22 @@
   min-width: 49px;
   flex-shrink: 0;
 }
-.password-border {
-  height: 100%;
-  width: 100%;
+.toggle-password {
   position: absolute;
-  margin: 0 !important;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border-radius: var(--br-7xs);
-  background-color: var(--palette-white);
-  border: 0.6px solid var(--color-gray-400);
-  box-sizing: border-box;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
 }
+
+.password {
+  font-family: 'Poppins', sans-serif;
+  width: calc(100% - 34px); /* 确保输入框不会覆盖图标 */
+  padding-right: 34px; /* 为图标预留空间 */
+}
+
 .enter-your-password {
   position: absolute;
   margin: 0 !important;
@@ -193,18 +191,7 @@
   font-weight: 300;
   z-index: 1;
 }
-.password-border-parent {
-  margin-top: -3px;
-  height: 59px;
-  flex: 1;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: var(--padding-lgi) var(--padding-11xl);
-  box-sizing: border-box;
-  position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
+
 .password-border-parent,
 .password-box,
 .password-parent {
@@ -229,14 +216,15 @@
   align-items: flex-start;
   height: 100%;
 }
-.invisible-1-icon {
-  position: absolute;
+ .invisible-1-icon {
+ position: absolute;
   top: 52px;
   left: 427px;
   width: 24px;
   height: 21px;
   overflow: hidden;
   z-index: 1;
+
 }
 .password-content {
   align-self: stretch;
@@ -332,17 +320,16 @@
   font-size: var(--font-size-sm);
   color: var(--color-darkgray);
 }
-.div6,
-.div7 {
+.div6 {
   position: relative;
   font-weight: 500;
-}
-.div7 {
   font-size: var(--font-size-12xl);
   display: inline-block;
   min-width: 63px;
   cursor: pointer;
   z-index: 2;
+  margin-left: auto;
+  margin-right: auto;
 }
 .group,
 .login-form {
@@ -390,7 +377,9 @@
   max-width: 100%;
   text-align: left;
   font-size: var(--font-size-17xl);
-  font-family: var(--font-poppins);
+}
+.frame-group {
+  font-family: 'Poppins', sans-serif;
 }
 .login-page {
   width: 100%;
@@ -407,8 +396,11 @@
   text-align: center;
   font-size: var(--font-size-45xl);
   color: var(--color-black);
-  font-family: var(--presets-body2);
 }
+.login-page {
+  font-family: 'Poppins', sans-serif;
+}
+
 @media screen and (max-width: 1150px) {
   .login-page {
     padding-left: var(--padding-159xl);
@@ -427,9 +419,6 @@
     font-size: var(--font-size-6xl);
   }
   .div6 {
-    font-size: var(--font-size-7xl);
-  }
-  .div7 {
     font-size: var(--font-size-6xl);
   }
 }
@@ -444,9 +433,6 @@
     font-size: var(--font-size-6xl);
   }
   .div6 {
-    font-size: var(--font-size-7xl);
-  }
-  .div7 {
     font-size: var(--font-size-6xl);
   }
   .login-form {
@@ -470,7 +456,7 @@
   }
   .frame-group {
     height: auto;
-    min-height: 701;
+    min-height: 701px;
   }
   .login-page {
     height: auto;
@@ -486,7 +472,6 @@
   .div2,
   .div5,
   .div6,
-  .div7,
   .log-in,
   .password {
     font-size: var(--font-size-lgi);
