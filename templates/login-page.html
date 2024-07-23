@@ -84,11 +84,8 @@
                 </div>
               </div>
               <div class="login-button">
-                <div
-                  class="login-button-background"
-                  id="loginButtonBackground"
-                ></div>
-                <div class="div5">登入</div>
+                <button type="button" class="login-button-background" id="loginButtonBackground"></button>
+                  <div class="div5" id="login-text">登入</div>
               </div>
             </div>
           </form>
@@ -102,14 +99,21 @@
     <script>
       var loginButtonBackground = document.getElementById("loginButtonBackground");
       if (loginButtonBackground) {
-        loginButtonBackground.addEventListener("click", function (e) {
+        loginButtonBackground.addEventListener("click", function () {
           window.location.href = "{{ url_for('main_page') }}";
         });
       }
 
+      var loginText = document.getElementById("login-text");
+      if (loginText) {
+         loginText.addEventListener("click", function () {
+          window.location.href = "{{ url_for('main_page') }}";
+         });
+      }
+
       var text5 = document.getElementById("text5");
       if (text5) {
-        text5.addEventListener("click", function (e) {
+        text5.addEventListener("click", function () {
           window.location.href = "{{ url_for('register') }}";
         });
       }
