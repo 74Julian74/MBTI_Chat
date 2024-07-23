@@ -14,7 +14,6 @@ def login_page():
     if request.method == 'POST':
         user_name = request.form.get('user_name')
         password = request.form.get('password')
-
         if user_name == '410630734' and password == '12345678':
             return redirect(url_for('main_page'))
         else:
@@ -31,13 +30,15 @@ def main_page():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        user_name = request.form.get('user_name')
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-
         if password == confirm_password:
+            flash('註冊成功!')
             return redirect(url_for('/'))
+        else:
+            flash('密碼不正確!')
+            return redirect(url_for('register'))
     return render_template('register.html')
 
 
@@ -60,7 +61,6 @@ def profile():
 def setting():
     return render_template('setting.html')
 
-
 @app.route('/sentiment-Analysis', methods=['GET'])
 def sentiment_analysis():
     return render_template('sentiment-Analysis.html')
@@ -68,10 +68,3 @@ def sentiment_analysis():
 
 if __name__ == "__main__":
     app.run()
-
-@app.route('/Sentiment_Analysis', methods=['GET'])
-def Sentiment_Analysis():
-    return 'this is Sentiment_Analysis'
-
-if __name__== "__main__": #如果以主程式執行
-    app.run() #立刻啟動伺服器
