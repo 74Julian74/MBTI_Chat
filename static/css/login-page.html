@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login-page.css') }}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="e355dc75c2e90373cb295-hero20v-group">
+        <img
+          class="e355dc75c2e90373cb295-hero20v-icon1"
+          loading="lazy"
+          alt=""
+          src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
+        />
+        <h1 class="h1">登入</h1>
+      </div>
+      <div class="login-page-child"></div>
+      <div class="frame-group">
+        <div class="frame-child"></div>
+        <div class="login-form">
+          <div class="login-form-child"></div>
+          <div class="welcome-message">
+            <h3 class="welcome">welcome!</h3>
+            <div class="log-in">Log in</div>
+          </div>
+          <form method="POST" action="{{ url_for('login_page') }}">
+            <div class="username-field">
+              <div class="parent">
+                <div class="div2">使用者名稱</div>
+                <div class="username-input">
+                  <div class="username-border">
+                    <input
+                      class="input-field"
+                      placeholder="Enter your user name"
+                      type="text"
+                      onfocus="this.placeholder = ''"
+                      onblur="this.placeholder = 'Enter your user name'"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="password-field">
+              <div class="password-input">
+                <div class="password-content">
+                  <div class="password-parent">
+                    <div class="password">密碼</div>
+                    <div class="password-box">
+                      <div class="password-border">
+                        <input
+                          id="password"
+                          class="input-field"
+                          placeholder="Enter your password"
+                          type="password"
+                          onfocus="this.placeholder = ''"
+                          onblur="this.placeholder = 'Enter your password'"
+                        />
+                      </div>
+                      <img
+                        class="toggle-password invisible-1-icon"
+                        id="toggle-password-visibility"
+                        alt="Show/Hide Password"
+                        src="{{ url_for('static', filename='image/invisible-1.svg') }}"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="login-options">
+                  <label>
+                    <input class="remember-me" type="checkbox" />
+                  </label>
+                  <div class="remember-me-label">
+                    <div class="div3">記住我</div>
+                  </div>
+                  <div class="div4">忘記密碼？</div>
+                </div>
+              </div>
+              <div class="login-button">
+                <button type="button" class="login-button-background" id="loginButtonBackground"></button>
+                  <div class="div5" id="login-text">登入</div>
+              </div>
+            </div>
+          </form>
+          <div class="group">
+            <div class="div6" id="text5">註冊新帳戶</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var loginButtonBackground = document.getElementById("loginButtonBackground");
+      if (loginButtonBackground) {
+        loginButtonBackground.addEventListener("click", function () {
+          window.location.href = "{{ url_for('main_page') }}";
+        });
+      }
+
+      var loginText = document.getElementById("login-text");
+      if (loginText) {
+         loginText.addEventListener("click", function () {
+          window.location.href = "{{ url_for('main_page') }}";
+         });
+      }
+
+      var text5 = document.getElementById("text5");
+      if (text5) {
+        text5.addEventListener("click", function () {
+          window.location.href = "{{ url_for('register') }}";
+        });
+      }
+
+      var togglePasswordVisibility = document.getElementById('toggle-password-visibility');
+      togglePasswordVisibility.addEventListener('click', function () {
+        var passwordInput = document.getElementById('password');
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          togglePasswordVisibility.src = "{{ url_for('static', filename='image/visible-1.svg') }}"; // 修改为可见状态的图标
+        } else {
+          passwordInput.type = 'password';
+          togglePasswordVisibility.src = "{{ url_for('static', filename='image/invisible-1.svg') }}"; // 修改为隐藏状态的图标
+        }
+      });
+    </script>
+  </body>
+</html>

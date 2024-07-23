@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <meta name="description" content="註冊頁面，請填寫您的電子郵件、密碼和 MBTI 診斷結果。">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
+</head>
+<body>
+    <div class="register">
+        <div class="container">
+            <h1 class="h11">註冊</h1>
+            <img class="e355dc75c2e90373cb295-hero20v-icon2" loading="lazy" alt="" src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}" />
+        </div>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="rectangle-parent">
+                <div class="frame-item"></div>
+                <div class="login-form-container">
+                    <div class="sign-in">Sign in</div>
+                    <div class="input-container">
+                        <label for="email" class="label">Email帳號</label>
+                        <input
+                            id="email"
+                            class="input-field"
+                            placeholder="Enter your email"
+                            type="email"
+                            onfocus="this.placeholder = ''"
+                            onblur="this.placeholder = 'Enter your email'"
+                        />
+                    </div>
+                    <div class="input-container">
+                        <label for="password" class="label">密碼</label>
+                        <input
+                            id="password"
+                            class="input-field"
+                            placeholder="Enter your password"
+                            type="password"
+                            onfocus="this.placeholder = ''"
+                            onblur="this.placeholder = 'Enter your password'"
+                        />
+                    </div>
+                    <div class="input-container">
+                        <label for="mbti" class="label">MBTI類型</label>
+                        <div class="custom-select">
+            <div class="selected-option">选择你的 MBTI 类型</div>
+            <div class="options-container">
+                <div class="option" data-value="ENFJ" data-color="#93c47d">ENFJ</div>
+                <div class="option" data-value="ENFP" data-color="#93c47d">ENFP</div>
+                <div class="option" data-value="INFJ" data-color="#93c47d">INFJ</div>
+                <div class="option" data-value="INFP" data-color="#93c47d">INFP</div>
+                <div class="option" data-value="ISFJ" data-color="#6fa8dc">ISFJ</div>
+                <div class="option" data-value="ISTJ" data-color="#6fa8dc">ISTJ</div>
+                <div class="option" data-value="ESTJ" data-color="#6fa8dc">ESTJ</div>
+                <div class="option" data-value="ESFJ" data-color="#6fa8dc">ESFJ</div>
+                <div class="option" data-value="INTJ" data-color="#b4a7d6">INTJ</div>
+                <div class="option" data-value="INTP" data-color="#b4a7d6">INTP</div>
+                <div class="option" data-value="ENTJ" data-color="#b4a7d6">ENTJ</div>
+                <div class="option" data-value="ENTP" data-color="#b4a7d6">ENTP</div>
+                <div class="option" data-value="ISFP" data-color="#d9d300">ISFP</div>
+                <div class="option" data-value="ISTP" data-color="#d9d300">ISTP</div>
+                <div class="option" data-value="ESTP" data-color="#d9d300">ESTP</div>
+                <div class="option" data-value="ESFP" data-color="#d9d300">ESFP</div>
+            </div>
+            <input type="hidden" name="mbti" id="mbti" required />
+                        </select>
+                    </div>
+                </div>
+                <div class="register-background-parent">
+                    <button type="button" class="register-background" id="registerBackground"></button>
+                    <div class="div10" id="Register-text">登入</div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script>
+      var registerBackground = document.getElementById("registerBackground");
+      if (registerBackground) {
+        registerBackground.addEventListener("click", function () {
+          window.location.href = "{{ url_for('login_page') }}";
+        });
+      }
+
+      var RegisterText = document.getElementById("Register-text");
+      if (RegisterText) {
+         RegisterText.addEventListener("click", function () {
+          window.location.href = "{{ url_for('main_page') }}";
+         });
+      }
+
+          document.addEventListener('DOMContentLoaded', function() {
+        const selectContainer = document.querySelector('.custom-select');
+        const selectedOption = selectContainer.querySelector('.selected-option');
+        const optionsContainer = selectContainer.querySelector('.options-container');
+        const options = optionsContainer.querySelectorAll('.option');
+        const hiddenInput = document.getElementById('mbti');
+
+        selectedOption.addEventListener('click', function() {
+            selectContainer.classList.toggle('open');
+        });
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                selectedOption.textContent = this.textContent;
+                hiddenInput.value = this.getAttribute('data-value');
+                selectContainer.classList.remove('open');
+            });
+
+            // Set the background color for each option
+            option.style.backgroundColor = option.getAttribute('data-color');
+        });
+    });
+      </script>
+</body>
+</html>
