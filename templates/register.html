@@ -46,15 +46,29 @@
                         />
                     </div>
                     <div class="input-container">
-                        <label for="mbti" class="label">MBTI</label>
-                        <input
-                            id="mbti"
-                            class="input-field"
-                            placeholder="Enter your MBTI"
-                            type="text"
-                            onfocus="this.placeholder = ''"
-                            onblur="this.placeholder = 'Enter your MBTI'"
-                        />
+                        <label for="mbti" class="label">MBTI類型</label>
+                        <div class="custom-select">
+            <div class="selected-option">选择你的 MBTI 类型</div>
+            <div class="options-container">
+                <div class="option" data-value="ENFJ" data-color="#93c47d">ENFJ</div>
+                <div class="option" data-value="ENFP" data-color="#93c47d">ENFP</div>
+                <div class="option" data-value="INFJ" data-color="#93c47d">INFJ</div>
+                <div class="option" data-value="INFP" data-color="#93c47d">INFP</div>
+                <div class="option" data-value="ISFJ" data-color="#6fa8dc">ISFJ</div>
+                <div class="option" data-value="ISTJ" data-color="#6fa8dc">ISTJ</div>
+                <div class="option" data-value="ESTJ" data-color="#6fa8dc">ESTJ</div>
+                <div class="option" data-value="ESFJ" data-color="#6fa8dc">ESFJ</div>
+                <div class="option" data-value="INTJ" data-color="#b4a7d6">INTJ</div>
+                <div class="option" data-value="INTP" data-color="#b4a7d6">INTP</div>
+                <div class="option" data-value="ENTJ" data-color="#b4a7d6">ENTJ</div>
+                <div class="option" data-value="ENTP" data-color="#b4a7d6">ENTP</div>
+                <div class="option" data-value="ISFP" data-color="#d9d300">ISFP</div>
+                <div class="option" data-value="ISTP" data-color="#d9d300">ISTP</div>
+                <div class="option" data-value="ESTP" data-color="#d9d300">ESTP</div>
+                <div class="option" data-value="ESFP" data-color="#d9d300">ESFP</div>
+            </div>
+            <input type="hidden" name="mbti" id="mbti" required />
+                        </select>
                     </div>
                 </div>
                 <div class="register-background-parent">
@@ -62,6 +76,7 @@
                     <div class="div10" id="Register-text">登入</div>
                 </div>
             </div>
+        </div>
         </form>
     </div>
     <script>
@@ -78,6 +93,29 @@
           window.location.href = "{{ url_for('main_page') }}";
          });
       }
+
+          document.addEventListener('DOMContentLoaded', function() {
+        const selectContainer = document.querySelector('.custom-select');
+        const selectedOption = selectContainer.querySelector('.selected-option');
+        const optionsContainer = selectContainer.querySelector('.options-container');
+        const options = optionsContainer.querySelectorAll('.option');
+        const hiddenInput = document.getElementById('mbti');
+
+        selectedOption.addEventListener('click', function() {
+            selectContainer.classList.toggle('open');
+        });
+
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                selectedOption.textContent = this.textContent;
+                hiddenInput.value = this.getAttribute('data-value');
+                selectContainer.classList.remove('open');
+            });
+
+            // Set the background color for each option
+            option.style.backgroundColor = option.getAttribute('data-color');
+        });
+    });
       </script>
 </body>
 </html>
