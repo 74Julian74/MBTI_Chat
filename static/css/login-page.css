@@ -1,12 +1,3 @@
-.e355dc75c2e90373cb295-hero20v-icon1 {
-  height: 178px;
-  width: 495px;
-  position: absolute;
-  margin: 0 !important;
-  top: -125px;
-  left: 111px;
-  object-fit: cover;
-}
 .h1 {
   margin: 0;
   height: 77px;
@@ -18,6 +9,17 @@
   min-width: 128px;
   text-align: center;
 }
+
+.e355dc75c2e90373cb295-hero20v-icon1 {
+  height: 178px;
+  width: 495px;
+  position: absolute;
+  margin: 0 !important;
+  top: -125px;
+  left: 111px;
+  object-fit: cover;
+}
+
 .e355dc75c2e90373cb295-hero20v-group {
   width: 729px;
   display: flex;
@@ -52,11 +54,12 @@
   box-shadow: 0 4px 64px rgba(0, 0, 0, 0.05);
   border-radius: var(--br-3xs);
   background-color: var(--color-ghostwhite);
-  border: 0.5px solid var(--color-gray-100);
   box-sizing: border-box;
   display: none;
   max-width: 100%;
+  border: 0.5px solid var(--color-gray-100);
 }
+
 .welcome {
   margin: 0;
   align-self: stretch;
@@ -121,11 +124,13 @@
   border: none;
   outline: none;
 }
+
 .parent {
   flex: 1;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .input-field {
   width: 480px;
   height: 56px; /* 设置统一的高度 */
@@ -142,10 +147,12 @@
 .input-field:focus {
   border-color: #007bff; /* 聚焦时的边框颜色 */
 }
+
 .password,
 .username-field {
   font-size: var(--font-size-5xl);
 }
+
 .username-field {
   width: 483px;
   display: flex;
@@ -289,16 +296,16 @@
   width: 100%;
   height: 100%;
   cursor: pointer;
-  z-index: 2;
+  z-index: 1;
 }
 .div5 {
-  position: absolute;
+  position: relative;
   top: 11px;
   left: 217px;
   font-weight: 500;
   display: inline-block;
   min-width: 49px;
-  z-index: 1;
+  z-index: 2;
 }
 .login-button {
   align-self: stretch;
@@ -401,6 +408,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+#login-text {
+  cursor: pointer; /* 确保在鼠标悬停时显示手形光标 */
+}
+
 @media screen and (max-width: 1150px) {
   .login-page {
     padding-left: var(--padding-159xl);
@@ -486,3 +497,4 @@
     box-sizing: border-box;
   }
 }
+
