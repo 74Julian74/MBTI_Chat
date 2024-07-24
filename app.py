@@ -1,11 +1,17 @@
-from flask import Flask, jsonify, request, redirect, url_for
+from flask import Flask, request, redirect, url_for
+from flask import render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from flask_migrate import Migrate
+from form import FormRegister, FormLogin
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_bootstrap import Bootstrap
+from flask_wtf.csrf import CSRFProtect
 
-# pip install flask_sqlalchemy
-# pip install pymysql
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
+bootstrap = Bootstrap(app)
+csrf = CSRFProtect(app)
+
 # _name_ 代表目前執行的模組
 
 # 下面這塊是連接資料庫
@@ -27,29 +33,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'your_secret_key'
 db = SQLAlchemy(app)
 
-migrate = Migrate(app, db)
-# with db.engine.connect() as conn: 測試資料庫,但這個應該沒辦法用
-#    rs=conn.execute("select 1")
-#    print(rs.fetchone())
-@app.route("/")
-# 函式的裝飾(Decorator): 已函式為基礎，提供附加的功能
-def home():
-    # return render_template('主畫面.html檔')
-    return "This is home"
-
 class UserACC(db.Model):
     __tablename__ = "user_acc"
     UserID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    ProfilePicture = db.Column(db.String(200))
-    LastActive = db.Column(db.DateTime)
-    MBTI = db.Column(db.String(5))
-    RespondType = db.Column(db.String(20))
-    BD = db.Column(db.Date)
-    AGE = db.Column(db.Integer)
-    StarSign = db.Column(db.String(5))
+    password = db.Column(db.String(255), nullable=False)
+    ProfilePicture = db.Column(db.String(200), nullable=True)
+    LastActive = db.Column(db.DateTime, nullable=True)
+    MBTI = db.Column(db.String(5), nullable=True)
+    RespondType = db.Column(db.String(20), nullable=True)
+    BD = db.Column(db.Date, nullable=True)
+    AGE = db.Column(db.Integer, nullable=True)
+    StarSign = db.Column(db.String(5), nullable=True)
 
 class UserMSG(db.Model):
     __tablename__ = "user_msg"
@@ -68,8 +64,8 @@ class Relation(db.Model):
     Status = db.Column(db.Boolean, nullable=False)
     TimeStamp = db.Column(db.DateTime, nullable=False)
 
-    user1 = db.relationship('User', foreign_keys=[UserID1])
-    user2 = db.relationship('User', foreign_keys=[UserID2])
+    user1 = db.relationship('UserACC', foreign_keys=[UserID1])
+    user2 = db.relationship('UserACC', foreign_keys=[UserID2])
 
 
 class VerifyMSG(db.Model):
@@ -113,57 +109,105 @@ class Notifiation(db.Model):
     TimeStamp = db.Column(db.DateTime, nullable=False)
     IsRead = db.Column(db.Boolean, nullable=False)
 
-@app.route("/login_page", methods=['POST'])
-# 代表我們要處理的網站路徑
-def login_page():
-    user_name = request.form.get('user_name')
-    password = request.form.get('password')
-
-    if user_name == '410630734' and password == '12345678':
-        return jsonify({'redirect_url': url_for('main_page')})
-    else:
-        print('Invalid user_name or password')
-        return redirect(url_for('/'))
-
+migrate = Migrate(app, db)
 with app.app_context():
     db.create_all()
-@app.route("/main_page")
-def main_page():
-    # return render_template('main_page.html')
-    return "this is main page"
+
+
+@app.route("/")
+def index():
+    return render_template('index.html')
+
+@app.route("/login-page", methods=['GET', 'POST'])
+def login_page():
+    form = FormLogin()
+    if form.validate_on_submit():
+        user = UserACC.query.filter_by(email=form.email.data).first()
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                flash('登錄成功！', 'success')
+                return redirect(url_for('main_page'))
+            else:
+                flash('Wrong Email or Password')
+                print("Wrong Email or Password")
+        else:
+            flash('Wrong Email or Password')
+    return render_template('login-page.html', title='登陸', form=form)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        user_name = request.form.get('user_name')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+    form = FormRegister()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        pass
 
-        if password == confirm_password:
-            return redirect(url_for('/'))
-    # return render_template('註冊畫面.html')
-    return "this is register"
+        print(f"Attempting to register: {email}")
 
-@app.route('/chat_room', methods=['GET'])
+        existing_user = UserACC.query.filter_by(email=email).first()
+        if existing_user:
+            flash('該信箱已註冊過', 'error')
+            return render_template('register.html', form=form)
+
+        try:
+            new_user = UserACC(email=email, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            print(f"User registered successfully: {email}")
+            flash('注册成功！', 'success')
+            return redirect(url_for('login_page'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Registration error: {str(e)}")
+            flash('註冊失敗。', 'error')
+            app.logger.error(f"Registration error: {str(e)}")
+            return render_template('register.html', form=form)
+
+    return render_template('register.html', form=form)
+
+@app.route("/main-page")
+def main_page():
+    return render_template('main-page.html')
+
+@app.route('/chat-room', methods=['GET', 'POST'])
 def chat_room():
-    return 'this is chat room'
+    return render_template('chat-room.html')
 
-@app.route('/MBTIclassification', methods=['GET'])
-def MBTIclassification():
-    return 'this is MBTI classification'
+@app.route('/m-b-t-i-classification', methods=['GET'])
+def mbticlassification():
+    return render_template('m-b-t-i-classification.html')
 
-@app.route('/Profile', methods=['GET'])
-def Profile():
-    return 'this is Profile'
+@app.route('/profile', methods=['GET'])
+def profile():
+    return render_template('profile.html')
 
 @app.route('/setting', methods=['GET'])
 def setting():
-    return 'this is setting'
+    return render_template('setting.html')
+
+
+@app.route('/sentiment-Analysis', methods=['GET'])
+def sentiment_analysis():
+    return render_template('sentiment-Analysis.html')
+
 
 @app.route('/Sentiment_Analysis', methods=['GET'])
 def Sentiment_Analysis():
     return 'this is Sentiment_Analysis'
 
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    app.logger.error(f"500 error: {str(error)}")
+    return "500 Internal Server Error", 500
+
+@app.errorhandler(404)
+def not_found_error(error):
+    app.logger.error(f"404 error: {str(error)}")
+    return "404 Not Found", 404
+
 if __name__=="__main__":  # 如果以主程式執行
     app.run(debug=True) # 立刻啟動伺服器
+
