@@ -843,18 +843,15 @@
   text-align: left;
 }
 .last-user-message-content {
-  cursor: pointer;
-  border: 0;
-  padding: var(--padding-xs) var(--padding-base);
-  background-color: var(--color-black);
-  border-radius: var(--br-base) var(--br-base) var(--br-9xs) var(--br-base);
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  max-width: 480px;
-  white-space: nowrap;
+  flex-direction: column;
+  align-items: flex-end; /* 使內容靠右對齊 */
+  color: var(--color-black); /* 將文字顏色改為黑色 */
+  background-color: var(--color-gainsboro-100); /* 假設您想要保持灰色背景 */
+  padding: 8px 12px; /* 添加一些內邊距 */
+  border-radius: 8px; /* 圓角 */
+  max-width: 70%; /* 限制最大寬度 */
+  margin-left: auto; /* 如果在一個塊級容器中，這會使消息靠右 */
 }
 .last-user-message-content:hover,
 .simple-wrapper:hover {
@@ -1109,8 +1106,17 @@
   color: var(--color-black);
 }
 .messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   gap: var(--gap-16xl);
   max-width: 100%;
+}
+.timestamp {
+  font-size: 0.8em; /* 使字體比正常文字小 20% */
+  color: var(--color-darkslategray-100); /* 使用較淺的顏色 */
+  margin-top: 4px; /* 在訊息和時間戳之間添加一些間距 */
+  align-self: flex-end; /* 如果父元素是 flex 容器，這會使時間戳靠右對齊 */
 }
 .label1 {
   flex: 1;
@@ -1153,13 +1159,10 @@
   max-width: 100%;
 }
 .messages-parent {
-  align-self: stretch;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0 0 0 var(--padding-5xl);
-  box-sizing: border-box;
-  gap: 25px;
-  color: var(--palette-white);
+  display: flex;
+  flex-direction: column-reverse;
+  height: 500px; /* 或者您想要的高度 */
+  overflow-y: auto;
 }
 .chat,
 .conversation8 {

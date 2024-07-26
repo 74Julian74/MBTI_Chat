@@ -373,35 +373,35 @@
       var text1 = document.getElementById("text1");
       if (text1) {
         text1.addEventListener("click", function (e) {
-          window.location.href = "./setting.html";
+          window.location.href = "{{ url_for('setting') }}";
         });
       }
       
       var text2 = document.getElementById("text2");
       if (text2) {
         text2.addEventListener("click", function (e) {
-          window.location.href = "./profile.html";
+          window.location.href = "{{ url_for('profile') }}";
         });
       }
       
       var emotionIcon = document.getElementById("emotionIcon");
       if (emotionIcon) {
         emotionIcon.addEventListener("click", function (e) {
-          window.location.href = "./sentiment-analysis.html";
+          window.location.href = "{{ url_for('sentiment_analysis') }}";
         });
       }
       
       var mBTIicon = document.getElementById("mBTIicon");
       if (mBTIicon) {
         mBTIicon.addEventListener("click", function (e) {
-          window.location.href = "./m-b-t-i-classification.html";
+          window.location.href = "{{ url_for('mbticlassification') }}";
         });
       }
       
       var ellipse = document.getElementById("ellipse");
       if (ellipse) {
         ellipse.addEventListener("click", function (e) {
-          window.location.href = "./chat-room.html";
+          window.location.href = "{{ url_for('chat_room') }}";
         });
       }
       </script>

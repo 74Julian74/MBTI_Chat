@@ -1,27 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, width=device-width" />
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-room.css') }}" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
+  
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   </head>
   <body>
     <div class="chat-room">
@@ -264,7 +254,6 @@
                     class="phone-icon"
                     loading="lazy"
                     alt=""
-                    
                     src="{{url_for('static', filename='image/phone.svg')}}"
                   />
 
@@ -277,86 +266,20 @@
                 </div>
               </div>
             </div>
-            <div class="messages-parent">
+            
+            <div class="messages-parent" style="height: 500px; overflow-y: auto;">
               <div class="messages">
-                <div class="bubble">
-                  <button class="last-user-message-content">
-                    <div class="no-honestly-im">
-                      No honestly I’m thinking of a career pivot
-                    </div>
-                  </button>
-                  <div class="last-user-message-content1">
-                    <div class="this-is-the">
-                      This is the main chat template
-                    </div>
-                  </div>
-                </div>
-                <div class="date">Nov 30, 2023, 9:41 AM</div>
-                <div class="bubbles">
-                  <div class="user-messages">
-                    <div class="oh">Oh?</div>
-                  </div>
-                  <div class="contact-messages">
-                    <div class="cool">Cool</div>
-                  </div>
-                  <div class="user-detailed-messages">
-                    <div class="how-does-it">How does it work?</div>
-                  </div>
-                </div>
-                <div class="bubbles1">
-                  <button class="simple-wrapper">
-                    <div class="simple">Simple</div>
-                  </button>
-                  <div class="you-just-edit-any-text-to-type-wrapper">
-                    <div class="you-just-edit">
-                      You just edit any text to type in the conversation you
-                      want to show, and delete any bubbles you don’t want to use
-                    </div>
-                  </div>
-                  <div class="boom-wrapper">
-                    <div class="boom">Boom</div>
-                  </div>
-                </div>
-                <div class="bubbles2">
-                  <div class="hmmm-wrapper">
-                    <div class="hmmm">Hmmm</div>
-                  </div>
-                  <button class="i-think-i-get-it-wrapper">
-                    <div class="i-think-i">I think I get it</div>
-                  </button>
-                  <div class="will-head-to-the-help-center-i-wrapper">
-                    <div class="will-head-to1">
-                      Will head to the Help Center if I have more questions tho
-                    </div>
-                  </div>
-                </div>
+                  
               </div>
-              <div class="reply">
-                <div class="label1">Enter your message</div>
-                <img
-                  class="mic-icon"
-                  loading="lazy"
-                  alt=""
-                  
-                  src="{{url_for('static', filename='image/mic.svg')}}"
-                />
+            </div>
 
-                <img
-                  class="smile-icon"
-                  loading="lazy"
-                  alt=""
-                  
-                  src="{{url_for('static', filename='image/smile.svg')}}"
-                />
-
-                <img
-                  class="image-icon1"
-                  loading="lazy"
-                  alt=""
-                  
-                  src="{{url_for('static', filename='image/image-1.svg')}}"
-                />
-              </div>
+            <div class="reply">
+                <input type="text" class="label1" placeholder="Enter your message" />
+                <img class="mic-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/mic.svg')}}" />
+                <img class="smile-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/smile.svg')}}" />
+                <img class="image-icon1" loading="lazy" alt="" src="{{url_for('static', filename='image/image-1.svg')}}" />
+            </div>
+            
             </div>
           </div>
         </section>
@@ -387,6 +310,124 @@
           window.location.href = "./sentiment-analysis.html";
         });
       }
-      </script>
+      
+    </script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+          var socket = io.connect('http://' + document.domain + ':' + location.port);
+  
+          // 當用戶連接時觸發
+          socket.on('connect', function() {
+              console.log('Connected');
+          });
+  
+          // 當收到消息時觸發
+          socket.on('message', function(msg) {
+              displayMessage(msg, 'contact-messages');
+          });
+  
+          // 發送消息
+          var messageInput = document.querySelector('.label1');
+          messageInput.addEventListener('keypress', function(e) {
+              if (e.key === 'Enter') {
+                  e.preventDefault(); // 防止默認的提交行為
+                  var msg = messageInput.value;
+                  if (msg.trim() !== "") { // 確保消息不為空
+                      socket.send(msg);
+                      displayMessage(msg, 'user-messages');
+                      messageInput.value = ''; // 清空輸入框
+                  }
+              }
+          });
+  
+          // 顯示消息
+          function displayMessage(msg, messageType) {
+            var messages = document.querySelector('.messages');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('bubble');
+            newMessage.innerHTML = `
+                <div class="${messageType}">
+                  <div class="message-content">${msg}</div>
+                  <div class="timestamp">${formatTimeOnly(new Date())}</div>
+                </div>`;
+            messages.appendChild(newMessage);
+
+            //if (messagesContainer.children.length > 8) {
+            //  messagesContainer.removeChild(messagesContainer.children[0]);
+            //}
+
+            messages.scrollTop = messages.scrollHeight; // 滾動到最新消息
+          }
+          function formatTimeOnly(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? '下午' : '上午';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 將 0 轉換為 12
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${ampm} ${hours}:${minutes}`;
+          }
+      })
+  </script>
+  <!--script
+    const MAX_VISIBLE_MESSAGES = 15;
+    let allMessages = [];
+    const messagesContainer = document.querySelector('.messages');
+    const messagesParent = document.querySelector('.messages-parent');
+    
+    function addNewMessage(message) {
+        allMessages.push(message);
+        const messageElement = createMessageElement(message);
+        messagesContainer.appendChild(messageElement);
+        
+        // 如果訊息數量超過限制,刪除最舊的訊息
+        if (allMessages.length > MAX_VISIBLE_MESSAGES) {
+            allMessages.shift();
+            messagesContainer.removeChild(messagesContainer.firstChild);
+        }
+        
+        // 滾動到底部
+        scrollToBottom();
+    }
+    
+    function createMessageElement(message) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        // 根據訊息類型設置不同的樣式
+        if (message.isUser) {
+            bubble.classList.add('user-messages');
+        } else {
+            bubble.classList.add('contact-messages');
+        }
+        
+        const content = document.createElement('div');
+        content.textContent = message.text;
+        bubble.appendChild(content);
+        
+        return bubble;
+    }
+    
+    function scrollToBottom() {
+        messagesParent.scrollTop = messagesParent.scrollHeight;
+    }
+    
+    // 模擬接收新訊息的函數 (實際應用中應替換為真實的訊息接收邏輯)
+    function simulateNewMessage(text, isUser) {
+        addNewMessage({ text, isUser });
+    }
+    
+    // 初始化一些訊息
+    for (let i = 1; i <= 10; i++) {
+        simulateNewMessage(`初始訊息 ${i}`, i % 2 === 0);
+    }
+    
+    // 測試: 每3秒添加一條新訊息
+    setInterval(() => {
+        simulateNewMessage(`新訊息 ${new Date().toLocaleTimeString()}`, Math.random() > 0.5);
+    }, 3000);
+    
+    </script>
+  -->
   </body>
 </html>
