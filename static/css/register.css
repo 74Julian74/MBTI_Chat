@@ -7,7 +7,7 @@
   font-family: inherit;
   display: inline-block;
   min-width: 128px;
-
+  text-align: center;
 }
 
 .e355dc75c2e90373cb295-hero20v-icon2 {
@@ -118,7 +118,7 @@
   width: 729px;
   margin: 0 !important;
   position: absolute;
-  bottom: 54px;
+  bottom: 124px;
   left: 355px;
   box-shadow: 0 4px 64px rgba(0, 0, 0, 0.05);
   border-radius: var(--br-3xs);
@@ -154,6 +154,72 @@
 
 #Register-text {
   cursor: pointer; /* 确保在鼠标悬停时显示手形光标 */
+}
+
+.mbti-selector {
+    width: 100%;
+    height: 56px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.mbti-selector:focus {
+    border-color: #007bff;
+}
+
+.custom-select {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 20px; /* 确保选择器与“登入”按钮之间的间隔 */
+}
+
+.selected-option {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.options-container {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    box-sizing: border-box;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.option {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+}
+
+.option:hover {
+    background-color: #f0f0f0;
+}
+
+.custom-select.open .options-container {
+    display: block;
 }
 
 @media screen and (max-width: 1125px) {

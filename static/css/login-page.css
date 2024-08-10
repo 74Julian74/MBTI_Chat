@@ -49,8 +49,10 @@
 }
 .login-form-child {
   width: 729px;
-  height: 701px;
-  position: relative;
+  margin: 0 !important;
+  position: absolute;
+  bottom: 124px;
+  left: 355px;
   box-shadow: 0 4px 64px rgba(0, 0, 0, 0.05);
   border-radius: var(--br-3xs);
   background-color: var(--color-ghostwhite);

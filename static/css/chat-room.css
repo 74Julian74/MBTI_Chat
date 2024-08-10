@@ -5,12 +5,9 @@
   text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .wrapper4 {
-  align-self: stretch;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
   justify-content: center;
-  padding: 0 var(--padding-xl) 0 87px;
+  padding: 0 var(--padding-xl);
 }
 .h12 {
   margin: 0;
@@ -186,6 +183,7 @@
 }
 .person-wrapper {
   width: 226px;
+  flex: 0 0 auto;
   flex-direction: row;
   justify-content: flex-end;
   padding: 0 var(--padding-4xs);
@@ -323,19 +321,19 @@
   justify-content: flex-start;
 }
 .conversation-preview {
-  flex: 1;
+  display: flex;
   flex-direction: column;
   padding: var(--padding-8xs) 0 0;
   box-sizing: border-box;
   min-width: 187px;
 }
 .conversation {
-  align-self: stretch;
-  background-color: var(--color-whitesmoke-200);
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   padding: var(--padding-xs) var(--padding-base);
   gap: var(--gap-base);
+  background-color: var(--color-whitesmoke-200);
 }
 .avatar-child {
   height: 64px;
@@ -843,18 +841,15 @@
   text-align: left;
 }
 .last-user-message-content {
-  cursor: pointer;
-  border: 0;
-  padding: var(--padding-xs) var(--padding-base);
-  background-color: var(--color-black);
-  border-radius: var(--br-base) var(--br-base) var(--br-9xs) var(--br-base);
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  max-width: 480px;
-  white-space: nowrap;
+  flex-direction: column;
+  align-items: flex-end; /* 使內容靠右對齊 */
+  color: var(--color-black); /* 將文字顏色改為黑色 */
+  background-color: var(--color-gainsboro-100); /* 假設您想要保持灰色背景 */
+  padding: 8px 12px; /* 添加一些內邊距 */
+  border-radius: 8px; /* 圓角 */
+  max-width: 70%; /* 限制最大寬度 */
+  margin-left: auto; /* 如果在一個塊級容器中，這會使消息靠右 */
 }
 .last-user-message-content:hover,
 .simple-wrapper:hover {
@@ -866,25 +861,24 @@
   font-weight: 500;
 }
 .last-user-message-content1 {
-  border-radius: var(--br-base) var(--br-base) var(--br-9xs) var(--br-base);
-  background-color: var(--color-black);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: var(--padding-xs) var(--padding-base);
-  box-sizing: border-box;
-  max-width: 480px;
-  white-space: nowrap;
+  background-color: var(--color-black); /* 背景色 */
+  color: var(--palette-white); /* 文字颜色 */
+  padding: var(--padding-xs) var(--padding-base); /* 内边距 */
+  border-radius: var(--br-base) var(--br-base) var(--br-9xs) var(--br-base); /* 圆角 */
+  max-width: 480px; /* 最大宽度 */
+  white-space: nowrap; /* 不换行 */
 }
 .bubble {
-  align-self: stretch;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: flex-start;
-  padding: 0 0 0 340px;
+  padding: 8px; /* 内边距 */
   gap: var(--gap-5xs);
+  margin-left: auto; /* 使气泡内容靠右 */
 }
 .date,
 .oh {
@@ -1109,8 +1103,21 @@
   color: var(--color-black);
 }
 .messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   gap: var(--gap-16xl);
   max-width: 100%;
+  background-color: #f1f1f1; /* 背景颜色 */
+  border-radius: 5px; /* 圆角 */
+  padding: 10px; /* 内边距 */
+  margin-bottom: 10px; /* 消息之间的间距 */
+}
+.timestamp {
+  font-size: 0.8em; /* 使字體比正常文字小 20% */
+  color: var(--color-darkslategray-100); /* 使用較淺的顏色 */
+  margin-top: 4px; /* 在訊息和時間戳之間添加一些間距 */
+  align-self: flex-end; /* 如果父元素是 flex 容器，這會使時間戳靠右對齊 */
 }
 .label1 {
   flex: 1;
@@ -1132,6 +1139,7 @@
   overflow: hidden;
   flex-shrink: 0;
 }
+
 .reply {
   align-self: stretch;
   border-radius: var(--br-5xs);
@@ -1153,13 +1161,10 @@
   max-width: 100%;
 }
 .messages-parent {
-  align-self: stretch;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0 0 0 var(--padding-5xl);
-  box-sizing: border-box;
-  gap: 25px;
-  color: var(--palette-white);
+  display: flex;
+  flex-direction: column-reverse;
+  height: 500px; /* 或者您想要的高度 */
+  overflow-y: auto;
 }
 .chat,
 .conversation8 {
@@ -1181,14 +1186,14 @@
 .chat {
   align-self: stretch;
   background-color: var(--color-whitesmoke-300);
-  flex-direction: row;
+  flex-direction: row; /* 改为纵向排列 */
   align-items: flex-start;
-  row-gap: 20px;
-  z-index: 1;
   text-align: left;
   font-size: var(--font-size-17xl);
-  color: var(--palette-white);
   font-family: var(--presets-body2);
+  color: var(--palette-white);
+  width: 100%; /* 让聊天框宽度占据父容器 */
+  max-width: 100%; /* 控制最大宽度 */
 }
 .a7 {
   text-decoration: none;
@@ -1324,8 +1329,14 @@
   text-align: left;
   font-size: var(--font-size-31xl);
   color: var(--color-black);
-  font-family: var(--presets-body2);
+  font-family: 'Inter', sans-serif;;
 }
+.chat-container {
+  height: 400px; /* 根据需要调整 */
+  overflow-y: auto; /* 使聊天区域可滚动 */
+  padding: 10px; /* 添加一些内边距 */
+}
+
 @media screen and (max-width: 1050px) {
   .chat-components {
     flex: 1;
@@ -1383,7 +1394,7 @@
     box-sizing: border-box;
   }
 }
-@media screen and (max-width: 725px) {
+@media screen and (max-width: 875px) {
   .list1,
   .profile1 {
     box-sizing: border-box;
