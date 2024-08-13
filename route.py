@@ -44,78 +44,29 @@ def register():
 
 @app.route('/chat-room/<username>')
 def chat_room(username):
-    # 模拟用户数据
-    user_data = {
-        'helena-hills': {
-            'name': 'Helena Hills',
-            'status': '20 minutes ago',
-            'avatar': 'image/avatar-1@2x.png',
-            'messages': [
-                'Hello, how are you?',
-                'Will head to the Help Center...'
-            ]
-        },
-        'oscar-davis': {
-            'name': 'Oscar Davis',
-            'status': 'Recently online',
-            'avatar': 'image/rectangle-1@2x.png',
-            'messages': [
-                'Trueeeeee'
-            ]
-        },
-        'daniel-jay-park': {
-            'name': 'Daniel Jay Park',
-            'status': 'Recently online',
-            'avatar': 'image/avatar-2@2x.png',
-            'messages': [
-                'lol yeah, are you coming to the lunch on the 13th?'
-            ]
-        },
-        'mark-rojas': {
-            'name': 'Mark Rojas',
-            'status': 'Online',
-            'avatar': 'image/avatar-3@2x.png',
-            'messages': [
-                'great catching up over dinner!!'
-            ]
-        },
-        'giannis-constantino': {
-            'name': 'Giannis Constantinou',
-            'status': 'Online',
-            'avatar': 'image/avatar-4@2x.png',
-            'messages': [
-                'yep :0'
-            ]
-        },
-        'briana-lewis': {
-            'name': 'Briana Lewis',
-            'status': 'Recently online',
-            'avatar': 'image/avatar-5@2x.png',
-            'messages': [
-                'When are you coming back to town? Would love to catch up.'
-            ]
-        },
-        'mom': {
-            'name': 'Mom',
-            'status': '10 minutes ago',
-            'avatar': 'image/avatar-6@2x.png',
-            'messages': [
-                'Thanks!'
-            ]
-        },
-        'sherry-roy': {
-            'name': 'Sherry Roy',
-            'status': '1 hour ago',
-            'avatar': 'image/avatar-7@2x.png',
-            'messages': [
-                'Jack needs to find a sitter for the dog and I don’t know who’s good...'
-            ]
-        }
+    user_info = {
+        'helena-hills': {'name': 'Helena Hills', 'avatar': 'image/avatar-1@2x.png', 'status': '20 minutes ago'},
+        'oscar-davis': {'name': 'Oscar Davis', 'avatar': 'image/rectangle-1@2x.png', 'status': '10 minutes ago'},
+        'daniel-jay-park': {'name': 'Daniel Jay Park', 'avatar': 'image/avatar-2@2x.png', 'status': 'Recently online'},
+        'mark-rojas': {'name': 'Mark Rojas', 'avatar': 'image/avatar-3@2x.png', 'status': 'Online'},
+        'giannis-constantinou': {'name': 'Giannis Constantinou', 'avatar': 'image/avatar-4@2x.png', 'status': 'Online'},
+        'briana-lewis': {'name': 'Briana Lewis', 'avatar': 'image/avatar-5@2x.png', 'status': '2 hours ago'},
+        'mom': {'name': 'Mom', 'avatar': 'image/avatar-6@2x.png', 'status': '1 day ago'},
+        'sherry_roy': {'name': 'Sherry Roy', 'avatar': 'image/avatar-7@2x.png', 'status': 'Online'}
     }
-    user_info = user_data.get(username,
-                              {'avatar': 'image/avatar-1@2x.png', 'name': 'Helena Hills', 'status': '20 minutes ago'})
-    chat_records = user_info.get('messages', [])
-    return render_template('chat-room.html', username=username, user_info=user_info, chat_records=chat_records)
+    chat_records = {
+        'helena-hills': [{'text': 'Will head to the Help Center...', 'timestamp': '10:45 AM'}],
+        'oscar-davis': [{'text': 'Trueeeeee', 'timestamp': '11:15 AM'}],
+        'daniel-jay-park': [{'text': 'lol yeah, are you coming to the lunch on the 13th?', 'timestamp': '12:00 PM'}],
+        'mark-rojas': [{'text': 'great catching up over dinner!!', 'timestamp': '01:00 PM'}],
+        'giannis-constantinou': [{'text': 'yep :0', 'timestamp': '02:00 PM'}],
+        'briana-lewis': [{'text': 'When are you coming back to town? Would love to catch up.', 'timestamp': '03:00 PM'}],
+        'mom': [{'text': 'Thanks!', 'timestamp': '04:00 PM'}],
+        'sherry-roy': [{'text': 'Jack needs to find a sitter for the dog and I don’t know who’s good...', 'timestamp': '05:00 PM'}]
+    }
+    user = user_info.get(username, {'name': 'Unknown', 'avatar': 'image/default-avatar.png', 'status': 'Offline'})
+    messages = chat_records.get(username, [])
+    return render_template('chat-room.html', user_info=user, chat_records=messages)
 
 
 @app.route('/m-b-t-i-classification', methods=['GET'])
