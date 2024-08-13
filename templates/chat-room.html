@@ -3,31 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, width=device-width" />
-
+    <title>情感分析聊天對話助手</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-room.css') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
-
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <style>
-    .person.selected {
-      background-color: #e0e0e0;
-    }
-    .chat-container {
-        height: 400px;
-        overflow-y: auto;
-    }
-    .chat-room {
-      display: flex;
-    }
-    .person-wrapper {
-      cursor: pointer;
-    }
-  </style>
   </head>
+
   <body>
     <div class="chat-room">
       <div class="wrapper4">
@@ -79,7 +64,9 @@
                 <div class="search-bar">
                   <div class="search1">
                     <img class="search-icon1" alt="" src="{{url_for('static', filename='image/search-1.svg')}}"/>
-                    <input class="label" placeholder="搜尋" type="text" />
+                      <label>
+                          <input class="label" placeholder="搜尋" type="text" />
+                      </label>
                   </div>
                 </div>
                   <div class="conversation">
@@ -215,18 +202,30 @@
             </div>
 
             <div class="chat-container">
-              <div class="messages">
-                {% for message in chat_records %}
-                  <div class="message">
-                    <strong>{{ user_info.name }}:</strong> {{ message }}
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
+                        <div class="messages">
+                            {% if chat_records %}
+                                {% for message in chat_records %}
+                                    <div class="message">
+                                        <div class="message-header">
+                                            <span class="message-sender">{{ message.sender }}</span>
+                                            <span class="message-timestamp">{{ message.timestamp }}</span>
+                                        </div>
+                                        <div class="message-body">
+                                            <p>{{ message.text }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="message">沒有對話紀錄。</div>
+                            {% endif %}
+                        </div>
+                    </div>
 
             <div class="message-bar">
-              <input class="input-box" placeholder="輸入訊息..." type="text" />
-              <div class="send-button">
+                <label>
+                    <input class="input-box" placeholder="輸入訊息..." type="text" />
+                </label>
+                <div class="send-button">
                 <button class="send-button1">
                   <img class="send-icon" alt="" src="{{url_for('static', filename='image/send.svg')}}"/>
                 </button>
@@ -238,56 +237,96 @@
     </div>
 
     <script>
-function updateChat(user) {
-  fetch(/chat-room/${user})
-    .then(response => response.text())
-    .then(html => {
-      // 更新页面内容
-      document.querySelector('.chatroom-content').innerHTML = html;
-
-      document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
-            personWrapper.addEventListener('click', function() {
-                const username = this.getAttribute('data-username');
-                updateChat(username);
-
-                document.querySelectorAll('.person-wrapper').forEach(wrapper => {
-                    wrapper.classList.remove('selected');
-                });
-                this.classList.add('selected');
+      // 保存聊天紀錄的狀態
+      const chatHistory = {};
+      // 更新聊天紀錄
+      function updateChat(user) {
+        // 檢查是否已有聊天紀錄
+        if (chatHistory[user]) {
+        // 使用已有紀錄
+          displayMessages(chatHistory[user]);
+        }
+        else {
+          fetch(`/chat-room/${user}`)
+            .then(response => response.json())
+            .then(data => {
+              chatHistory[user] = data; // 保存紀錄
+              displayMessages(data);
             });
+        }
+
+        document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
+          personWrapper.addEventListener('click', function() {
+            const username = this.getAttribute('data-username');
+            updateChat(username);
+
+            document.querySelectorAll('.person-wrapper').forEach(wrapper => {
+              wrapper.classList.remove('selected');
+            });
+            this.classList.add('selected');
+          });
         });
-    });
-}
+      }
 
-
-// 监听点击事件以切换用戶
-document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
-  personWrapper.addEventListener('click', function() {
-    const username = this.getAttribute('data-username');
-    updateChat(username);
-
-    document.querySelectorAll('.person-wrapper').forEach(wrapper => {
-      wrapper.classList.remove('selected');
-    });
-    this.classList.add('selected');
-  });
-});
-
-      // 初始化 socket.io 连接
-      const socket = io();
-      // 监听消息事件，并将其显示在聊天窗口中
-      socket.on('message', function(msg) {
-        var messageElement = document.createElement('div');
-        messageElement.textContent = msg;
-        document.querySelector('.chat-container').appendChild(messageElement);
+    // 顯示聊天紀錄
+    function displayMessages(messages) {
+      const messageContainer = document.querySelector('.messages');
+      messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.innerHTML = `
+          <div class="message-header">
+            <span class="message-sender">${message.sender}</span>
+            <span class="message-timestamp">${message.timestamp}</span>
+          </div>
+          <div class="message-body">
+            <p>${message.text}</p>
+          </div>
+        `;
+    messageContainer.appendChild(messageElement);
       });
+      // 保持滾動位置至最新消息
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
 
-      // 发送消息
-      document.querySelector('.send-button1').addEventListener('click', function() {
-        var inputBox = document.querySelector('.input-box');
-        socket.emit('message', inputBox.value);
-        inputBox.value = '';
+
+    // 監聽點擊事件以切换用戶
+    document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
+      personWrapper.addEventListener('click', function() {
+        const username = this.getAttribute('data-username');
+        updateChat(username);
+
+        document.querySelectorAll('.person-wrapper').forEach(wrapper => {
+          wrapper.classList.remove('selected');
+        });
+        this.classList.add('selected');
       });
+    });
+
+    // 初始化 socket.io 連接
+    const socket = io();
+    socket.on('message', function(msg) {
+      const user = getCurrentUser();
+      if (chatHistory[user]) {
+        chatHistory[user].push(msg);
+        displayMessages(chatHistory[user]);
+      }
+    });
+
+    // 發送消息
+    document.querySelector('.send-button1').addEventListener('click', function() {
+      const inputBox = document.querySelector('.input-box');
+      const user = getCurrentUser();
+      const message = { sender: user, text: inputBox.value, timestamp: new Date().toLocaleTimeString() };
+      socket.emit('message', message);
+      inputBox.value = '';
+    });
+
+    // 獲取當前用户
+    function getCurrentUser() {
+      // 根据实际情况实现获取当前用户的逻辑
+      return document.querySelector('.chat-header .person1 img').alt;
+    }
     </script>
   </body>
 </html>
