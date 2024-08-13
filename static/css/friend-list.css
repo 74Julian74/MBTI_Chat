@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #d9d9d9;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #000;
+}
+
+.home-icon {
+    font-size: 24px;
+    text-decoration: none;
+    color: #000;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.header-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icon {
+    text-decoration: none;
+    font-size: 20px;
+}
+
+main {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+.user-section {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-profile {
+    background-color: #c1e1c1;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.user-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #6495ed;
+}
+
+.user-name {
+    margin: 10px 0 0;
+    font-weight: bold;
+}
+
+.task-card {
+    background-color: #c1e1c1;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.task-card h3 {
+    margin-top: 0;
+}
+
+.friends-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);
+}
+
+.friend-card {
+    display: flex;
+    align-items: center;
+    background-color: #e6e6fa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.friend-card:nth-child(even) {
+    background-color: #d8d8d8;
+}
+
+.friend-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.action-icon {
+    font-size: 20px;
+    cursor: pointer;
+}
+
