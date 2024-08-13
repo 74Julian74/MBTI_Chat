@@ -52,7 +52,7 @@ def chat_room(username):
         'giannis-constantinou': {'name': 'Giannis Constantinou', 'avatar': 'image/avatar-4@2x.png', 'status': 'Online'},
         'briana-lewis': {'name': 'Briana Lewis', 'avatar': 'image/avatar-5@2x.png', 'status': '2 hours ago'},
         'mom': {'name': 'Mom', 'avatar': 'image/avatar-6@2x.png', 'status': '1 day ago'},
-        'sherry_roy': {'name': 'Sherry Roy', 'avatar': 'image/avatar-7@2x.png', 'status': 'Online'}
+        'sherry-roy': {'name': 'Sherry Roy', 'avatar': 'image/avatar-7@2x.png', 'status': 'Online'}
     }
     chat_records = {
         'helena-hills': [{'text': 'Will head to the Help Center...', 'timestamp': '10:45 AM'}],
