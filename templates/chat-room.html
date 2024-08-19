@@ -202,24 +202,29 @@
             </div>
 
             <div class="chat-container">
-                        <div class="messages">
-                            {% if chat_records %}
-                                {% for message in chat_records %}
-                                    <div class="message">
-                                        <div class="message-header">
-                                            <span class="message-sender">{{ message.sender }}</span>
-                                            <span class="message-timestamp">{{ message.timestamp }}</span>
-                                        </div>
-                                        <div class="message-body">
-                                            <p>{{ message.text }}</p>
-                                        </div>
-                                    </div>
-                                {% endfor %}
+              {% for message in chat_records %}
+                {% if message.type == 'date_separator' %}
+                  <div class="date-separator">
+                    <div class="date">{{ message.date }}</div>
+                  </div>
+                {% else %}
+                    <div class="message {% if message.type == 'sender' %}message-sender{% else %}message-receiver{% endif %}">
+                        <div class="message-header">
+                            {% if message.type == 'sender' %}
+                                <span class="message-sender">{{ ' ' }}</span>
+                                <span class="message-timestamp">{{ message.timestamp.split(' ')[1] }}</span>
                             {% else %}
-                                <div class="message">沒有對話紀錄。</div>
+                                <span class="message-receiver">{{ ' ' }}</span>
+                                <span class="message-timestamp">{{ message.timestamp.split(' ')[1] }}</span>
                             {% endif %}
                         </div>
+                        <div class="message-body">
+                            <p>{{ message.text }}</p>
+                        </div>
                     </div>
+                {% endif %}
+              {% endfor %}
+            </div>
 
             <div class="message-bar">
                 <label>
@@ -270,23 +275,34 @@
 
     // 顯示聊天紀錄
     function displayMessages(messages) {
-      const messageContainer = document.querySelector('.messages');
+      const messageContainer = document.querySelector('.chat-container');
+      let lastDate = null;
       messages.forEach(message => {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message');
-        messageElement.innerHTML = `
-          <div class="message-header">
-            <span class="message-sender">${message.sender}</span>
-            <span class="message-timestamp">${message.timestamp}</span>
-          </div>
-          <div class="message-body">
-            <p>${message.text}</p>
-          </div>
-        `;
-    messageContainer.appendChild(messageElement);
-      });
+          const messageDate = new Date(message.timestamp).toLocaleDateString();
+          if (messageDate !== lastDate) {
+              console.log(`messageDate: ${message}`);
+              const dateElement = document.createElement('div');
+              dateElement.classList.add('date-separator');
+              dateElement.innerHTML = `<div class="date">${messageDate}</div>`;
+              messageContainer.appendChild(dateElement);
+              lastDate = messageDate;
+          }
+
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('message', message.type === 'sender' ? 'message-sender' : 'message-receiver');
+          messageElement.innerHTML = `
+            <div class="message-header">
+              <span class="message-sender">${message.type === 'sender' ? message.sender : ''}</span>
+              <span class="message-timestamp">${new Date(message.timestamp).toLocaleTimeString()}</span>
+            </div>
+            <div class="message-body">
+              <p>${message.text}</p>
+            </div>
+          `;
+           messageContainer.appendChild(messageElement);
+        });
       // 保持滾動位置至最新消息
-      messageContainer.scrollTop = messageContainer.scrollHeight;
+        messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 
 
