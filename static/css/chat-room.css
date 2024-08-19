@@ -50,7 +50,9 @@
   flex-shrink: 0;
   min-height: 24px;
 }
-.div14 {
+.div14,
+.div15,
+.div16{
   flex: 1;
   line-height: 150%;
   font-weight: 500;
@@ -79,13 +81,6 @@
   flex-shrink: 0;
   min-height: 24px;
 }
-.div15 {
-  flex: 1;
-  line-height: 150%;
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .menu-item1 {
   align-self: stretch;
   border-radius: var(--br-5xs);
@@ -108,13 +103,6 @@
   flex-shrink: 0;
   min-height: 24px;
 }
-.div16 {
-  flex: 1;
-  line-height: 150%;
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .list,
 .menu-item2 {
   align-self: stretch;
@@ -131,15 +119,6 @@
 }
 .list {
   flex-direction: column;
-}
-.avatar-icon {
-  height: 128px;
-  width: 128px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: cover;
 }
 .avatar-wrapper {
   display: flex;
@@ -276,7 +255,23 @@
   align-self: stretch;
   padding: 0 var(--padding-5xl);
 }
-.avatar-icon1 {
+.avatar-icon {
+  height: 128px;
+  width: 128px;
+  position: relative;
+  border-radius: var(--br-981xl);
+  overflow: hidden;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.avatar-icon1,
+.avatar-icon2,
+.avatar-icon3,
+.avatar-icon4,
+.avatar-icon5,
+.avatar-icon6,
+.avatar-icon7,
+.avatar-icon8{
   height: 64px;
   width: 64px;
   position: relative;
@@ -339,6 +334,18 @@
   padding: var(--padding-xs) var(--padding-base);
   gap: var(--gap-base);
 }
+.helena-hills,
+.oscar-davis,
+.daniel-jay-park,
+.mark-rojas,
+.giannis-constantinou,
+.briana-lewis,
+.mom,
+.sherry-roy{
+  font-weight: 500;
+  display: inline-block;
+  min-width: 115px;
+}
 .avatar-child {
   height: 64px;
   width: 64px;
@@ -362,18 +369,6 @@
   position: relative;
   line-height: 150%;
 }
-.helena-hills,
-.oscar-davis,
-.daniel-jay-park,
-.mark-rojas,
-.giannis-constantinou,
-.briana-lewis,
-.mom,
-.sherry-roy{
-  font-weight: 500;
-  display: inline-block;
-  min-width: 115px;
-}
 .trueeeeee {
   align-self: stretch;
   font-size: var(--presets-body2-size);
@@ -395,15 +390,6 @@
   padding: var(--padding-8xs) 0 0;
   box-sizing: border-box;
   min-width: 187px;
-}
-.avatar-icon2 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
 }
 .daniel-jay-park,
 .lol-yeah-are {
@@ -432,15 +418,6 @@
   box-sizing: border-box;
   min-width: 187px;
 }
-.avatar-icon3 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
-}
 .great-catching-up,
 .mark-rojas {
   position: relative;
@@ -467,15 +444,6 @@
   padding: var(--padding-8xs) 0 0;
   box-sizing: border-box;
   min-width: 187px;
-}
-.avatar-icon4 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
 }
 .text4,
 .yep {
@@ -504,15 +472,6 @@
   box-sizing: border-box;
   min-width: 187px;
 }
-.avatar-icon5 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
-}
 .briana-lewis,
 .when-are-you {
   position: relative;
@@ -540,15 +499,6 @@
   box-sizing: border-box;
   min-width: 187px;
 }
-.avatar-icon6 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
-}
 .text6,
 .thanks {
   align-self: stretch;
@@ -575,15 +525,6 @@
   padding: var(--padding-8xs) 0 0;
   box-sizing: border-box;
   min-width: 187px;
-}
-.avatar-icon7 {
-  height: 64px;
-  width: 64px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: contain;
 }
 .jack-needs-to,
 .sherry-roy {
@@ -651,15 +592,13 @@
   width: 400px;
   min-width: 400px;
 }
-.avatar-icon8 {
-  height: 48px;
-  width: 48px;
-  position: relative;
-  border-radius: var(--br-981xl);
-  overflow: hidden;
-  flex-shrink: 0;
-  object-fit: cover;
-  min-height: 48px;
+.chat-container {
+   display: flex;
+   flex-direction: column;
+   height: 100%; /* 根據需要調整 */
+   width: 100%; /* 根據需要調整 */
+   overflow-y: auto; /* 使聊天區域可滾動 */
+   padding: 10px; /* 添加一些內邊距 */
 }
 .div18,
 .helena-hills1 {
@@ -734,22 +673,55 @@
     align-items: center;
     font-size: 0.9em;
     color: #555;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 .message-sender {
     font-weight: bold;
     font-size: 1em; /* 调整字体大小 */
-    color: #888; /* 字体颜色 */
-    margin-right: 10px; /* 与时间戳之间的间距 */
-    display: inline-block; /* 确保发件人名字和时间戳在同一行 */
+    color: #555; /* 字体颜色 */
+    align-self: flex-start;
+    text-align: left;
+    margin: 0 auto 0 10px; /* 設置 margin */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    position: relative;
+}
+.message-receiver {
+    font-weight: bold;
+    font-size: 1em; /* 调整字体大小 */
+    color: #555; /* 字体颜色 */
+    align-self: flex-end;
+    text-align: right;
+    margin: 0 10px 0 auto; /* 設置 margin */
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    position: relative;
 }
 .message-timestamp {
     font-size: 0.8em;
     color: #888;
+    position: absolute;
+    top: 0;
+}
+/* 发送者的时间戳在右侧 */
+.message-sender .message-timestamp {
+    right: 10px;
+}
+
+/* 接收者的时间戳在左侧 */
+.message-receiver .message-timestamp {
+    left: 10px;
 }
 .message-body {
+    display: inline-block;
+    flex-direction: column;
+    gap: var(--gap-5xs);
+    margin-left: auto; /* 使气泡内容靠右 */
+    word-wrap: break-word; /* 讓內容可以換行 */
     background-color: #f1f1f1;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 5px;
     position: relative;
 }
@@ -795,12 +767,45 @@
   white-space: nowrap; /* 不换行 */
 }
 .bubble {
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 8px; /* 内边距 */
+  justify-content: flex-start;
+  padding: 0 0 0 340px;
   gap: var(--gap-5xs);
-  margin-left: auto; /* 使气泡内容靠右 */
+}
+.bubbles {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 511px 0 0;
+  gap: var(--gap-5xs);
+  color: var(--color-black);
+}
+.bubbles1 {
+  align-self: stretch;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0 0 0 204px;
+  gap: var(--gap-5xs);
+  max-width: 100%;
+}
+.bubbles2 {
+  padding: 0 221px 0 0;
+  gap: var(--gap-5xs);
+  color: var(--color-black);
+}
+.bubbles2,
+.messages {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 .date,
 .oh {
@@ -864,16 +869,6 @@
   max-width: 480px;
   white-space: nowrap;
 }
-.bubbles {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0 511px 0 0;
-  gap: var(--gap-5xs);
-  color: var(--color-black);
-}
 .simple {
   position: relative;
   font-size: var(--presets-body2-size);
@@ -900,19 +895,9 @@
   display: inline-block;
   min-width: 44px;
 }
-.boom-wrapper,
-.bubbles1 {
+.boom-wrapper{
   display: flex;
   box-sizing: border-box;
-}
-.bubbles1 {
-  align-self: stretch;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 0 0 0 204px;
-  gap: var(--gap-5xs);
-  max-width: 100%;
 }
 .hmmm {
   position: relative;
@@ -959,35 +944,218 @@
   line-height: 150%;
   font-weight: 500;
 }
-.bubbles2,
-.messages {
-  align-self: stretch;
+.message {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-.bubbles2 {
-  padding: 0 221px 0 0;
-  gap: var(--gap-5xs);
-  color: var(--color-black);
+  max-width: 70%; /* 控制消息气泡的最大宽度 */
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word; /* 防止文字超出气泡 */
 }
 .messages {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: var(--gap-16xl);
-  max-width: 100%;
-  background-color: #f1f1f1; /* 背景颜色 */
-  border-radius: 0; /* 无圆角 */
-  padding: 10px; /* 内边距 */
-  margin-bottom: 10px; /* 消息之间的间距 */
+    max-width: 70%; /* 使消息框最大宽度占70% */
+    min-width: 50%; /* 设置最小宽度 */
+    margin-left: 0;
+    margin-right: auto; /* 确保发送者消息靠左 */
+    word-wrap: break-word;
+    background-color: #f1f1f1;
+    border-radius: 0;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 .timestamp {
   font-size: 0.8em; /* 使字體比正常文字小 20% */
   color: var(--color-darkslategray-100); /* 使用較淺的顏色 */
   margin-top: 4px; /* 在訊息和時間戳之間添加一些間距 */
   align-self: flex-end; /* 如果父元素是 flex 容器，這會使時間戳靠右對齊 */
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+}
+.date-separator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+}
+.date {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #666;
+}
+.oh {
+  font-weight: 500;
+  display: inline-block;
+  min-width: 31px;
+}
+.user-messages {
+  border-radius: var(--br-5xl) var(--br-base) var(--br-base) var(--br-9xs);
+  background-color: var(--color-gainsboro-100);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding-xs) var(--padding-base);
+  box-sizing: border-box;
+  max-width: 480px;
+}
+.cool {
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+  display: inline-block;
+  min-width: 36px;
+}
+.contact-messages {
+  border-radius: var(--br-5xl) var(--br-base) var(--br-base) var(--br-9xs);
+  background-color: var(--color-gainsboro-100);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding-xs) var(--padding-base);
+  box-sizing: border-box;
+  max-width: 480px;
+}
+.how-does-it {
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+}
+.user-detailed-messages {
+  border-radius: var(--br-5xl) var(--br-base) var(--br-base) var(--br-9xs);
+  background-color: var(--color-gainsboro-100);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding-xs) var(--padding-base);
+  box-sizing: border-box;
+  max-width: 480px;
+  white-space: nowrap;
+}
+.simple {
+  position: relative;
+  font-size: var(--presets-body2-size);
+  line-height: 150%;
+  font-weight: 500;
+  font-family: var(--presets-body2);
+  color: var(--palette-white);
+  text-align: left;
+  display: inline-block;
+  min-width: 52px;
+}
+.you-just-edit {
+  flex: 1;
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+  display: inline-block;
+  max-width: 100%;
+}
+.boom {
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+  display: inline-block;
+  min-width: 44px;
+}
+.boom-wrapper{
+  display: flex;
+  box-sizing: border-box;
+}
+.hmmm {
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+  display: inline-block;
+  min-width: 55px;
+}
+.i-think-i {
+  position: relative;
+  font-size: var(--presets-body2-size);
+  line-height: 150%;
+  font-weight: 500;
+  font-family: var(--presets-body2);
+  color: var(--color-black);
+  text-align: left;
+  display: inline-block;
+  min-width: 99px;
+}
+.simple-wrapper,
+.boom-wrapper,
+.hmmm-wrapper,
+.will-head-to,
+.i-think-i-get-it-wrapper,
+.you-just-edit-any-text-to-type-wrapper{
+  cursor: pointer;
+  border: 0;
+  padding: var(--padding-xs) var(--padding-base);
+  background-color: var(--color-gainsboro-100);
+  border-radius: var(--br-5xl) var(--br-base) var(--br-base) var(--br-9xs);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 480px;
+  white-space: nowrap;
+}
+.i-think-i-get-it-wrapper:hover {
+  background-color: var(--color-silver-100);
+}
+.will-head-to1 {
+  position: relative;
+  line-height: 150%;
+  font-weight: 500;
+}
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%; /* 控制消息气泡的最大宽度 */
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word; /* 防止文字超出气泡 */
+}
+.messages {
+    max-width: 70%; /* 使消息框最大宽度占70% */
+    min-width: 50%; /* 设置最小宽度 */
+    margin-left: 0;
+    margin-right: auto; /* 确保发送者消息靠左 */
+    word-wrap: break-word;
+    background-color: #f1f1f1;
+    border-radius: 0;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.timestamp {
+  font-size: 0.8em; /* 使字體比正常文字小 20% */
+  color: var(--color-darkslategray-100); /* 使用較淺的顏色 */
+  margin-top: 4px; /* 在訊息和時間戳之間添加一些間距 */
+  align-self: flex-end; /* 如果父元素是 flex 容器，這會使時間戳靠右對齊 */
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+}
+.date-separator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+}
+.date {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  color: #666;
+  position: relative;
 }
 .label1 {
   flex: 1;
@@ -1200,18 +1368,6 @@
   color: var(--color-black);
   font-family: 'Inter', sans-serif;;
 }
-.chat-container {
-  height: 400px; /* 根据需要调整 */
-  overflow-y: auto; /* 使聊天区域可滚动 */
-  padding: 10px; /* 添加一些内边距 */
-}
-.timestamp {
-  position: absolute;
-  bottom: 0;
-  right: 10px;
-  font-size: 0.8em;
-  color: #999;
-}
 @media screen and (max-width: 1050px) {
   .chat-components {
     flex: 1;
@@ -1336,10 +1492,6 @@
   .h12 {
     font-size: var(--font-size-3xl);
     line-height: 32px;
-  }
-  .helena {
-    font-size: var(--presets-body2-size);
-    line-height: 24px;
   }
   .list-parent {
     gap: var(--gap-40xl);
