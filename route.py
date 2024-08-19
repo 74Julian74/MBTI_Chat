@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-
+from datetime import datetime
 app = Flask(__name__, static_url_path='/static', template_folder="templates")
 app.secret_key = 'your_secret_key'
 
@@ -54,19 +54,42 @@ def chat_room(username):
         'mom': {'name': 'Mom', 'avatar': 'image/avatar-6@2x.png', 'status': '1 day ago'},
         'sherry-roy': {'name': 'Sherry Roy', 'avatar': 'image/avatar-7@2x.png', 'status': 'Online'}
     }
+    current_user = user_info.get(username, {'name': 'Unknown'}).get('name', 'Unknown')
+    now = datetime.now()
+
     chat_records = {
-        'helena-hills': [{'text': 'Will head to the Help Center...', 'timestamp': '10:45 AM'}],
-        'oscar-davis': [{'text': 'Trueeeeee', 'timestamp': '11:15 AM'}],
-        'daniel-jay-park': [{'text': 'lol yeah, are you coming to the lunch on the 13th?', 'timestamp': '12:00 PM'}],
-        'mark-rojas': [{'text': 'great catching up over dinner!!', 'timestamp': '01:00 PM'}],
-        'giannis-constantinou': [{'text': 'yep :0', 'timestamp': '02:00 PM'}],
-        'briana-lewis': [{'text': 'When are you coming back to town? Would love to catch up.', 'timestamp': '03:00 PM'}],
-        'mom': [{'text': 'Thanks!', 'timestamp': '04:00 PM'}],
-        'sherry-roy': [{'text': 'Jack needs to find a sitter for the dog and I don’t know who’s good...', 'timestamp': '05:00 PM'}]
+        'helena-hills': [
+            {'text': 'Will head to the Help Center...', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'},
+            {'text': 'Great, see you there!', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'receiver'}
+    ],
+        'oscar-davis': [
+            {'text': 'Trueeeeee', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'daniel-jay-park': [
+            {'text': 'lol yeah, are you coming to the lunch on the 13th?', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'mark-rojas': [
+            {'text': 'great catching up over dinner!!', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'giannis-constantinou': [
+            {'text': 'yep :0', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'briana-lewis': [
+            {'text': 'When are you coming back to town? Would love to catch up.', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'mom': [
+            {'text': 'Thanks!', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}],
+        'sherry-roy': [
+            {'text': 'Jack needs to find a sitter for the dog and I don’t know who’s good...', 'timestamp': now.strftime('%Y-%m-%d %H:%M'), 'type': 'sender'}]
     }
+
     user = user_info.get(username, {'name': 'Unknown', 'avatar': 'image/default-avatar.png', 'status': 'Offline'})
     messages = chat_records.get(username, [])
-    return render_template('chat-room.html', user_info=user, chat_records=messages)
+    # 處理日期分隔邏輯
+    formatted_records = []
+    last_date = None
+    for record in messages:
+        current_date = record['timestamp'].split(' ')[0]
+        if current_date != last_date:
+            formatted_records.append({'type': 'date_separator', 'date': current_date})
+            last_date = current_date
+        formatted_records.append(record)
+    return render_template('chat-room.html', user_info=user, chat_records=formatted_records, current_user=current_user)
 
 
 @app.route('/m-b-t-i-classification', methods=['GET'])
@@ -91,3 +114,4 @@ def sentiment_analysis():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
