@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <title>情感分析聊天對話助手</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-room.css') }}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  </head>
+
+  <body>
+    <div class="chat-room">
+      <div class="wrapper4">
+        <a class="a6">聊天室</a>
+      </div>
+      <main class="chatroom-content">
+        <section class="chat">
+          <div class="chat-components">
+            <div class="profile1">
+              <div class="profile-components">
+                <div class="button">
+                  <h1 class="h12">情感分析區</h1>
+                </div>
+              </div>
+              <div class="profile-child"></div>
+              <div class="list-parent">
+                <div class="list">
+                  <div class="menu-item">
+                    <img class="search-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/search.svg')}}"/>
+                    <div class="div14">搜尋</div>
+                  </div>
+                  <div class="menu-item1">
+                    <img class="image-icon" alt="" src="{{url_for('static', filename='image/image.svg')}}" />
+                    <div class="div15">傳送圖片</div>
+                  </div>
+                  <div class="menu-item2">
+                    <img class="more-horizontal-icon" alt="" src="{{url_for('static', filename='image/morehorizontal.svg')}}"/>
+                    <div class="div16">更多</div>
+                  </div>
+                </div>
+                <div class="person-wrapper" data-username="helena-hills">
+                  <div class="person">
+                    <div class="avatar-wrapper">
+                      <img class="avatar-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar@2x.png')}}"/>
+                    </div>
+                    <div class="name-status">
+                      <div class="helena">Helena</div>
+                      <div class="div17">20分鐘前上線</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list1">
+              <div class="chat-list-header">
+                <h1 class="h13">聊天列表</h1>
+              </div>
+              <div class="chat-list-search">
+                <div class="search-bar">
+                  <div class="search1">
+                    <img class="search-icon1" alt="" src="{{url_for('static', filename='image/search-1.svg')}}"/>
+                      <label>
+                          <input class="label" placeholder="搜尋" type="text" />
+                      </label>
+                  </div>
+                </div>
+                  <div class="conversation">
+                      <a href="{{ url_for('chat_room', username='helena-hills') }}">
+                      <div class="avatar" data-username="helena-hills">
+                        <img class="avatar-icon1" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar-1@2x.png')}}"/>
+                      </div>
+                    </a>
+                      <div class="conversation-preview">
+                        <div class="text">
+                          <div class="helena-hills">Helena Hills</div>
+                          <div class="will-head-to">Will head to the Help Center...</div>
+                        </div>
+                      </div>
+                  </div>
+
+                  <div class="conversation1">
+                      <a href="{{ url_for('chat_room', username='oscar-davis') }}">
+                          <div class="avatar" data-username="oscar-davis">
+                              <img class="avatar-child" loading="lazy" alt="" src="{{url_for('static', filename='image/rectangle-1@2x.png')}}"/>
+                          </div>
+                      </a>
+                      <div class="text-wrapper">
+                          <div class="text1">
+                              <div class="oscar-davis">Oscar Davis</div>
+                              <div class="trueeeeee">Trueeeeee</div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="conversation2">
+                    <a href="{{ url_for('chat_room', username='daniel-jay-park') }}">
+                      <div class="avatar" data-username="daniel-jay-park">
+                          <img class="avatar-icon2" alt="" src="{{url_for('static', filename='image/avatar-2@2x.png')}}"/>
+                      </div>
+                    </a>
+                      <div class="text-container">
+                          <div class="text2">
+                              <div class="daniel-jay-park">Daniel Jay Park</div>
+                              <div class="lol-yeah-are">lol yeah, are you coming to the lunch on the 13th?</div>
+                          </div>
+                      </div>
+                  </div>
+
+                      <div class="conversation3">
+                          <a href="{{ url_for('chat_room', username='mark-rojas') }}">
+                              <div class="avatar" data-username="mark-rojas">
+                                  <img class="avatar-icon3" alt="" src="{{url_for('static', filename='image/avatar-3@2x.png')}}"/>
+                              </div>
+                          </a>
+                          <div class="text-frame">
+                              <div class="text3">
+                                  <div class="mark-rojas">Mark Rojas</div>
+                                  <div class="great-catching-up">great catching up over dinner!!</div>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="conversation4">
+                          <a href="{{ url_for('chat_room', username='giannis-constantinou') }}">
+                              <div class="avatar" data-username="giannis-constantinou">
+                                  <img class="avatar-icon4" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar-4@2x.png')}}"/>
+                              </div>
+                          </a>
+                          <div class="text-wrapper1">
+                              <div class="text4">
+                                  <div class="giannis-constantinou">Giannis Constantinou</div>
+                                  <div class="yep">yep :0</div>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="conversation5">
+                          <a href="{{ url_for('chat_room', username='briana-lewis') }}">
+                              <div class="avatar" data-username="briana-lewis">
+                                  <img class="avatar-icon5" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar-5@2x.png')}}"/>
+                              </div>
+                          </a>
+                          <div class="text-wrapper2">
+                              <div class="text5">
+                                  <div class="briana-lewis">Briana Lewis</div>
+                                  <div class="when-are-you">When are you coming back to town? Would love to catch up.</div>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="conversation6">
+                          <a href="{{ url_for('chat_room', username='mom') }}">
+                              <div class="avatar" data-username="mom">
+                                  <img class="avatar-icon6" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar-6@2x.png')}}"/>
+                              </div>
+                          </a>
+                          <div class="text-wrapper3">
+                              <div class="text6">
+                                  <div class="mom">Mom</div>
+                                  <div class="thanks">Thanks!</div>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="conversation7">
+                          <a href="{{ url_for('chat_room', username='sherry-roy') }}">
+                              <div class="avatar" data-username="sherry-roy">
+                                  <img class="avatar-icon7" loading="lazy" alt="" src="{{url_for('static', filename='image/avatar-7@2x.png')}}"/>
+                              </div>
+                          </a>
+                          <div class="text-wrapper4">
+                              <div class="text7">
+                                  <div class="sherry-roy">Sherry Roy</div>
+                                  <div class="jack-needs-to">Jack needs to find a sitter for the dog and I don’t know who’s good...</div>
+                              </div>
+                          </div>
+                      </div>
+                </div>
+              </div>
+            </div>
+
+          <div class="conversation8">
+            <div class="chat-header">
+              <div class="person1">
+                <img class="avatar-icon8" loading="lazy" alt="" src="{{ url_for('static', filename=user_info.avatar)}}"/>
+                <div class="text8">
+                  <div class="helena-hills1">{{ user_info.name }}</div>
+                  <div class="div18">{{ user_info.status }}</div>
+                </div>
+              </div>
+              <div class="call-icons">
+                <div class="icons">
+                  <img class="phone-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/phone.svg')}}"/>
+                  <img class="video-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/video.svg')}}"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-container">
+              {% for message in chat_records %}
+                {% if message.type == 'date_separator' %}
+                  <div class="date-separator">
+                    <div class="date">{{ message.date }}</div>
+                  </div>
+                {% else %}
+                    <div class="message {% if message.type == 'sender' %}message-sender{% else %}message-receiver{% endif %}">
+                        <div class="message-header">
+                            {% if message.type == 'sender' %}
+                                <span class="message-sender">{{ ' ' }}</span>
+                                <span class="message-timestamp">{{ message.timestamp.split(' ')[1] }}</span>
+                            {% else %}
+                                <span class="message-receiver">{{ ' ' }}</span>
+                                <span class="message-timestamp">{{ message.timestamp.split(' ')[1] }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="message-body">
+                            <p>{{ message.text }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <div class="message-bar">
+                <label>
+                    <input class="input-box" placeholder="輸入訊息..." type="text" />
+                </label>
+                <div class="send-button">
+                <button class="send-button1">
+                  <img class="send-icon" alt="" src="{{url_for('static', filename='image/send.svg')}}"/>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // 保存聊天紀錄的狀態
+      const chatHistory = {};
+      // 更新聊天紀錄
+      function updateChat(user) {
+        // 檢查是否已有聊天紀錄
+        if (chatHistory[user]) {
+        // 使用已有紀錄
+          displayMessages(chatHistory[user]);
+        }
+        else {
+          fetch(`/chat-room/${user}`)
+            .then(response => response.json())
+            .then(data => {
+              chatHistory[user] = data; // 保存紀錄
+              displayMessages(data);
+            });
+        }
+
+        document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
+          personWrapper.addEventListener('click', function() {
+            const username = this.getAttribute('data-username');
+            updateChat(username);
+
+            document.querySelectorAll('.person-wrapper').forEach(wrapper => {
+              wrapper.classList.remove('selected');
+            });
+            this.classList.add('selected');
+          });
+        });
+      }
+
+    // 顯示聊天紀錄
+    function displayMessages(messages) {
+      const messageContainer = document.querySelector('.chat-container');
+      let lastDate = null;
+      messages.forEach(message => {
+          const messageDate = new Date(message.timestamp).toLocaleDateString();
+          if (messageDate !== lastDate) {
+              console.log(`messageDate: ${message}`);
+              const dateElement = document.createElement('div');
+              dateElement.classList.add('date-separator');
+              dateElement.innerHTML = `<div class="date">${messageDate}</div>`;
+              messageContainer.appendChild(dateElement);
+              lastDate = messageDate;
+          }
+
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('message', message.type === 'sender' ? 'message-sender' : 'message-receiver');
+          messageElement.innerHTML = `
+            <div class="message-header">
+              <span class="message-sender">${message.type === 'sender' ? message.sender : ''}</span>
+              <span class="message-timestamp">${new Date(message.timestamp).toLocaleTimeString()}</span>
+            </div>
+            <div class="message-body">
+              <p>${message.text}</p>
+            </div>
+          `;
+           messageContainer.appendChild(messageElement);
+        });
+      // 保持滾動位置至最新消息
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+
+    // 監聽點擊事件以切换用戶
+    document.querySelectorAll('.person-wrapper').forEach(personWrapper => {
+      personWrapper.addEventListener('click', function() {
+        const username = this.getAttribute('data-username');
+        updateChat(username);
+
+        document.querySelectorAll('.person-wrapper').forEach(wrapper => {
+          wrapper.classList.remove('selected');
+        });
+        this.classList.add('selected');
+      });
+    });
+
+    // 初始化 socket.io 連接
+    const socket = io();
+    socket.on('message', function(msg) {
+      const user = getCurrentUser();
+      if (chatHistory[user]) {
+        chatHistory[user].push(msg);
+        displayMessages(chatHistory[user]);
+      }
+    });
+
+    // 發送消息
+    document.querySelector('.send-button1').addEventListener('click', function() {
+      const inputBox = document.querySelector('.input-box');
+      const user = getCurrentUser();
+      const message = { sender: user, text: inputBox.value, timestamp: new Date().toLocaleTimeString() };
+      socket.emit('message', message);
+      inputBox.value = '';
+    });
+
+    // 獲取當前用户
+    function getCurrentUser() {
+      // 根据实际情况实现获取当前用户的逻辑
+      return document.querySelector('.chat-header .person1 img').alt;
+    }
+    </script>
+  </body>
+</html>
