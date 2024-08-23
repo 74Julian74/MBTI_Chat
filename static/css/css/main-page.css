@@ -1,0 +1,151 @@
+/* 全局樣式 */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+}
+
+.main_page {
+  position: absolute;
+  left: 20px; /* 將首頁按鈕固定在左上角 */
+  top: 50%;
+  transform: translateY(-50%); /* 垂直居中 */
+  font-size: 50px;
+  font-weight: bold;
+  text-decoration: none;
+  color: black; /* 可調整首頁字體顏色 */
+}
+/* 頁首樣式 */
+header.frame {
+  background-color: #d3d3d3;
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+}
+.parent2 a:hover{
+  color: dodgerblue;
+}
+header .wrapper a,
+header .parent2 a {
+  text-decoration: none;
+  font-size: 24px; /* 調整字體大小 */
+  color: #000;
+  margin-right: 20px;
+}
+
+header .parent2 {
+  display: flex;
+  justify-content: flex-end; /* 讓右側內容靠右對齊 */
+  gap: 20px; /* 控制右側選項之間的距離 */
+}
+
+header .wrapper {
+  display: flex;
+  justify-content: flex-start; /* 讓左側內容靠左對齊 */
+  flex-grow: 1; /* 讓左側和右側的內容間保持距離 */
+}
+
+/* 增加導航欄與內容區域之間的間距 */
+.main-page-inner {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;  /* 這裡的 padding 增加了上下方向的空間 */
+}
+
+
+/* 主內容樣式 */
+.frame-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.image-container-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+}
+
+.main-hero-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.wrapper2 {
+  margin-top: 20px;
+}
+
+.wrapper2 .div11 {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.description {
+  font-size: 18px;
+  color: #666;
+  margin: 20px 0;
+  max-width: 600px;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.action-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+}
+
+.action-button img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.action-button span {
+  font-size: 14px;
+  color: #333;
+}
+
+.action-button a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.first-connection-parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.first-connection-icons {
+  width: 100px;
+  height: auto;
+}
