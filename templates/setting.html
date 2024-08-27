@@ -1,66 +1,288 @@
 <!DOCTYPE html>
 <html lang="zh">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}"/>
+        <link rel="icon" href="data:,">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+        <title>Setting</title>
+    </head>
+    <body>
+        <div class="user_frame">
+            <div class="top_frame"></div>
+            <a class="main_page" id="main_page" href="#">首頁</a>
+                <span class="setting_title">設定</span>
+                    <div class="profile-frame">
+                        <div class="self-photo">
+                            {% if current_user.ProfilePicture %}
+                                <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
+                            {% else %}
+                                <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
+                            {% endif %}</div><a href="#">
+                        <div class="edit" id="edit">
+                            <div class="name"></div>
+                        </div></a>
+                <span class="self-name" id="username">{{ current_user.username }}</span>
+            </div>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
-  </head>
-  <body>
-    <div class="setting">
-      <header class="frame-header">
-        <div class="frame-child1"></div>
-        <div class="wrapper3">
-          <a class="a4">首頁</a>
+             <div class="container">
+                <nav class="sidebar">
+                    <div class="folding-menu">
+                        <ul>
+                          <li class="acc"><a href="#"><i class="icon-account"></i>帳號<span class="arrow">▼</span></a>
+                            <ul class="acc-options">
+                                <li><a class="circle">帳號 : {{ current_user.email }}<span id="email"></span></a></li>
+                                <li><a href="#" class="circle" id="password-change">更改密碼</a></li>
+                            </ul>
+                          </li>
+
+                          <li class="notification"><a href="#"><i class="icon-notification"></i> 通知<span class="arrow">▼</span></a>
+                            <ul class="notification-options">
+                                <li class="toggle-option">
+                                    <span class="circle">選項名稱</span>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                          </li>
+
+                          <li class="friend-list"><a href="#" id="friend-list"><i class="icon-friends"></i>好友列表<span class="arrow">▼</span></a>
+                          </li>
+
+                          <li class="safety"><a href="javascript:void(0)"><i class="icon-privacy"></i>隱私 & 安全<span class="arrow">▼</span></a></li>
+
+                          <li class="invite"><a href="#"><i class="icon-invite"></i>邀請<span class="arrow">▼</span></a>
+                            <ul class="invite-options">
+                                <li><a href="javascript:void(0)" class="circle" id="copyButton" onclick="copyInviteLink()">複製連結</a></li>
+                                <li><a href="javascript:void(0)" class="circle" id="shareButton" onclick="showSharePopup()">分享</a></li>
+                            </ul>
+                              <div id="sharePopup" class="share-popup" style="display:none;">
+                                <div class="share-content">
+                                    <h3>在貼文中分享</h3>
+                                    <div id="shareMessage"></div>
+                                    <div class="share-icons">
+                                        <button onclick="share('whatsapp')"><img src="/static/image/whatsapp-icon.png" alt="WhatsApp" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('facebook')"><img src="/static/image/facebook.png" alt="Facebook" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('x')"><img src="/static/image/x.jpg" alt="X" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('email')"><img src="/static/image/email.jpg" alt="透過電子郵件分享" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('kakaotalk')"><img src="/static/image/Kakao.png" alt="KakaoTalk" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <a onclick="closeSharePopup()"  href="javascript:void(0)">關閉</a>
+                                    </div>
+
+                                </div>
+                              </div>
+                          </li>
+
+                          <li class="language"><a href="javascript:void(0)"><i class="icon-language"></i>語言<span class="arrow">▼</span></a></li>
+                        </ul>
+                    </div>
+                </nav>
+             </div>
+            <div class="name"></div>
         </div>
-        <button id="settingBackground" class="a5">設定</button>
-      </header>
-      <section class="profile-info-wrapper">
-        <div class="profile-info">
-          <div class="wrapper-pxl-20210309-203454756-wrapper">
-            <div class="wrapper-pxl-20210309-203454756">
-              <img
-                class="pxl-20210309-203454756-1-icon1"
-                loading="lazy"
-                alt=""
-                src="{{url_for('static', filename='image/pxl-20210309-203454756-1@2x.png')}}"
-              />
-            </div>
-          </div>
-          <div class="edit-icon-wrapper">
-            <div class="edit-icon">
-              <img
-                class="iconedit"
-                loading="lazy"
-                alt=""
-                src="{{url_for('static', filename='image/iconedit.svg')}}"
-              />
-            </div>
-          </div>
-          <b class="brain">Brain</b>
-          <div class="juliamariomailcom">juliamario@mail.com</div>
-        </div>
-      </section>
-      <img
-        class="background-icon"
-        loading="lazy"
-        alt=""
-        src="{{url_for('static', filename='image/18@2x.png')}}"
-      />
-    </div>
-     <script>
-      var settingBackground = document.getElementById("settingBackground");
-      if (settingBackground) {
-        settingBackground.addEventListener("click", function () {
-          console.log("Button clicked");
-          window.location.href = "{{ url_for('setting') }}";
+
+    <script>
+        var main_page = document.getElementById("main_page");
+          if (main_page) {
+            main_page.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('chat.main_page') }}";
+            });
+          }
+
+          var friend_list = document.getElementById("friend-list");
+          if (friend_list) {
+            friend_list.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('friend_list') }}";
+            });
+          }
+
+          var edit = document.getElementById("edit");
+          if (edit) {
+            edit.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('auth.profile_setting') }}";
+            });
+          }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .acc > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.acc-options > a');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
         });
-      }
+
+        var password_change = document.getElementById("password-change");
+        if (password_change) {
+            password_change.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('auth.password_change') }}";
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .invite > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.invite-options');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .notification > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.notification-options');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            // Toggle switches 邏輯
+            $('.toggle-option input[type="checkbox"]').change(function() {
+                var $this = $(this);
+                var optionName = $this.closest('.toggle-option').find('span.circle').text();
+                var isChecked = $this.is(':checked');
+
+                console.log("選項 '" + optionName + "' 已" + (isChecked ? "開啟" : "關閉"));
+
+                // 這裡可以添加您的邏輯，例如發送 AJAX 請求
+                // updateOptionStatus(optionName, isChecked);
+            });
+        });
+
+        function resizeImage(file, maxWidth, maxHeight, callback) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+              let width = img.width;
+              let height = img.height;
+              if (width > height) {
+                if (width > maxWidth) {
+                  height *= maxWidth / width;
+                  width = maxWidth;
+                }
+              } else {
+                if (height > maxHeight) {
+                  width *= maxHeight / height;
+                  height = maxHeight;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+              callback(canvas.toDataURL());
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          fetch('/api/user_info')
+             .then(response => response.json())
+             .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('email').textContent = data.email;
+             })
+             .catch(error => console.error('Error:', error));
+       });
+
+      function copyInviteLink() {
+        const inviteLink = "http://127.0.0.1:5000"; // 替換為您的實際邀請連結
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(inviteLink)
+                .then(() => alert('邀請連結已複製到剪貼板!'))
+                .catch(() => alert('複製失敗，請手動複製。'));
+        } else {
+            const tempInput = document.createElement('input');
+            tempInput.value = inviteLink;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('邀請連結已複製到剪貼板!');
+        }
+    }
+
+    function showSharePopup() {
+    document.getElementById('sharePopup').style.display = 'block';
+    }
+
+    function closeSharePopup() {
+        document.getElementById('sharePopup').style.display = 'none';
+    }
+
+    function share(platform) {
+        var message = "test123";
+        var link = "http://127.0.0.1:5000"; // 替換為實際的邀請連結
+        var shareText = encodeURIComponent(message + " " + link);
+
+        switch(platform) {
+            case 'whatsapp':
+                window.open('https://wa.me/?text=' + shareText);
+                break;
+            case 'facebook':
+                window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link));
+                break;
+            case 'twitter':
+                window.open('https://twitter.com/intent/tweet?text=' + shareText);
+                break;
+            case 'email':
+                window.location.href = 'mailto:?body=' + shareText;
+                break;
+            case 'kakaotalk':
+                // KakaoTalk的分享API可能需要額外設置
+                alert('KakaoTalk分享功能需要整合KakaoTalk SDK');
+                break;
+        }
+        closeSharePopup();
+    }
       </script>
-  </body>
+    </body>
 </html>

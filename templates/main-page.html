@@ -39,7 +39,7 @@
         </div>
         <div class="frame-div">
           <div class="parent2">
-            <a class="a1" id="text1">設定</a>
+            <a class="a1" id="text1" href="#">設定</a>
             <div class="wrapper1">
               <a class="a2" id="text2">個人資料</a>
             </div>
@@ -100,16 +100,16 @@
                 <div class="frame-wrapper4">
                   <button class="emotion-icon-parent">
                     <div class="emotion-icon" id="emotionIcon"></div>
-                    <div class="div12">情感分析</div>
+                      <div class="div12" href="#">使用介紹</div>
                   </button>
                 </div>
                 <div class="analysis-icons">
                   <div class="m-b-t-iicon" id="mBTIicon"></div>
-                  <div class="mbti">MBTI分類</div>
+                    <div class="mbti"><a href="https://www.16personalities.com/tw/%E6%80%A7%E6%A0%BC%E6%B8%AC%E8%A9%A6" target="_blank" rel="noopener noreferrer">{{ ('MBTI測驗') }}</a></div>
                 </div>
                 <div class="analysis-icons1">
                   <div class="analysis-icons-child" id="ellipse"></div>
-                  <div class="div13">聊天室</div>
+                  <div class="div13" href="#">CHAT</div>
                 </div>
               </div>
             </div>
@@ -401,7 +401,7 @@
       var ellipse = document.getElementById("ellipse");
       if (ellipse) {
         ellipse.addEventListener("click", function (e) {
-          window.location.href = "{{ url_for('chat_room') }}";
+          window.location.href = "{{ url_for('chat.chat_room') }}";
         });
       }
       </script>

@@ -7,6 +7,8 @@ from langchain.chat_models import AzureChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.schema import HumanMessage
 
+
+
 #with open('key.txt', 'r') as file:
 #   key = file.readline().strip()
 
@@ -30,7 +32,7 @@ chat35 = AzureChatOpenAI(
     openai_api_type='azure',
     model='gpt-35-turbo',
     temperature=0.7,
-    max_tokens=80
+    max_tokens=500
 )
 
 chat4 = AzureChatOpenAI(
@@ -53,7 +55,7 @@ embeddings = OpenAIEmbeddings(
     chunk_size=1
 )
 
-msg = '請問這句話是甚麼情緒，我現在很不開心，好生氣'
+msg = ''
 
 #res = llm35(prompt=msg)
 #print(f'\nllm35: {res}')

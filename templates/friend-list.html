@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友列表</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/friend-list.css') }}"/>
+</head>
+<body>
+    <header>
+        <a class="main_page" id="main_page" href="#">首頁</a>
+        <h1>好友列表</h1>
+        <div class="header-icons">
+            <a href="#" class="icon" id="add-friend">👤</a>
+            <a href="#" class="icon">⚙️</a>
+            <a href="#" class="icon">👥</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="user-section">
+            <div class="user-profile">
+                <img src="path_to_user_image.jpg" alt="User" class="user-image">
+                <p class="user-name">Brian</p>
+            </div>
+
+            <div class="task-card">
+                <h3>Wash dog</h3>
+                <p>Wash the dog with correct shampoo.</p>
+            </div>
+
+            <div class="task-card">
+                <h3>Task</h3>
+                <p>Description</p>
+            </div>
+        </div>
+
+        <div class="friends-list">
+            <!-- 好友卡片會在這裡動態添加 -->
+        </div>
+    </main>
+
+    <script>
+        var main_page = document.getElementById("main_page");
+        if (main_page) {
+            main_page.addEventListener("click", function (e) {
+                window.location.href = "{{ url_for('chat.main_page') }}";
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var add_friend = document.getElementById("add-friend");
+            if (add_friend) {
+                add_friend.addEventListener("click", function (e) {
+                    window.location.href = "{{ url_for('AFlist') }}";
+                });
+            }
+        });
+        // 模擬添加新朋友的函數
+        function addNewFriend(name, mbti, pronouns) {
+            const friendsList = document.querySelector('.friends-list');
+            const friendCard = document.createElement('div');
+            friendCard.className = 'friend-card';
+            friendCard.innerHTML = `
+                <img src="path_to_default_image.jpg" alt="${name}" class="friend-image">
+                <div class="friend-info">
+                    <p>姓名：${name}</p>
+                    <p>MBTI：${mbti}</p>
+                    <p>Pronouns：${pronouns}</p>
+                </div>
+                <div class="friend-actions">
+                    <span class="action-icon">💬</span>
+                    <span class="action-icon">🗑️</span>
+                </div>
+            `;
+            friendsList.appendChild(friendCard);
+        }
+
+        // 示例：添加一些朋友
+        addNewFriend('Alice', 'INTJ', 'She/Her');
+        addNewFriend('Bob', 'ENFP', 'He/Him');
+        addNewFriend('Carol', 'ISFJ', 'They/Them');
+
+
+    </script>
+</body>
+</html>

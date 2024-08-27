@@ -1,0 +1,14 @@
+Flask==2.3.2
+Flask-SQLAlchemy==3.0.5
+Flask-Migrate==4.0.4
+Flask-Bootstrap4==4.0.2
+Flask-WTF==1.1.1
+Flask-SocketIO==5.3.4
+Flask-Login==0.6.2
+PyMySQL==1.1.0
+Werkzeug==2.3.6
+SQLAlchemy==2.0.19
+WTForms==3.0.1
+email-validator==2.0.0
+Pillow==10.0.0
+python-socketio==5.8.0

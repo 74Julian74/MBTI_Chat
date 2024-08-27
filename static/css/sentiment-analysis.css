@@ -675,12 +675,30 @@
   flex-shrink: 0;
 }
 .body-parent {
-  width: 650.4px;
+  width: 100%;
   display: flex;
   justify-content: flex-start;
-  padding: 9.4px 0 6.3px;
+  padding: 10px;
   position: relative;
-  max-width: 106%;
+  max-width: 100%;
+}
+
+.body {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  resize: none;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  background: #f5f5f5;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.send-icon,
+.emojis-icon,
+.outline-messages-coversatio3 {
+  margin-left: 10px;
 }
 .main-message-box3 {
   width: 633.9px;

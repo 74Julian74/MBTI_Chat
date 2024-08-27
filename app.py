@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, jsonify
 from flask import render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
@@ -7,214 +7,144 @@ from form import FormRegister, FormLogin
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from celery_config import Celery
+from datetime import datetime
+from redis_utils import save_message_to_cache, get_recent_messages
+import json
+from config import Config
+from celery_config import make_celery
+from celery_app import celery
+from tasks import save_message_to_db, send_notification
+from extensions import db, migrate, bootstrap, csrf, socketio
+from flask_login import LoginManager
+from dbmodels import UserACC
+import os
+from datetime import timedelta
+import logging
+from flask import current_app
 
-app = Flask(__name__, template_folder='templates')
-bootstrap = Bootstrap(app)
+
+app = Flask(__name__, template_folder='templates', static_folder='static')
+
+app.config['upload_pic'] = os.path.join(app.root_path, 'upload-pic')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['SECRET_KEY'] = 'Aa12345678'  # 使用一個真正的隨機密鑰
+app.config['SESSION_PROTECTION'] = 'basic'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # 設置會話持續7天
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)  # 如果使用"記住我"功能
+app.config['SESSION_TYPE'] = 'filesystem'
+
+'''bootstrap = Bootstrap(app)
 csrf = CSRFProtect(app)
-
-# _name_ 代表目前執行的模組
-
-# 下面這塊是連接資料庫
-HOSTNAME = "127.0.0.1"
-# 改成VM的IP
-PORT = 3306
-USERNAME = "root"
-# 改你自己的資料庫
-PASSWORD = "Ff29098796"
-# 改你自己的資料庫
-DATABASE = "user_db"
-# 改你自己的資料庫
-app.config['SQLALCHEMY_DATABASE_URI']=f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
-
-DATABASE_URI = 'mysql+pymysql://root:juju920713@127.0.0.1/mbti'
-engine = create_engine(DATABASE_URI)
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'your_secret_key'
-SocketIO= SocketIO(app)
 db = SQLAlchemy(app)
-
-class UserACC(db.Model):
-    __tablename__ = "user_acc"
-    UserID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(20), unique=True, nullable=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    ProfilePicture = db.Column(db.String(200), nullable=True)
-    LastActive = db.Column(db.DateTime, nullable=True)
-    MBTI = db.Column(db.String(5), nullable=True)
-    RespondType = db.Column(db.String(20), nullable=True)
-    BD = db.Column(db.Date, nullable=True)
-    AGE = db.Column(db.Integer, nullable=True)
-    StarSign = db.Column(db.String(5), nullable=True)
-
-class UserMSG(db.Model):
-    __tablename__ = "user_msg"
-    GroupID = db.Column(db.Integer, primary_key=True, nullable=False)
-    MessageID = db.Column(db.Integer, nullable=False)
-    SenderID = db.Column(db.Integer, db.ForeignKey('user_acc.UserID') ,nullable=False)
-    ChatContentID = db.Column(db.String(50), nullable=False)
-    TimeStamp = db.Column(db.DateTime, nullable=False)
-    Emotion = db.Column(db.String(10), nullable=False)
-
-
-class Relation(db.Model):
-    __tablename__ = "relation"
-    UserID1 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), primary_key=True)
-    UserID2 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), primary_key=True)
-    Status = db.Column(db.Boolean, nullable=False)
-    TimeStamp = db.Column(db.DateTime, nullable=False)
-
-    user1 = db.relationship('UserACC', foreign_keys=[UserID1])
-    user2 = db.relationship('UserACC', foreign_keys=[UserID2])
-
-
-class VerifyMSG(db.Model):
-    __tablename__ = "verify"
-    GroupID1 = db.Column(db.Integer, primary_key=True, nullable=False)
-    FilterType = db.Column(db.String(10))
-    Enable = db.Column(db.Boolean, nullable=False)
-
-
-class Chat(db.Model):
-    __tablename__ = "chat"
-    GroupID = db.Column(db.Integer, primary_key=True, nullable=False)
-    GroupName = db.Column(db.String(20), nullable=False)
-    CreatorID = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
-    CreateAt = db.Column(db.DateTime, nullable=False)
-    FilterType = db.Column(db.Boolean, nullable=False)
-
-
-class ChatMember(db.Model):
-    __tablename__ = "chat_member"
-    GroupID = db.Column(db.Integer, primary_key=True, nullable=False)
-    UserID = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
-    Role = db.Column(db.String(10), nullable=False)
-    NiceName = db.Column(db.String(10), nullable=False)
-
-
-class Setting(db.Model):
-    __tablename__ = "setting"
-    UserID = db.Column(db.Integer, primary_key=True, nullable=False)
-    NotificationSound = db.Column(db.Boolean)
-    #    Theme = db.Column(db.blob, nullable=False)
-    Language = db.Column(db.String(20), nullable=False)
-
-
-class Notifiation(db.Model):
-    __tablename__ = "notification"
-    NotificattionID = db.Column(db.Integer, primary_key=True, nullable=False)
-    UserID = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
-    NotificationType = db.Column(db.String(10), nullable=False)
-    Content = db.Column(db.String(20), nullable=False)
-    TimeStamp = db.Column(db.DateTime, nullable=False)
-    IsRead = db.Column(db.Boolean, nullable=False)
-
 migrate = Migrate(app, db)
-with app.app_context():
-    db.create_all()
+socketio = SocketIO(app)
+celery = make_celery(app)'''
 
+def create_app():
 
-@app.route("/")
-def index():
-    return render_template('index.html')
+    HOSTNAME = "127.0.0.1"
+    PORT = 3306
+    USERNAME = "root"
+    PASSWORD = "Ff29098796"
+    DATABASE = "user_db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = 'your_secret_key'
 
-@app.route("/login-page", methods=['GET', 'POST'])
-def login_page():
-    form = FormLogin()
-    if form.validate_on_submit():
-        user = UserACC.query.filter_by(email=form.email.data).first()
+    # 初始化扩展
+    db.init_app(app)
+    migrate.init_app(app, db)
+    bootstrap.init_app(app)
+    csrf.init_app(app)
+    socketio.init_app(app)
+
+    # 注册蓝图
+    from auth import auth_bp
+    from chat import chat_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(chat_bp, url_prefix='/chat')
+
+    from routes import register_routes
+    register_routes(app)
+
+    logging.basicConfig(level=logging.DEBUG)
+    app.logger.setLevel(logging.DEBUG)
+
+    return app
+app = create_app()
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login_page'
+
+def check_db_connection():
+    try:
+        db.session.query("1").from_statement("SELECT 1").all()
+        current_app.logger.info("Database connection successful")
+    except Exception as e:
+        current_app.logger.error(f"Database connection failed: {str(e)}")
+    check_db_connection()
+
+@login_manager.user_loader
+def load_user(user_id):
+    app.logger.debug(f"Attempting to load user with ID: {user_id}")
+    try:
+        user = UserACC.query.get(int(user_id))
         if user:
-            if check_password_hash(user.password, form.password.data):
-                flash('登錄成功！', 'success')
-                return redirect(url_for('main_page'))
-            else:
-                flash('Wrong Email or Password')
-                print("Wrong Email or Password")
+            app.logger.debug(f"Successfully loaded user: {user.UserID}")
+            return user
         else:
-            flash('Wrong Email or Password')
-    return render_template('login-page.html', title='登陸', form=form)
+            app.logger.warning(f"No user found with ID: {user_id}")
+            return None
+    except ValueError:
+        app.logger.error(f"Invalid user ID format: {user_id}")
+        return None
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room = db.Column(db.String(50))
+    sender = db.Column(db.String(50))
+    content = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-@app.route("/register", methods=['GET', 'POST'])
-def register():
-    form = FormRegister()
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        pass
+@app.route('/send_message', methods=['POST'])
+@csrf.exempt
+def send_message():
+    data = request.json
+    room_id = data['room_id']
+    content = data['content']
+    sender_id = data['sender_id']
 
-        print(f"Attempting to register: {email}")
+    # 保存消息到Redis緩存
+    save_message_to_cache(room_id, sender_id, content)
 
-        existing_user = UserACC.query.filter_by(email=email).first()
-        if existing_user:
-            flash('該信箱已註冊過', 'error')
-            return render_template('register.html', form=form)
+    # 使用Celery異步保存消息到數據庫
+    #save_message_to_db.delay(room_id, sender_id, content)
 
-        try:
-            new_user = UserACC(email=email, password=hashed_password)
-            db.session.add(new_user)
-            db.session.commit()
-            print(f"User registered successfully: {email}")
-            flash('注册成功！', 'success')
-            return redirect(url_for('login_page'))
+    # 通過SocketIO廣播消息
+    '''socketio.emit('new_message', {
+        'room_id': room_id,
+        'sender_id': sender_id,
+        'content': content,
+        'timestamp': datetime.utcnow().isoformat()
+    }, room=room_id)
+    '''
+    return jsonify({'status': 'success'})
 
-        except Exception as e:
-            db.session.rollback()
-            print(f"Registration error: {str(e)}")
-            flash('註冊失敗。', 'error')
-            app.logger.error(f"Registration error: {str(e)}")
-            return render_template('register.html', form=form)
+@app.route('/get_recent_messages/<room_id>')
+def get_recent_messages_route(room_id):
+    messages = get_recent_messages(room_id, limit=50)
+    return jsonify(messages)
 
-    return render_template('register.html', form=form)
+@socketio.on('join')
+def on_join(data):
+    room = data['room']
+    join_room(room)
 
-@app.route("/main-page")
-def main_page():
-    return render_template('main-page.html')
-
-@app.route('/chat-room', methods=['GET', 'POST'])
-def chat_room():
-    return render_template('chat-room.html')
-"""
-@SocketIO.on('message')
-def handle_message(msg):
-    print(f'Message: {msg}')
-    send(msg, broadcast= True)
-"""
-@app.route('/m-b-t-i-classification', methods=['GET'])
-def mbticlassification():
-    return render_template('m-b-t-i-classification.html')
-
-@app.route('/profile', methods=['GET'])
-def profile():
-    return render_template('profile.html')
-
-@app.route('/setting', methods=['GET'])
-def setting():
-    return render_template('setting.html')
-
-
-@app.route('/sentiment-Analysis', methods=['GET'])
-def sentiment_analysis():
-    return render_template('sentiment-Analysis.html')
-
-
-@app.route('/Sentiment_Analysis', methods=['GET'])
-def Sentiment_Analysis():
-    return 'this is Sentiment_Analysis'
-
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    app.logger.error(f"500 error: {str(error)}")
-    return "500 Internal Server Error", 500
-
-@app.errorhandler(404)
-def not_found_error(error):
-    app.logger.error(f"404 error: {str(error)}")
-    return "404 Not Found", 404
 
 if __name__=="__main__":  # 如果以主程式執行
-    app.run(debug=True) # 立刻啟動伺服器
-
+    from dbmodels import *
+    with app.app_context():
+        db.create_all()
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True) # 立刻啟動伺服器
