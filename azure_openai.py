@@ -60,8 +60,8 @@ msg = ''
 #res = llm35(prompt=msg)
 #print(f'\nllm35: {res}')
 
-res = chat35([HumanMessage(content=msg)])
-print(f'\nchat35: {res.content}')
+#res = chat35([HumanMessage(content=msg)])
+#print(f'\nchat35: {res.content}')
 
 #res = chat4([HumanMessage(content=msg)])
 #print(f'\nchat4: {res.content}')

@@ -26,21 +26,6 @@
         <div id="chat-window">
             <div id="chat-header">
                 <h2>聊天室</h2>
-                <div id="chat-actions">
-                  <img
-                  class="phone-icon"
-                  loading="lazy"
-                  alt=""
-                  src="{{url_for('static', filename='image/phone.svg')}}"
-                />
-
-                <img
-                  class="video-icon"
-                  loading="lazy"
-                  alt=""
-                  src="{{url_for('static', filename='image/video.svg')}}"
-                />
-                </div>
             </div>
             <div id="message-list" class="message-container">
                 <!-- 聊天訊息將在這裡動態生成 -->
@@ -53,9 +38,47 @@
                 <img class="image-icon1" loading="lazy" alt="" src="{{url_for('static', filename='image/image-1.svg')}}" />
             </div>
         </div>
+        <!-- 新增的右邊部分 -->
+        <div id="analysis-section">
+            <h3>對話分析</h3>
+            <div class="emotion-label">
+                <label>對方:</label>
+                <span id="person-name"></span>
+            </div>
+            <div class="emotion-label">
+                <label>對方的情緒為:</label>
+                <span id="person-emotion"></span>
+            </div>
+            <div class="emotion-label">
+                <label>對方的MBTI為:</label>
+                <span id="person-mbti"></span>
+            </div>
+            
+            <button id="emotion-analysis-button">情緒分析</button>
+            
+            <div class="preference-label">
+                <label>您的回話風格偏好</label>
+                <select id="reply-style-select">
+                    <option value="正式">正式</option>
+                    <option value="輕鬆">輕鬆</option>
+                    <option value="幽默">幽默</option>
+                    <option value="同情">同情</option>
+                </select>
+            </div>
+
+            <div class="suggestion">
+                <button id="replyone">建議回應1</button>
+                <textarea id ="suggestion-1"placeholder="輸入建議回應1"></textarea>
+            </div>
+            <div class="suggestion">
+                <button id="relpytwo">建議回應2</button>
+                <textarea id= "suggestion-2"placeholder="輸入建議回應2"></textarea>
+            </div>
+            <p id="analysis-error"></p>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <!--script src="{{ url_for('static', filename='js/chat.js') }}"></script-->
+    <script src="{{ url_for('static', filename='js/emotionAnalysis.js') }}"></script>
 </body>
 </html>

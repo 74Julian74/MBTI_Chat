@@ -11,7 +11,7 @@ body {
 }
 
 #sidebar {
-    width: 300px;
+    width: 20%;
     background-color: #fff;
     border-right: 1px solid #ddd;
     display: flex;
@@ -67,6 +67,7 @@ nav ul li.active {
 }
 
 #chat-window {
+    width: 60%;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -80,6 +81,21 @@ nav ul li.active {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+#emotion-analysis-button {
+    font-size: 12px;
+    padding: 6px 12px;
+    background-color:#6395d4; 
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+  
+#emotion-analysis-button:hover {
+    background-color: #4CAF50;
 }
 
 #message-list {
@@ -171,4 +187,41 @@ nav ul li.active {
     width: 30%;
     vertical-align: middle;
     margin: 0 10px;
+}
+#analysis-section {
+    line-height: 50px;
+    width: 20%; 
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+    padding: 20px;
+}
+
+#analysis-section h3 {
+    margin-top: 0; 
+    padding-top: 0; 
+    margin-bottom: 15px; /* 你可以保留或調整下方的間距 */
+}
+
+
+.emotion-label, .preference-label,.suggestion{
+    margin-bottom: 15px;
+}
+
+#action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#action-buttons button {
+    font-size: 12px;
+    padding: 6px 12px;
+    background-color: #6395d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#action-buttons :hover {
+    background-color: #4CAF50;
 }

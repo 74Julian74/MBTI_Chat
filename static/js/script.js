@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messageList = document.getElementById('message-list');
-    let currentRoomId = null;
+    let currentGroupId = null;
+    let currentUserId= null;
+    let userIdPromise= null;
     // Socket.IO 設置
     const socket = io();
 
@@ -17,6 +19,50 @@ document.addEventListener('DOMContentLoaded', () => {
         // 添加更多好友...
     ];
 
+    // 獲取當前用戶ID的函數
+    function fetchCurrentUserId() {
+        if (userIdPromise) {
+            return userIdPromise;
+        }
+
+        userIdPromise = fetch('/get_current_user_id')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user ID');
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentUserId = data.user_id;
+                console.log('Current User ID:', currentUserId);
+                return currentUserId;
+            })
+            .catch(error => {
+                console.error('Error fetching user ID:', error);
+                // 重置 promise 以便下次重試
+                userIdPromise = null;
+                throw error;
+            });
+
+        return userIdPromise;
+    }
+    // 初始化函數
+    function initialize() {
+        fetchCurrentUserId()
+            .then(() => {
+                console.log('User ID fetched successfully');
+                // 在獲取到用戶ID後，初始化聊天室
+                switchRoom('default_group');
+                startPolling(); // 開始定期輪詢
+            })
+            .catch(() => console.log('Failed to fetch user ID. User might not be logged in.'));
+    }
+    // 在頁面加載時調用
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchCurrentUserId()
+            .then(() => console.log('User ID fetched successfully'))
+            .catch(() => console.log('Failed to fetch user ID. User might not be logged in.'));
+    });
     // 渲染好友列表
     function renderFriendList() {
         friendList.innerHTML = friends.map(friend => `
@@ -36,12 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 切換聊天室
-    function switchRoom(roomId) {
-        currentRoomId = roomId;
-        // 加入新房間
-        socket.emit('join', {room: roomId});
-        // 獲取最近的消息
-        fetch(`/get_recent_messages/${roomId}`)
+    function switchRoom(groupId) {
+        currentGroupId = groupId;
+        //socket.emit('join', {group: groupId});
+        loadMessages(groupId);
+    }
+
+    // 加載消息
+    function loadMessages(groupId) {
+        fetch(`/get_recent_messages/${groupId}`)
             .then(response => response.json())
             .then(messages => {
                 messageList.innerHTML = '';
@@ -52,32 +101,59 @@ document.addEventListener('DOMContentLoaded', () => {
     // 發送消息
     function sendMessage() {
         const content = messageInput.value.trim();
-        if (content && currentRoomId) {
-            // 發送消息到後端
-            fetch('/send_message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken':csrfToken
-                },
-                body: JSON.stringify({
-                    room_id: currentRoomId,
-                    content: content,
-                    sender_id: 1 // 這裡需要替換為實際的用戶ID
-                }),
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      messageInput.value = '';
-                      // 可以在這裡立即在UI上顯示消息，不等待 Socket.IO 的廣播
-                      displayMessage({
-                          sender_id: 1,
-                          content: content,
-                          timestamp: getCurrentTime()
-                      });
-                  }
-              });
+        if (!content || !currentGroupId) {
+            console.error('无效的消息内容或群组ID');
+            return;
         }
+    
+        fetchCurrentUserId()
+            .then(userId => {
+                if (!userId) {
+                    throw new Error('User ID not available. Please ensure you are logged in.');
+                }
+                currentUserId= userId;
+                const message = {
+                    sender_id: currentUserId,
+                    content: content,
+                    timestamp: new Date().toISOString(new Date())
+                };
+
+                return fetch('/send_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        group_id: currentGroupId,
+                        content: content,
+                        sender_id: userId
+                    }),
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    messageInput.value = '';
+                    const message = {
+                        sender_id: currentUserId,
+                        content: content,
+                        timestamp: new Date().toISOString()
+                    };
+                    displayMessage(message);
+                }else {
+                    throw new Error(data.message || '发送消息失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                alert(error.message);  // 顯示錯誤給用戶
+            });
     }
     
     function formatDateToChinese(date) {
@@ -100,6 +176,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('zh-TW', options);
     }
     
+    function pollForNewMessages() {
+        if (!currentGroupId) return;
+
+        const lastMessageTimestamp = getLastMessageTimestamp();
+
+        fetch(`/get_new_messages/${currentGroupId}?since=${encodeURIComponent(lastMessageTimestamp)}`)
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(displayMessage);
+                if (messages.length > 0) {
+                    const lastTimestamp = messages[messages.length - 1].timestamp;
+                    updateLastMessageTimestamp(lastTimestamp);
+                }
+            })
+            .catch(error => console.error('Error polling for new messages:', error));
+    }
+
+    function getLastMessageTimestamp() {
+        const lastMessage = messageList.lastElementChild;
+        return lastMessage ? lastMessage.dataset.timestamp : new Date(0).toISOString();
+    }
+
+    function updateLastMessageTimestamp(timestamp) {
+        if (messageList.lastElementChild) {
+            messageList.lastElementChild.dataset.timestamp = timestamp;
+        }
+    }
+    
+
+    function getLocalISOString(date) {
+        const offset = date.getTimezoneOffset();
+        const localDate = new Date(date.getTime() - (offset*60*1000));
+        return localDate.toISOString().split('Z')[0];
+    }
+
+    function getLastMessageTimestamp() {
+        const lastMessage = messageList.lastElementChild;
+        return lastMessage ? lastMessage.dataset.timestamp : getLocalISOString(new Date(0));
+    }
 
     let lastMessageDate = null;
     function displayMessage(message) {
@@ -118,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const messageElement = document.createElement('div');
-        messageElement.className = `message ${message.sender_id === 1 ? 'sent' : 'received'}`;
+        messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
         
         const timeElement = document.createElement('div');
         timeElement.className = 'message-time';
@@ -133,12 +248,29 @@ document.addEventListener('DOMContentLoaded', () => {
         bubbleElement.textContent = message.content;
         
         contentElement.appendChild(bubbleElement);
+        messageElement.dataset.timestamp = message.timestamp;
         
-        messageElement.appendChild(timeElement);
-        messageElement.appendChild(contentElement);
+        // 根據消息是發送還是接收來決定時間元素的位置
+        if (message.sender_id === currentUserId) {
+            messageElement.appendChild(contentElement);
+            messageElement.appendChild(timeElement);
+        } else {
+            messageElement.appendChild(timeElement);
+            messageElement.appendChild(contentElement);
+        }
         
         messageList.appendChild(messageElement);
         messageList.scrollTop = messageList.scrollHeight;
+    }
+
+    // 設置定期輪詢，並添加錯誤處理
+    function startPolling() {
+        setInterval(() => {
+            pollForNewMessages().catch(error => {
+                console.error('Polling error:', error);
+                // 可以在這裡添加重試邏輯或顯示錯誤消息給用戶
+            });
+        }, 5000);
     }
 
     function formatTimeOnly(date) {
@@ -162,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('message', (data) => {
-        displayMessage(data.message, 'contact-messages');
+        displayMessage(data.message);
     });
 
     socket.on('load_messages', (messages) => {
@@ -177,7 +309,20 @@ document.addEventListener('DOMContentLoaded', () => {
             sendMessage();
         }
     });
+    document.getElementById("replyone").addEventListener("click", function() {
+    // 获取第一个建议回复的内容
+    const suggestionContent1 = document.querySelector(".suggestion textarea").value;
+    // 将第一个建议回复的内容复制到消息输入框中
+    document.getElementById("message-input").value = suggestionContent1;
+    });
+
+    document.getElementById("relpytwo").addEventListener("click", function() {
+        // 获取第二个建议回复的内容
+        const suggestionContent2 = document.querySelectorAll(".suggestion textarea")[1].value;
+        // 将第二个建议回复的内容复制到消息输入框中
+        document.getElementById("message-input").value = suggestionContent2;
+    });
 
     // 初始化
-    switchRoom('default_room');
+    initialize();
 });

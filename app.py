@@ -24,6 +24,7 @@ from datetime import timedelta
 import logging
 from flask import current_app
 
+csrf= CSRFProtect()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -35,12 +36,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)  # 設置會話持�
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)  # 如果使用"記住我"功能
 app.config['SESSION_TYPE'] = 'filesystem'
 
-'''bootstrap = Bootstrap(app)
-csrf = CSRFProtect(app)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-socketio = SocketIO(app)
-celery = make_celery(app)'''
+#login_manager= LoginManager()
 
 def create_app():
 
@@ -67,7 +63,8 @@ def create_app():
     app.register_blueprint(chat_bp, url_prefix='/chat')
 
     from routes import register_routes
-    register_routes(app)
+    #register_routes(app)
+    register_routes(app, socketio)
 
     logging.basicConfig(level=logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
@@ -108,40 +105,9 @@ class Message(db.Model):
     content = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-@app.route('/send_message', methods=['POST'])
-@csrf.exempt
-def send_message():
-    data = request.json
-    room_id = data['room_id']
-    content = data['content']
-    sender_id = data['sender_id']
-
-    # 保存消息到Redis緩存
-    save_message_to_cache(room_id, sender_id, content)
-
-    # 使用Celery異步保存消息到數據庫
-    #save_message_to_db.delay(room_id, sender_id, content)
-
-    # 通過SocketIO廣播消息
-    '''socketio.emit('new_message', {
-        'room_id': room_id,
-        'sender_id': sender_id,
-        'content': content,
-        'timestamp': datetime.utcnow().isoformat()
-    }, room=room_id)
-    '''
-    return jsonify({'status': 'success'})
-
-@app.route('/get_recent_messages/<room_id>')
-def get_recent_messages_route(room_id):
-    messages = get_recent_messages(room_id, limit=50)
-    return jsonify(messages)
-
-@socketio.on('join')
-def on_join(data):
-    room = data['room']
-    join_room(room)
-
+@login_manager.user_loader
+def load_user(user_id):
+    return UserACC.query.get(int(user_id))
 
 if __name__=="__main__":  # 如果以主程式執行
     from dbmodels import *
