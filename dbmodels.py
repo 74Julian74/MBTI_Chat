@@ -28,13 +28,13 @@ class UserMSG(db.Model):
     TimeStamp = db.Column(db.DateTime, nullable=False)
     Emotion = db.Column(db.String(20), nullable=False)  # 修改長度為 20
 
-    def __init__(self, sender_id=None, content=None):
-        self.sender_id = sender_id
-        self.content = content
+    #def __init__(self, sender_id=None, content=None):
+        #self.sender_id = sender_id
+        #self.content = content
         # 其他属性
-    @property
-    def sender_id(self):
-        return self.SenderID
+    #@property
+    #def sender_id(self):
+        #return self.SenderID
 
 
 class Relation(db.Model):

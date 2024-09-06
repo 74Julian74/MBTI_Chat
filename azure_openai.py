@@ -31,8 +31,8 @@ chat35 = AzureChatOpenAI(
     openai_api_base='https://lingpu.im.tku.edu.tw',
     openai_api_type='azure',
     model='gpt-35-turbo',
-    temperature=0.7,
-    max_tokens=500
+    temperature=1,
+    max_tokens=2000
 )
 
 chat4 = AzureChatOpenAI(
@@ -42,8 +42,8 @@ chat4 = AzureChatOpenAI(
     openai_api_base='https://lingpu.im.tku.edu.tw',
     openai_api_type='azure',
     model='gpt-4',
-    temperature=0,
-    max_tokens=80
+    temperature=0.7,
+    max_tokens=2000
 )
 
 embeddings = OpenAIEmbeddings(

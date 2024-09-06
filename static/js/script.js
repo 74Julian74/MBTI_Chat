@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGroupId = null;
     let currentUserId= null;
     let userIdPromise= null;
+    
     // Socket.IO 設置
     const socket = io();
 
@@ -51,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCurrentUserId()
             .then(() => {
                 console.log('User ID fetched successfully');
-                // 在獲取到用戶ID後，初始化聊天室
                 switchRoom('default_group');
                 startPolling(); // 開始定期輪詢
             })
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() {
         const content = messageInput.value.trim();
         if (!content || !currentGroupId) {
-            console.error('无效的消息内容或群组ID');
+            console.error('無效的消息內容或群組ID');
             return;
         }
     
@@ -111,11 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!userId) {
                     throw new Error('User ID not available. Please ensure you are logged in.');
                 }
-                currentUserId= userId;
+                currentUserId = userId;
                 const message = {
                     sender_id: currentUserId,
                     content: content,
-                    timestamp: new Date().toISOString(new Date())
+                    timestamp: new Date().toISOString()
                 };
 
                 return fetch('/send_message', {
@@ -133,21 +133,22 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('网络响应不正常');
+                    throw new Error('網絡響應不正常');
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.status === 'success') {
                     messageInput.value = '';
-                    const message = {
+                    const newMessage = {
                         sender_id: currentUserId,
                         content: content,
                         timestamp: new Date().toISOString()
                     };
-                    displayMessage(message);
-                }else {
-                    throw new Error(data.message || '发送消息失败');
+                    //displayMessage(newMessage);
+                    updateLastMessageTimestamp(newMessage.timestamp);
+                } else {
+                    throw new Error(data.message || '發送消息失敗');
                 }
             })
             .catch(error => {
@@ -193,12 +194,24 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error polling for new messages:', error));
     }
 
+    const displayedMessageIds = new Set();
+
+    function isMessageDisplayed(message) {
+        const messageId = `${message.sender_id}-${message.timestamp}`;
+        if (displayedMessageIds.has(messageId)) {
+            return true;
+        }
+        displayedMessageIds.add(messageId);
+        return false;
+    }
+
     function getLastMessageTimestamp() {
         const lastMessage = messageList.lastElementChild;
         return lastMessage ? lastMessage.dataset.timestamp : new Date(0).toISOString();
     }
 
     function updateLastMessageTimestamp(timestamp) {
+        lastMessageTimestamp = timestamp;
         if (messageList.lastElementChild) {
             messageList.lastElementChild.dataset.timestamp = timestamp;
         }
@@ -219,7 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastMessageDate = null;
     function displayMessage(message) {
         const messageDate = new Date(message.timestamp).toDateString(); // 獲取訊息的日期
-    
+        
+        if (isMessageDisplayed(message)) {
+            return; // 如果消息已顯示，則不重複顯示
+        }
+
         if (lastMessageDate !== messageDate) {
             const dateSeparator = document.createElement('div');
             dateSeparator.className = 'date-separator';
