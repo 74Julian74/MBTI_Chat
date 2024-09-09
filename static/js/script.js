@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messageList = document.getElementById('message-list');
+    const chatTitle = document.getElementById('chat-title');
     let currentGroupId = null;
     let currentUserId= null;
     let userIdPromise= null;
@@ -19,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 3, name: '謝程安(MaKaBaKa)', lastMessage: 'MAKABAKA' },//, avatar: '/api/placeholder/40/40'
         // 添加更多好友...
     ];
+
+    // 更新聊天標題的函數
+    function updateChatTitle(name) {
+        chatTitle.textContent = name || ''; // 如果没有名字，就设置为空字符串
+    }
 
     // 獲取當前用戶ID的函數
     function fetchCurrentUserId() {
@@ -47,25 +53,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return userIdPromise;
     }
-    // 初始化函數
+
+    // 初始化
     function initialize() {
         fetchCurrentUserId()
             .then(() => {
                 console.log('User ID fetched successfully');
-                switchRoom('default_group');
+                switchRoom('default_group'); // 初始化時載入 default_group
+                renderFriendList(); // 确保在初始化时渲染好友列表
                 startPolling(); // 開始定期輪詢
             })
             .catch(() => console.log('Failed to fetch user ID. User might not be logged in.'));
     }
+
     // 在頁面加載時調用
     document.addEventListener('DOMContentLoaded', () => {
         fetchCurrentUserId()
             .then(() => console.log('User ID fetched successfully'))
             .catch(() => console.log('Failed to fetch user ID. User might not be logged in.'));
     });
-    // 渲染好友列表
+
+    // 渲染好友列表函數
     function renderFriendList() {
-        friendList.innerHTML = friends.map(friend => `
+        const friendList = document.getElementById('friend-list');
+        friendList.innerHTML = `
+            <div class="friend-item" data-id="default_group">
+                <div>聊天室</div>
+            </div>
+        ` + friends.map(friend => `
             <div class="friend-item" data-id="${friend.id}">
                 <img src="${friend.avatar}" alt="${friend.name}" class="friend-avatar">
                 <div>
@@ -77,15 +92,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 添加點擊事件
         friendList.querySelectorAll('.friend-item').forEach(item => {
-            item.addEventListener('click', () => switchChat(item.dataset.id));
+            item.addEventListener('click', () => switchRoom(item.dataset.id));
         });
     }
 
-    // 切換聊天室
-    function switchRoom(groupId) {
+   // 切換聊天室函數
+   function switchRoom(groupId) {
         currentGroupId = groupId;
-        //socket.emit('join', {group: groupId});
         loadMessages(groupId);
+
+        if (groupId === 'default_group') {
+            updateChatTitle('聊天室');
+        } else {
+            // 找到對應的朋友名稱
+            const friend = friends.find(f => f.id.toString() === groupId.toString());
+            if (friend) {
+                updateChatTitle(friend.name);
+            } else {
+                updateChatTitle('聊天室'); // 如果沒找到對應的朋友，顯示 '聊天室'
+            }
+        }
     }
 
     // 加載消息
@@ -231,24 +257,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lastMessageDate = null;
     function displayMessage(message) {
-        const messageDate = new Date(message.timestamp).toDateString(); // 獲取訊息的日期
+        const messageDate = new Date(message.timestamp).toDateString();
         
         if (isMessageDisplayed(message)) {
-            return; // 如果消息已顯示，則不重複顯示
+            return;
         }
-
+    
         if (lastMessageDate !== messageDate) {
             const dateSeparator = document.createElement('div');
             dateSeparator.className = 'date-separator';
-
-            // 使用中文日期格式
             const dateFormatted = formatDateToChinese(new Date(message.timestamp));
             dateSeparator.textContent = dateFormatted;
-
             messageList.appendChild(dateSeparator);
             lastMessageDate = messageDate;
         }
-
+    
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
         
@@ -262,18 +285,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const bubbleElement = document.createElement('div');
         bubbleElement.className = 'message-bubble';
-        bubbleElement.textContent = message.content;
+        
+        // 添加发送者名称
+        if (message.sender_id !== currentUserId) {
+            const senderNameElement = document.createElement('div');
+            senderNameElement.className = 'sender-name';
+            senderNameElement.textContent = message.sender_name || 'Unknown'; // 使用sender_name或默认值
+            bubbleElement.appendChild(senderNameElement);
+        }
+        
+        const messageTextElement = document.createElement('div');
+        messageTextElement.textContent = message.content;
+        bubbleElement.appendChild(messageTextElement);
         
         contentElement.appendChild(bubbleElement);
         messageElement.dataset.timestamp = message.timestamp;
         
-        // 根據消息是發送還是接收來決定時間元素的位置
+        // 调整时间元素的位置
         if (message.sender_id === currentUserId) {
             messageElement.appendChild(contentElement);
             messageElement.appendChild(timeElement);
         } else {
-            messageElement.appendChild(timeElement);
             messageElement.appendChild(contentElement);
+            contentElement.appendChild(timeElement); // 将时间元素放在内容元素的右侧
         }
         
         messageList.appendChild(messageElement);

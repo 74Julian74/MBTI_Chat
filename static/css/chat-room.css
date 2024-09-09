@@ -119,8 +119,8 @@ nav ul li.active {
 }
 
 #send-button {
-    padding: 5px 15px;
-    background-color: #4CAF50;
+    padding: 8px 15px;
+    background-color: #7289da;
     color: white;
     border: none;
     border-radius: 4px;
@@ -128,10 +128,9 @@ nav ul li.active {
 }
 .message {
     margin-bottom: 10px;
-    max-width: 70%;
+    max-width: 100%;
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
+    flex-direction: column;
 }
 
 .message.sent {
@@ -145,15 +144,39 @@ nav ul li.active {
 }
 
 .message-bubble {
-    padding: 10px;
-    border-radius: 20px;
+    padding: 8px 12px;
+    border-radius: 4px;
     display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
 }
+
 
 .message-time {
     font-size: 0.8em;
     color: #888;
-    margin: 0 8px;
+    text-align: right;
+}
+.message.sent .message-time {
+    margin-left: 5px; /* Reduce the margin to bring it closer to the message */
+    align-self: flex-end;
+    right: 5px; /* Optional: Ensure it stays close to the right */
+}
+.message.received .message-time {
+    margin-left: 5px; /* 調整這裡讓時間更靠近訊息框 */
+    align-self: flex-start;
+}
+
+
+
+/* 傳送訊息時間顯示在右下角 */
+.message.sent .message-time {
+    right: 5px; /* 調整時間靠近訊息泡泡的右側 */
+}
+
+/* 接收訊息時間顯示在左下角 */
+.message.received .message-time {
+    left: 5px; /* 調整時間靠近訊息泡泡的左側 */
 }
 
 .message.sent .message-bubble {
@@ -164,11 +187,39 @@ nav ul li.active {
     background-color: #f1f0f0;
 }
 
+.message.received .message-content {
+    align-items: flex-start;
+}
+
+.message.sent .message-content {
+    align-items: flex-end;
+}
+
 #message-list {
     display: flex;
     flex-direction: column;
     padding: 20px;
 }
+
+.sender-name {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #72767d;
+}
+
+.message.received .message-time {
+    align-self: flex-end;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: #888;
+}
+
+.message.sent .message-time {
+    margin-left: 10px;
+    align-self: flex-end;
+}
+
 .date-separator {
     text-align: center;
     margin: 20px 0;

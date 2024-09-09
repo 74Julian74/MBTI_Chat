@@ -197,6 +197,11 @@ def register_routes(app, socketio):
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({'error': 'Bad Request'}), 400
+    
+    def get_username(user_id):
+        user= UserACC.query.get(user_id)
+        return user.username if user else "Unknown"
+    
     @app.route('/send_message', methods=['POST'])
     @csrf.exempt
     def send_message():
@@ -207,15 +212,32 @@ def register_routes(app, socketio):
 
         save_message_to_cache(group_id, sender_id, content)
 
-        return jsonify({'status': 'success'})
+        return jsonify({
+        'status': 'success',
+        'message': {
+            'sender_id': sender_id,
+            'sender_name': current_user.username,
+            'content': content,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+    })
+
     @app.route('/get_current_user_id')
     @login_required
     def get_current_user_id():
         return jsonify({'user_id': current_user.UserID})
+    
     @app.route('/get_recent_messages/<group_id>')
+    @login_required
     def get_recent_messages_route(group_id):
         messages = get_recent_messages(group_id, limit=50)
+        
+        # 動態添加發送者的用戶名
+        for message in messages:
+            message['sender_name'] = get_username(message['sender_id'])
+        
         return jsonify(messages)
+    
     @socketio.on('join')
     def on_join(data):
         group = data['group']  # 將 'room' 改為 'group'
@@ -247,17 +269,24 @@ def register_routes(app, socketio):
             return jsonify({'error': '分析過程中發生錯誤'}), 500
     
     @app.route('/get_new_messages/<group_id>')
+    @login_required
     def get_new_messages_route(group_id):
         since = request.args.get('since', '0')
         try:
             since_datetime = datetime.fromisoformat(since.split('+')[0].split('Z')[0])
         except ValueError:
             since_datetime = datetime.min
+        
         messages = get_recent_messages(group_id)
         new_messages = [
             msg for msg in messages 
             if datetime.fromisoformat(msg['timestamp']) > since_datetime
         ]
+        
+        # 動態添加發送者的用戶名
+        for message in new_messages:
+            message['sender_name'] = get_username(message['sender_id'])
+        
         return jsonify(new_messages)
-
+    
     return app
