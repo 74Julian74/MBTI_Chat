@@ -144,40 +144,27 @@ nav ul li.active {
 }
 
 .message-bubble {
-    padding: 8px 12px;
-    border-radius: 4px;
+    padding: 10px;
+    border-radius: 20px;
     display: inline-block;
-    max-width: 80%;
-    word-wrap: break-word;
 }
-
 
 .message-time {
     font-size: 0.8em;
     color: #888;
-    text-align: right;
-}
-.message.sent .message-time {
-    margin-left: 5px; /* Reduce the margin to bring it closer to the message */
-    align-self: flex-end;
-    right: 5px; /* Optional: Ensure it stays close to the right */
+    margin: 0 8px;
 }
 .message.received .message-time {
-    margin-left: 5px; /* 調整這裡讓時間更靠近訊息框 */
-    align-self: flex-start;
+    align-self: flex-end; /* 確保時間靠右對齊 */
+    margin-left: 0; /* 避免左邊距離 */
+    margin-right: 5px; /* 調整右邊距離 */
 }
-
-
-
-/* 傳送訊息時間顯示在右下角 */
 .message.sent .message-time {
-    right: 5px; /* 調整時間靠近訊息泡泡的右側 */
+    align-self: flex-start; /* 確保時間靠左對齊 */
+    margin-right: 0; /* 避免右邊距離 */
+    margin-left: 5px; /* 調整左邊距離 */
 }
 
-/* 接收訊息時間顯示在左下角 */
-.message.received .message-time {
-    left: 5px; /* 調整時間靠近訊息泡泡的左側 */
-}
 
 .message.sent .message-bubble {
     background-color: #dcf8c6;
@@ -206,18 +193,6 @@ nav ul li.active {
     font-weight: bold;
     margin-bottom: 4px;
     color: #72767d;
-}
-
-.message.received .message-time {
-    align-self: flex-end;
-    margin-top: 5px;
-    font-size: 0.8em;
-    color: #888;
-}
-
-.message.sent .message-time {
-    margin-left: 10px;
-    align-self: flex-end;
 }
 
 .date-separator {
