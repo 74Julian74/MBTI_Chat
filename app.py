@@ -1,11 +1,14 @@
-from flask import Flask
-from extensions import db, migrate, bootstrap, csrf, socketio
+
+from flask import Flask, request, redirect, url_for, jsonify, render_template, flash, current_app
 from flask_login import LoginManager
-import os
-from datetime import timedelta
-import logging
-from flask import current_app
 from flask_wtf.csrf import CSRFProtect
+import os
+import json
+import logging
+from datetime import datetime, timedelta
+
+# Application extensions
+from extensions import db, migrate, bootstrap, csrf, socketio
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -28,7 +31,6 @@ def create_app():
     app.config['SECRET_KEY'] = 'your_secret_key'
 
     csrf = CSRFProtect(app)
-    # 初始化扩展
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)
@@ -43,7 +45,7 @@ def create_app():
     app.register_blueprint(chat_bp, url_prefix='/chat')
 
     from routes import register_routes
-    register_routes(app)
+    register_routes(app, socketio)
 
     logging.basicConfig(level=logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
