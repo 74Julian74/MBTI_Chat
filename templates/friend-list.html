@@ -3,10 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>好友列表</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/friend-list.css') }}"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .friend-item {
+            background-color: #E6E6FA;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .friend-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .task-card {
+            background-color: #98FB98;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
+
     <header>
         <a class="main_page" id="main_page" href="#">首頁</a>
         <h1>好友列表</h1>
@@ -20,8 +54,12 @@
     <main>
         <div class="user-section">
             <div class="user-profile">
-                <img src="path_to_user_image.jpg" alt="User" class="user-image">
-                <p class="user-name">Brian</p>
+                {% if current_user.ProfilePicture %}
+                    <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
+                {% else %}
+                    <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
+                {% endif %}
+                <p class="user-name">{{ current_user.username }}</p>
             </div>
 
             <div class="task-card">
@@ -35,12 +73,20 @@
             </div>
         </div>
 
-        <div class="friends-list">
+        <div id="friends-list" class="friends-list">
             <!-- 好友卡片會在這裡動態添加 -->
+        </div>
+        <div id="confirmDialog" class="modal" style="display: none;">
+            <div class="modal-content">
+                <p>確定要刪除嗎？</p>
+                <button id="confirmDelete">確定</button>
+                <button id="cancelDelete">取消</button>
+            </div>
         </div>
     </main>
 
     <script>
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var main_page = document.getElementById("main_page");
         if (main_page) {
             main_page.addEventListener("click", function (e) {
@@ -52,36 +98,183 @@
             var add_friend = document.getElementById("add-friend");
             if (add_friend) {
                 add_friend.addEventListener("click", function (e) {
-                    window.location.href = "{{ url_for('AFlist') }}";
+                    window.location.href = "{{ url_for('add_friend') }}";
                 });
             }
         });
+
         // 模擬添加新朋友的函數
-        function addNewFriend(name, mbti, pronouns) {
-            const friendsList = document.querySelector('.friends-list');
-            const friendCard = document.createElement('div');
-            friendCard.className = 'friend-card';
-            friendCard.innerHTML = `
-                <img src="path_to_default_image.jpg" alt="${name}" class="friend-image">
-                <div class="friend-info">
-                    <p>姓名：${name}</p>
-                    <p>MBTI：${mbti}</p>
-                    <p>Pronouns：${pronouns}</p>
-                </div>
-                <div class="friend-actions">
-                    <span class="action-icon">💬</span>
-                    <span class="action-icon">🗑️</span>
+        console.log('Script loaded');
+
+        console.log('Script started');
+
+        function addNewFriend(id, username, mbti, profilePicture) {
+            console.log('Adding new friend:', id, username, mbti, profilePicture);
+            const friendsList = document.getElementById('friends-list');
+            if (!friendsList) {
+                console.error('friends-list element not found');
+                return;
+            }
+            const friendElement = document.createElement('div');
+            friendElement.className = 'friend-item';
+            friendElement.setAttribute('data-friend-id', id);
+            friendElement.innerHTML = `
+                <div class="user-profile">
+                    <img src="/uploads/${profilePicture}" alt="${username}'s profile picture">
+                    <div>${username}</div>
+                    <div>${mbti}</div>
                 </div>
             `;
-            friendsList.appendChild(friendCard);
+            friendsList.appendChild(friendElement);
         }
 
-        // 示例：添加一些朋友
-        addNewFriend('Alice', 'INTJ', 'She/Her');
-        addNewFriend('Bob', 'ENFP', 'He/Him');
-        addNewFriend('Carol', 'ISFJ', 'They/Them');
+        function getFriendsAndShow() {
+            console.log('Fetching friends...');
+            fetch('/get_friends')
+                .then(response => response.json())
+                .then(friends => {
+                    console.log('Friends data:', friends);
+                    const friendsList = document.getElementById('friends-list');
+                    friendsList.innerHTML = ''; // 清空現有內容
+                    if (friends.length === 0) {
+                        friendsList.innerHTML = '<p>No friends found.</p>';
+                        return;
+                    }
+                    friends.forEach(friend => {
+                        const friendElement = document.createElement('div');
+                        friendElement.className = 'friend-item';
+                        friendElement.style.backgroundColor = '#E6E6FA'; // 淡紫色背景
+                        friendElement.style.margin = '10px 0';
+                        friendElement.style.padding = '10px';
+                        friendElement.style.borderRadius = '8px';
+                        friendElement.style.display = 'flex';
+                        friendElement.style.alignItems = 'center';
 
+                        const profilePicture = friend.profile_picture.startsWith('http')
+                            ? friend.profile_picture
+                            : `/uploads/${friend.profile_picture}`;
 
+                        friendElement.innerHTML = `
+                            <img src="${profilePicture}" alt="${friend.username}'s avatar"
+                                 style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;"
+                                 onerror="this.src='/static/default_avatar.jpg';">
+                            <div style="flex-grow: 1;">
+                                <div>ID: ${friend.id}</div>
+                                <div style="font-weight: bold;">姓名: ${friend.username}</div>
+                                <div>MBTI: ${friend.mbti}</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <button style="background: none; border: none; cursor: pointer; margin-bottom: 5px;">💬</button>
+                                <button onclick="showDeleteConfirmation(${friend.id})" style="background: none; border: none; cursor: pointer;">🗑️</button>
+                                <div style="font-size: 0.8em; margin-top: 5px;">LastActive: ${friend.last_active}</div>
+                            </div>
+                        `;
+
+                        friendsList.appendChild(friendElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching friends:', error);
+                    const friendsList = document.getElementById('friends-list');
+                    friendsList.innerHTML = '<p>Error loading friends. Please try again later.</p>';
+                });
+        }
+
+        let friendIdToDelete = null;
+
+        function showDeleteConfirmation(friendId) {
+            console.log('showDeleteConfirmation called with friendId:', friendId);
+            friendIdToDelete = friendId;
+
+            // 移除舊的對話框（如果存在）
+            const oldDialog = document.getElementById('confirmDialog');
+            if (oldDialog) {
+                oldDialog.remove();
+            }
+
+            // 創建新的對話框
+            const dialog = document.createElement('div');
+            dialog.id = 'confirmDialog';
+            dialog.style.position = 'fixed';
+            dialog.style.top = '50%';
+            dialog.style.left = '50%';
+            dialog.style.transform = 'translate(-50%, -50%)';
+            dialog.style.backgroundColor = 'white';
+            dialog.style.padding = '20px';
+            dialog.style.borderRadius = '8px';
+            dialog.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+            dialog.style.zIndex = '1000';
+
+            dialog.innerHTML = `
+                <p>確定要刪除嗎？</p>
+                <button id="confirmDeleteBtn">確定</button>
+                <button id="cancelDeleteBtn">取消</button>
+            `;
+
+            document.body.appendChild(dialog);
+
+            // 添加事件監聽器
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                console.log('Confirm delete button clicked');
+                deleteFriend(friendId);
+                cancelDelete();
+            });
+
+            document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+                console.log('Cancel delete button clicked');
+                cancelDelete();
+            });
+        }
+
+        function deleteFriend(friendId) {
+            if (confirm('確定要刪除這個好友嗎？')) {
+                var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch('/delete_friend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ friend_id: friendId })  // 確保這行正確設置
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'accepted') {
+                        document.getElementById('friend-' + friendId).remove();
+                        alert('好友已成功刪除');
+                    } else {
+                    }
+                })
+            }
+        }
+
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }
+
+        function cancelDelete() {
+            console.log('cancelDelete called');
+            const confirmDialog = document.getElementById('confirmDialog');
+            if (confirmDialog) confirmDialog.remove();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM content loaded, calling getFriendsAndShow');
+            getFriendsAndShow();
+        });
+
+        console.log('Script ended');
+
+        function 聊天(friendName) {
+            console.log(`開始與 ${friendName} 聊天`);
+            // 實現聊天功能
+        }
+
+        document.addEventListener('DOMContentLoaded', getFriendsAndShow);
+
+        setInterval(getFriendsAndShow, 1000); // 每分鐘刷新一次
     </script>
+
 </body>
 </html>
