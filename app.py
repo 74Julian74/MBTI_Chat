@@ -1,12 +1,11 @@
 from flask import Flask
 from extensions import db, migrate, bootstrap, csrf, socketio
 from flask_login import LoginManager
-from dbmodels import UserACC
 import os
 from datetime import timedelta
 import logging
 from flask import current_app
-
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -28,12 +27,14 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'your_secret_key'
 
+    csrf = CSRFProtect(app)
     # 初始化扩展
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)
     csrf.init_app(app)
     socketio.init_app(app)
+
 
     # 注册蓝图
     from auth import auth_bp
@@ -76,6 +77,11 @@ def load_user(user_id):
     except ValueError:
         app.logger.error(f"Invalid user ID format: {user_id}")
         return None
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(UserACC, int(user_id))
+
 
 if __name__ == "__main__":
     from dbmodels import *
