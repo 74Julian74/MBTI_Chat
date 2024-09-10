@@ -1,17 +1,20 @@
 from flask import (render_template, flash, redirect, url_for, request,
-                   send_from_directory,jsonify)
+                   send_from_directory, jsonify)
 from PIL import Image
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import current_user, login_required
-from dbmodels import *
-import datetime
-from datetime import datetime
-from sqlalchemy import or_
-from extensions import csrf
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy import or_, and_
+from datetime import datetime
+from dbmodels import *
+from extensions import csrf
+from redis_utils import save_message_to_cache, get_recent_messages
+from sentiment_analysis import analyze_sentiment
+from flask_socketio import join_room
 
-def register_routes(app):
+def register_routes(app, socketio):
 
     @app.route("/")
     def index():
@@ -417,3 +420,96 @@ def register_routes(app):
     def bad_request(error):
         return jsonify({'error': 'Bad Request'}), 400
 
+    def get_username(user_id):
+        user = UserACC.query.get(user_id)
+        return user.username if user else "Unknown"
+
+    @app.route('/send_message', methods=['POST'])
+    @csrf.exempt
+    def send_message():
+        data = request.json
+        group_id = data['group_id']
+        content = data['content']
+        sender_id = data['sender_id']
+
+        save_message_to_cache(group_id, sender_id, content)
+
+        return jsonify({
+            'status': 'success',
+            'message': {
+                'sender_id': sender_id,
+                'sender_name': current_user.username,
+                'content': content,
+                'timestamp': datetime.utcnow().isoformat()
+            }
+        })
+
+    @app.route('/get_current_user_id')
+    @login_required
+    def get_current_user_id():
+        return jsonify({'user_id': current_user.UserID})
+
+    @app.route('/get_recent_messages/<group_id>')
+    @login_required
+    def get_recent_messages_route(group_id):
+        messages = get_recent_messages(group_id, limit=50)
+
+        # 動態添加發送者的用戶名
+        for message in messages:
+            message['sender_name'] = get_username(message['sender_id'])
+
+        return jsonify(messages)
+
+    @socketio.on('join')
+    def on_join(data):
+        group = data['group']  # 將 'room' 改為 'group'
+        join_room(group)
+
+    @app.route('/analyze_emotion', methods=['POST'])
+    @login_required
+    def analyze_emotion_route():
+        data = request.json
+        group_id = data.get('group_id') or data.get('room_id')
+        reply_style = data.get('reply_style', '正式')  # 默認為 '正式'
+        if not group_id:
+            return jsonify({'error': '缺少 group_id 或 room_id'}), 400
+
+        my_user_id = current_user.UserID
+        if my_user_id is None:
+            return jsonify({'error': '用戶未認證'}), 401
+
+        try:
+            # 添加日誌來檢查接收到的參數
+            app.logger.info(
+                f"Analyzing emotion with group_id: {group_id}, user_id: {my_user_id}, reply_style: {reply_style}")
+            analysis = analyze_sentiment(group_id, my_user_id, reply_style)
+            return jsonify(analysis)
+        except AttributeError as e:
+            app.logger.error(f"analyze_emotion 中的 AttributeError: {str(e)} - UserMSG 對象可能缺少 'sender_id'")
+            return jsonify({'error': '分析過程中發生錯誤,缺少屬性'}), 500
+        except Exception as e:
+            app.logger.error(f"analyze_emotion 中的錯誤: {str(e)}")
+            return jsonify({'error': '分析過程中發生錯誤'}), 500
+
+    @app.route('/get_new_messages/<group_id>')
+    @login_required
+    def get_new_messages_route(group_id):
+        since = request.args.get('since', '0')
+        try:
+            since_datetime = datetime.fromisoformat(since.split('+')[0].split('Z')[0])
+        except ValueError:
+            since_datetime = datetime.min
+
+        messages = get_recent_messages(group_id)
+        new_messages = [
+            msg for msg in messages
+            if datetime.fromisoformat(msg['timestamp']) > since_datetime
+        ]
+
+        # 動態添加發送者的用戶名
+        for message in new_messages:
+            message['sender_name'] = get_username(message['sender_id'])
+
+        return jsonify(new_messages)
+
+    return app
