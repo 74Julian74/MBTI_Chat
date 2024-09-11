@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>驗證您的電子郵件</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verify-email.css') }}">
+</head>
+<body>
+    <h1>驗證</h1>
+    <form id="register-form" method="POST">
+        <button type="button" id="register-button">註冊</button>
+    </form>
+
+    <!-- 彈出窗口 -->
+    <div id="verification-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>驗證您的電子郵件</h1>
+            <form id="verification-form">
+                <label for="verification_code">請輸入您收到的驗證碼:</label>
+                <input type="text" id="verification_code" name="verification_code" required> <!-- 驗證碼輸入欄位 -->
+                <button type="submit">提交</button>
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 打開註冊按鈕的彈出窗口
+            document.getElementById('register-button').addEventListener('click', function() {
+                document.getElementById('verification-modal').style.display = 'block';
+            });
+
+            // 關閉彈出窗口
+            document.querySelector('.close').addEventListener('click', function() {
+                document.getElementById('verification-modal').style.display = 'none';
+            });
+
+            // 驗證碼表單提交處理
+            document.getElementById('verification-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // 阻止表單的默認提交行為
+
+                // 收集表單數據
+                const verificationCode = document.getElementById('verification_code').value;
+                const formData = new FormData();
+                formData.append('verification_code', verificationCode);
+
+                fetch('/auth/verify-email', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("驗證成功！");
+                        window.location.href = "{{ url_for('auth.login_page') }}";
+                    } else {
+                        alert("驗證碼錯誤，請再試一次。");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("發生錯誤，請稍後再試。");
+                });
+            });
+        });
+    </script>
+</body>
+</html>

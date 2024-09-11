@@ -1,121 +1,119 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
-    <meta name="description" content="註冊頁面，請填寫您的電子郵件、密碼和 MBTI 診斷結果。">
+{% extends "bootstrap4/base.html" %}
+{% block title %}註冊{% endblock %}
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verify-email.css') }}">
+{% endblock %}
+{% block content %}
+<div class="BG-group">
+    <img
+      class="BG-icon1"
+      loading="lazy"
+      alt=""
+      src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
+    />
+    <div class="register-container">
+        <h1>註冊</h1>
+        <div class="register-form">
+            <h2>Sign up</h2>
+            <form method="POST" action="{{ url_for('auth.register') }}" id="register-form">
+                <div class="form-group">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-input", placeholder="Email", autocomplete="email") }}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-input", placeholder="密碼", autocomplete="new-password") }}
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label(class="form-label") }}
+                    {{ form.password2(class="form-input", placeholder="確認密碼", autocomplete="new-password") }}
+                </div>
+                {{ form.submit(class="submit-button") }}
+            </form>
+        </div>
+    </div>
+</div>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
-</head>
-<body>
-    <div class="register">
-        <div class="container">
-            <h1 class="h11">註冊</h1>
-            <img class="e355dc75c2e90373cb295-hero20v-icon2" loading="lazy" alt="" src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}" />
-        </div>
-        <form method="POST" action="{{ url_for('register') }}">
-            <div class="rectangle-parent">
-                <div class="frame-item"></div>
-                <div class="login-form-container">
-                    <div class="sign-in">Sign in</div>
-                    <div class="input-container">
-                        <label for="email" class="label">Email帳號</label>
-                        <input
-                            id="email"
-                            class="input-field"
-                            placeholder="Enter your email"
-                            type="email"
-                            onfocus="this.placeholder = ''"
-                            onblur="this.placeholder = 'Enter your email'"
-                        />
-                    </div>
-                    <div class="input-container">
-                        <label for="password" class="label">密碼</label>
-                        <input
-                            id="password"
-                            class="input-field"
-                            placeholder="Enter your password"
-                            type="password"
-                            onfocus="this.placeholder = ''"
-                            onblur="this.placeholder = 'Enter your password'"
-                        />
-                    </div>
-                    <div class="input-container">
-                        <label for="mbti" class="label">MBTI類型</label>
-                        <div class="custom-select">
-            <div class="selected-option">Choose your MBTI</div>
-            <div class="options-container">
-                <div class="option" data-value="ENFJ" data-color="#93c47d">ENFJ</div>
-                <div class="option" data-value="ENFP" data-color="#93c47d">ENFP</div>
-                <div class="option" data-value="INFJ" data-color="#93c47d">INFJ</div>
-                <div class="option" data-value="INFP" data-color="#93c47d">INFP</div>
-                <div class="option" data-value="ISFJ" data-color="#6fa8dc">ISFJ</div>
-                <div class="option" data-value="ISTJ" data-color="#6fa8dc">ISTJ</div>
-                <div class="option" data-value="ESTJ" data-color="#6fa8dc">ESTJ</div>
-                <div class="option" data-value="ESFJ" data-color="#6fa8dc">ESFJ</div>
-                <div class="option" data-value="INTJ" data-color="#b4a7d6">INTJ</div>
-                <div class="option" data-value="INTP" data-color="#b4a7d6">INTP</div>
-                <div class="option" data-value="ENTJ" data-color="#b4a7d6">ENTJ</div>
-                <div class="option" data-value="ENTP" data-color="#b4a7d6">ENTP</div>
-                <div class="option" data-value="ISFP" data-color="#d9d300">ISFP</div>
-                <div class="option" data-value="ISTP" data-color="#d9d300">ISTP</div>
-                <div class="option" data-value="ESTP" data-color="#d9d300">ESTP</div>
-                <div class="option" data-value="ESFP" data-color="#d9d300">ESFP</div>
-            </div>
-            <input type="hidden" name="mbti" id="mbti" required />
-                        </select>
-                    </div>
-                </div>
-                <div class="register-background-parent">
-                    <button type="button" class="register-background" id="registerBackground"></button>
-                    <div class="div10" id="Register-text">註冊</div>
-                </div>
-            </div>
-        </div>
+<!-- 彈出窗口 -->
+<div id="verification-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>驗證您的電子郵件</h1>
+        <form id="verification-form" method="post" action="{{ url_for('auth.verify_email') }}">
+            <label for="verification_code">請輸入您收到的驗證碼:</label>
+            <input type="text" id="verification_code" name="verification_code" required>
+            <button type="submit">送出</button>
         </form>
     </div>
-    <script>
-      var registerBackground = document.getElementById("registerBackground");
-      if (registerBackground) {
-        registerBackground.addEventListener("click", function () {
-          window.location.href = "{{ url_for('login_page') }}";
-        });
-      }
+</div>
 
-      var RegisterText = document.getElementById("Register-text");
-      if (RegisterText) {
-         RegisterText.addEventListener("click", function () {
-          window.location.href = "{{ url_for('login_page') }}";
-         });
-      }
+{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let form = document.getElementById("register-form");
+    let modal = document.getElementById("verification-modal");
+    let closeBtn = document.getElementsByClassName("close")[0];
 
-          document.addEventListener('DOMContentLoaded', function() {
-        const selectContainer = document.querySelector('.custom-select');
-        const selectedOption = selectContainer.querySelector('.selected-option');
-        const optionsContainer = selectContainer.querySelector('.options-container');
-        const options = optionsContainer.querySelectorAll('.option');
-        const hiddenInput = document.getElementById('mbti');
+    // 當表單提交時，顯示模態窗口
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
 
-        selectedOption.addEventListener('click', function() {
-            selectContainer.classList.toggle('open');
-        });
+        const formData = new FormData(form);
 
-        options.forEach(option => {
-            option.addEventListener('click', function() {
-                selectedOption.textContent = this.textContent;
-                hiddenInput.value = this.getAttribute('data-value');
-                selectContainer.classList.remove('open');
-            });
-
-            // Set the background color for each option
-            option.style.backgroundColor = option.getAttribute('data-color');
-        });
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                modal.style.display = "block";
+            } else {
+                alert(data.message); // 顯示錯誤信息
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
-      </script>
-</body>
-</html>
+
+    // 當用户點擊關閉按鈕時，關閉模態窗口
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    };
+
+    // 當用户點擊窗口外部時，關閉模態窗口
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    // 設置 Socket.io 連接
+    const socket = io();
+
+    // 當用户提交驗證碼表單時
+    document.getElementById('verification-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const verificationInput = document.getElementById('verification_code');
+        const verificationCode = verificationInput.value;
+        if (verificationCode.trim()) {
+            socket.emit('verify_email', { code: verificationCode });
+        }
+    });
+
+    // 接收驗證結果
+    socket.on('verification_result', function(data) {
+        if (data.success) {
+            alert("驗證成功！");
+            modal.style.display = "none"; // 隱藏模態窗口
+        } else {
+            alert("驗證碼錯誤，請重試！");
+        }
+    });
+});
+
+</script>
+{% endblock %}
