@@ -9,58 +9,114 @@
         <link rel="icon" href="data:,">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+        <!-- 設定頁面標題 -->
         <title>Setting</title>
     </head>
-    <body>
-        <div class="user_frame">
-            <div class="top_frame"></div>
-            <a class="main_page" id="main_page" href="#">首頁</a>
-                <span class="setting_title">設定</span>
-                    <div class="profile-frame">
-                        <div class="self-photo">
-                            {% if current_user.ProfilePicture %}
-                                <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
-                            {% else %}
-                                <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
-                            {% endif %}</div><a href="#">
+    <div class="main-page">
+        <!-- 頁首部分，包含導航欄 -->
+        <header class="frame">
+          <div class="front-page" id="main_page" href="#">
+            <a class="a">首頁</a>
+          </div>
+          <div class="setting">
+            <a class="a">MBTI情感分析助手</a>
+          </div>
+
+          <div class="parent2">
+            <a class="a2" id="text2" href="#">MBTI測驗</a>
+            <a class="a3" id="text3" href="#">聊天室</a>
+            <a class="a4" id="text4" href="#">好友列表</a>
+          </div>
+
+        </header>
+
+        <!-- 包含用戶資料和設定選項的主區域 -->
+        <main>
+            <!-- 用戶個人資料區塊 -->
+            <div class="profile-frame">
+                <!-- 用戶頭像 -->
+                <div class="self-photo">
+                    <!-- 判斷用戶是否有個人頭像，如果有則顯示，否則顯示預設頭像 -->
+                    {% if current_user.ProfilePicture %}
+                        <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
+                    {% else %}
+                        <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
+                    {% endif %}
+                    <!-- 編輯頭像的按鈕 -->
+                    <a href="#">
                         <div class="edit" id="edit">
-                            <div class="name"></div>
-                        </div></a>
+                            <img src="{{ url_for('static', filename='image/edit-icon.png') }}" alt="Edit Icon">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 用戶名和電子郵件 -->
                 <span class="self-name" id="username">{{ current_user.username }}</span>
+                <span class="self-email">{{ current_user.email }}</span>
             </div>
 
-             <div class="container">
+            <!-- 設定選項的容器 -->
+            <div class="container">
+                <!-- 側邊欄導航選單 -->
                 <nav class="sidebar">
                     <div class="folding-menu">
                         <ul>
-                          <li class="acc"><a href="#"><i class="icon-account"></i>帳號<span class="arrow">▼</span></a>
-                            <ul class="acc-options">
-                                <li><a class="circle">帳號 : {{ current_user.email }}<span id="email"></span></a></li>
-                                <li><a href="#" class="circle" id="password-change">更改密碼</a></li>
-                            </ul>
-                          </li>
+                            <!-- 帳號設定主選單 -->
+                            <li class="acc">
+                                <a href="#">
+                                    <img src="{{ url_for('static', filename='image/account-icon.png') }}" alt="Account Icon">
+                                    帳號
+                                    <span class="arrow">▼</span>
+                                </a>
+                                <!-- 帳號相關的子選單 -->
+                                <ul class="acc-options">
+                                    <li><a href="#" class="circle copy-button">帳號 : {{ current_user.email }}<span id="email"></span></a></li>
+                                    <li><a href="#" class="circle copy-button" id="password-change">更改密碼</a></li>
+                                </ul>
+                            </li>
 
-                          <li class="notification"><a href="#"><i class="icon-notification"></i> 通知<span class="arrow">▼</span></a>
-                            <ul class="notification-options">
-                                <li class="toggle-option">
-                                    <span class="circle">選項名稱</span>
-                                    <label class="switch">
-                                        <input type="checkbox">
-                                        <span class="slider round"></span>
-                                    </label>
-                                </li>
-                            </ul>
-                          </li>
+                            <!-- 通知設定主選單 -->
+                            <li class="notification">
+                                <a href="#">
+                                    <img src="{{ url_for('static', filename='image/notification-icon.png') }}" alt="Notification Icon">
+                                    通知
+                                    <span class="arrow">▼</span>
+                                </a>
+                                <!-- 通知相關的子選單 -->
+                                <ul class="notification-options">
+                                    <li class="toggle-option">
+                                        <span class="circle copy-button">選項名稱</span>
+                                        <label class="switch">
+                                            <input type="checkbox">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </li>
 
-                          <li class="friend-list"><a href="#" id="friend-list"><i class="icon-friends"></i>好友列表<span class="arrow">▼</span></a>
-                          </li>
+                            <!-- 好友列表主選單 -->
+                            <li class="friend-list">
+                                <a href="#" id="friend-list">
+                                    <img src="{{ url_for('static', filename='image/friends-icon.png') }}" alt="Friends Icon">
+                                    好友列表
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
 
-                          <li class="safety"><a href="javascript:void(0)"><i class="icon-privacy"></i>隱私 & 安全<span class="arrow">▼</span></a></li>
+                            <!-- 隱私與安全主選單 -->
+                            <li class="safety">
+                                <a href="javascript:void(0)">
+                                    <img src="{{ url_for('static', filename='image/security-icon.png') }}" alt="Privacy Icon">
+                                    隱私 & 安全
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
 
-                          <li class="invite"><a href="#"><i class="icon-invite"></i>邀請<span class="arrow">▼</span></a>
+                            <!-- 邀請功能主選單 -->
+                            <li class="invite"><a href="#"><i class="icon-invite"></i>邀請<span class="arrow">▼</span></a>
                             <ul class="invite-options">
-                                <li><a href="javascript:void(0)" class="circle" id="copyButton" onclick="copyInviteLink()">複製連結</a></li>
-                                <li><a href="javascript:void(0)" class="circle" id="shareButton" onclick="showSharePopup()">分享</a></li>
+                                <li><a href="javascript:void(0)" class="circle copy-button" id="copyButton" onclick="copyInviteLink()">複製連結</a></li>
+                                <li><a href="javascript:void(0)" class="circle copy-button" id="shareButton" onclick="showSharePopup()">分享</a></li>
                             </ul>
                               <div id="sharePopup" class="share-popup" style="display:none;">
                                 <div class="share-content">
@@ -77,15 +133,29 @@
 
                                 </div>
                               </div>
-                          </li>
-
-                          <li class="language"><a href="javascript:void(0)"><i class="icon-language"></i>語言<span class="arrow">▼</span></a></li>
+                            </li>
+                            <!-- 語言設定主選單 -->
+                            <li class="language">
+                                <a href="javascript:void(0)">
+                                    <img src="{{ url_for('static', filename='image/language-icon.png') }}" alt="Language Icon">
+                                    語言
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
-             </div>
-            <div class="name"></div>
-        </div>
+
+                <!-- 左右角落插畫 -->
+                <img src="{{ url_for('static', filename='image/11.png') }}" alt="Left Image" class="corner_image left_image">
+                <img src="{{ url_for('static', filename='image/18.png') }}" alt="Right Image" class="corner_image right_image">
+            </div>
+        </main>
+    </div>
+    </body>
+</html>
+
+
 
     <script>
         var main_page = document.getElementById("main_page");
@@ -108,6 +178,32 @@
               window.location.href = "{{ url_for('auth.profile_setting') }}";
             });
           }
+            // MBTI測驗
+         var text2 = document.getElementById("text2");
+        if (text2) {
+            text2.addEventListener("click", function (e) {
+              window.open(
+            "https://www.16personalities.com/tw/%E6%80%A7%E6%A0%BC%E6%B8%AC%E8%A9%A6",
+            "_blank"
+          );
+        });
+      }
+
+      // 聊天室
+      var text3 = document.getElementById("text3");
+      if (text3) {
+        text3.addEventListener("click", function (e) {
+          window.location.href = "{{ url_for('chat.chat_room') }}";
+        });
+      }
+      // 好友列表
+      var text4 = document.getElementById("text4");
+      if (text4) {
+        text4.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('friend_list') }}";
+            });
+          }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             var menuItems = document.querySelectorAll('.folding-menu .acc > a');

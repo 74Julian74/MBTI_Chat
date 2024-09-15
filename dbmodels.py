@@ -39,13 +39,22 @@ class UserMSG(db.Model):
 
 class Relation(db.Model):
     __tablename__ = "relation"
-    UserID1 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), primary_key=True)
-    UserID2 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), primary_key=True)
+    RelationID = db.Column(db.String(50), primary_key=True)
+    UserID1 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
+    UserID2 = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
     Status = db.Column(db.String(20), nullable=False)
     TimeStamp = db.Column(db.DateTime, nullable=False)
 
     user1 = db.relationship('UserACC', foreign_keys=[UserID1])
     user2 = db.relationship('UserACC', foreign_keys=[UserID2])
+
+    @staticmethod
+    def create_relation_id(user_id1, user_id2):
+        return f"{min(user_id1, user_id2)}-{max(user_id1, user_id2)}"
+
+    @staticmethod
+    def create_relation_id2(user_id1, user_id2):
+        return f"{max(user_id1, user_id2)}-{min(user_id1, user_id2)}"
 
 class VerifyMSG(db.Model):
     __tablename__ = "verify"
@@ -55,7 +64,7 @@ class VerifyMSG(db.Model):
 
 class Chat(db.Model):
     __tablename__ = "chat"
-    GroupID = db.Column(db.Integer, primary_key=True, nullable=False)
+    GroupID = db.Column(db.String(50), primary_key=True, nullable=False)
     GroupName = db.Column(db.String(20), nullable=False)
     CreatorID = db.Column(db.Integer, db.ForeignKey('user_acc.UserID'), nullable=False)
     CreateAt = db.Column(db.DateTime, nullable=False)

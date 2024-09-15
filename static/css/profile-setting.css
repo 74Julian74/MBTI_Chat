@@ -10,19 +10,46 @@ body {
     min-height: 100vh;
 }
 
-/* 頁頭樣式 */
-header {
+.top_frame {
     width: 100%;
     height: 89px;
-    background: rgba(217,217,217,1);
-    opacity: 1;
+    background: rgba(217, 217, 217, 1);
+    position: fixed; /* 保證導航欄固定在頁面頂部 */
+    top: 0;
+    left: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    z-index: 10; /* 保證導航欄在最頂層 */
+  }
+  .main_page {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    border: 1px solid rgba(0,0,0,1);
-    overflow: hidden;
-}
-
+    left: 20px; /* 將首頁按鈕固定在左上角 */
+    top: 50%;
+    transform: translateY(-50%); /* 垂直居中 */
+    font-size: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black; /* 可調整首頁字體顏色 */
+  }
+  .main_page:hover{
+    color: dodgerblue;
+  }
+  .main_page img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .setting_title {
+    font-size: 50px;
+    font-weight: bold;
+    text-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25);
+    font-family: 'Inter', sans-serif;
+    color: rgba(0, 0, 0, 1);
+    text-align: center;
+  }
 header a {
     margin-left: 80px;
     text-decoration: none;

@@ -2,10 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messageList = document.getElementById('message-list');
+    const friendList = document.getElementById('friend-list');
     const chatTitle = document.getElementById('chat-title');
     let currentGroupId = null;
     let currentUserId= null;
     let userIdPromise= null;
+
+    const userInfoMap = new Map();
     
     // Socket.IO 設置
     const socket = io();
@@ -13,13 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 從 meta 標籤中獲取 CSRF 令牌
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // 模擬的好友數據
-    const friends = [
-        { id: 1, name: '爸', lastMessage: '晚' },//, avatar: '/api/placeholder/40/40'
-        { id: 2, name: '媽', lastMessage: '早' },//, avatar: '/api/placeholder/40/40'
-        { id: 3, name: '謝程安(MaKaBaKa)', lastMessage: 'MAKABAKA' },//, avatar: '/api/placeholder/40/40'
-        // 添加更多好友...
-    ];
 
     // 更新聊天標題的函數
     function updateChatTitle(name) {
@@ -54,12 +50,85 @@ document.addEventListener('DOMContentLoaded', () => {
         return userIdPromise;
     }
 
+    function renderFriendList() {
+        fetch('/get_friends')
+            .then(response => response.json())
+            .then(friends => {
+                friendList.innerHTML = `
+                    <div class="friend-item" data-id="default_group">
+                        <img src="/static/image/main2.png" alt="MBTI" class="friend-avatar">
+                        <div class="friend-info">
+                            <div class="friend-name">交誼廳</div>
+                        </div>
+                    </div>
+                `;
+    
+                friends.forEach(friend => {
+                    const friendElement = document.createElement('div');
+                    friendElement.className = 'friend-item';
+                    // 生成 GroupID
+                    const groupId = `${Math.min(currentUserId, friend.id)}_${Math.max(currentUserId, friend.id)}`;
+                    friendElement.dataset.id = groupId;
+                    friendElement.innerHTML = `
+                        <img src="/uploads/${friend.profile_picture}" alt="${friend.username}" class="friend-avatar">
+                        <div class="friend-info">
+                            <div class="friend-name">${friend.username}</div>
+                        </div>
+                    `;
+                    friendList.appendChild(friendElement);
+                    // 將用戶信息添加到映射中
+                    userInfoMap.set(friend.id.toString(), {
+                        username: friend.username,
+                        avatarUrl: `/uploads/${friend.profile_picture}`
+                    });
+                });
+    
+                // 添加點擊事件
+                friendList.querySelectorAll('.friend-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const groupId = item.dataset.id;
+                        const friendName = item.querySelector('.friend-name').textContent;
+                        createOrSwitchChat(groupId, friendName);
+                    });
+                });
+            })
+            .catch(error => console.error('Error loading friend list:', error));
+    }
+    
+    function createOrSwitchChat(groupId, friendName) {
+        // 首先嘗試切換到現有聊天
+        switchRoom(groupId, friendName);
+    
+        // 如果聊天不存在，則創建新的聊天
+        fetch('/create_chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                type: 'private',
+                other_user_id: groupId.split('_').find(id => id !== currentUserId.toString())
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === '聊天創建成功' || data.message === '聊天已存在') {
+                switchRoom(groupId, friendName);
+            } else {
+                console.error('Failed to create chat:', data.error);
+            }
+        })
+        .catch(error => console.error('Error creating chat:', error));
+    }
+
+
     // 初始化
     function initialize() {
         fetchCurrentUserId()
             .then(() => {
                 console.log('User ID fetched successfully');
-                switchRoom('default_group'); // 初始化時載入 default_group
+                //switchRoom('default_group', '交誼廳'); // 初始化時載入 default_group
                 renderFriendList(); // 确保在初始化时渲染好友列表
                 startPolling(); // 開始定期輪詢
             })
@@ -73,56 +142,60 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => console.log('Failed to fetch user ID. User might not be logged in.'));
     });
 
-    // 渲染好友列表函數
-    function renderFriendList() {
-        const friendList = document.getElementById('friend-list');
-        friendList.innerHTML = `
-            <div class="friend-item" data-id="default_group">
-                <div>聊天室</div>
-            </div>
-        ` + friends.map(friend => `
-            <div class="friend-item" data-id="${friend.id}">
-                <img src="${friend.avatar}" alt="${friend.name}" class="friend-avatar">
-                <div>
-                    <div>${friend.name}</div>
-                    <small>${friend.lastMessage}</small>
-                </div>
-            </div>
-        `).join('');
+    function clearAnalysisContent() {
+        //document.getElementById('person-name').textContent = '';
+        document.getElementById('person-mbti').textContent = '';
+        document.getElementById('person-emotion').textContent = '';
+        document.getElementById('emotion-reason').textContent = '';
+        document.getElementById('mbti-explanation').innerHTML = '';
+        document.getElementById('suggestion-1').value = '';
+        document.getElementById('suggestion-2').value = '';
+        document.getElementById('analysis-error').textContent = '';
+    }
 
-        // 添加點擊事件
-        friendList.querySelectorAll('.friend-item').forEach(item => {
-            item.addEventListener('click', () => switchRoom(item.dataset.id));
+    function switchRoom(groupId, name) {
+        currentGroupId = groupId;
+        chatTitle.textContent = name;
+        loadMessages(groupId);
+        // 更新分析部分的名称
+        document.getElementById('person-name').textContent = name;
+        // 清空分析内容
+        clearAnalysisContent();
+        // 加入 Socket.IO 房間
+        socket.emit('join', { group: groupId });
+        window.currentGroupId= groupId;
+    }
+
+    // 添加获取当前 groupId 的函数
+    window.getCurrentGroupId = function() {
+        return currentGroupId;
+    };
+
+    // 初始化情感分析按钮
+    const analyzeButton = document.getElementById('emotion-analysis-button');
+    if (analyzeButton) {
+        analyzeButton.addEventListener('click', async function() {
+            const analysis = await emotionAnalysis.analyzeEmotion();
+            emotionAnalysis.updateAnalysisUI(analysis);
         });
     }
 
-   // 切換聊天室函數
-   function switchRoom(groupId) {
-        currentGroupId = groupId;
-        loadMessages(groupId);
-
-        if (groupId === 'default_group') {
-            updateChatTitle('聊天室');
-        } else {
-            // 找到對應的朋友名稱
-            const friend = friends.find(f => f.id.toString() === groupId.toString());
-            if (friend) {
-                updateChatTitle(friend.name);
-            } else {
-                updateChatTitle('聊天室'); // 如果沒找到對應的朋友，顯示 '聊天室'
-            }
-        }
-    }
-
-    // 加載消息
     function loadMessages(groupId) {
         fetch(`/get_recent_messages/${groupId}`)
             .then(response => response.json())
             .then(messages => {
                 messageList.innerHTML = '';
+                displayedMessageIds.clear();  // 清空已顯示消息的集合
                 messages.forEach(displayMessage);
-            });
+            })
+            .catch(error => console.error('Error loading messages:', error));
     }
+
+    //function loadMessages(groupId) {
+        // 这里应该从服务器加载消息
+        // 为了演示，我们只是清空消息列表
+        //messageList.innerHTML = '';
+    //}
 
     // 發送消息
     function sendMessage() {
@@ -183,6 +256,38 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
     
+    // 添加創建新聊天的函數
+    function createNewChat(type, otherUserId = null, groupName = null) {
+        const data = { type };
+        if (type === 'private') {
+            data.other_user_id = otherUserId;
+        } else if (type === 'group') {
+            data.group_name = groupName;
+        }
+
+        fetch('/create_chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.message === '聊天創建成功') {
+                renderFriendList();  // 重新渲染聊天列表
+                switchRoom(result.group_id, type === 'private' ? `與 ${otherUserId} 的私聊` : groupName);
+            } else {
+                throw new Error(result.message || '創建聊天失敗');
+            }
+        })
+        .catch(error => {
+            console.error('Error creating chat:', error);
+            alert(error.message);
+        });
+    }
+
     function formatDateToChinese(date) {
         const today = new Date();
         const yesterday = new Date();
@@ -208,8 +313,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const lastMessageTimestamp = getLastMessageTimestamp();
 
-        fetch(`/get_new_messages/${currentGroupId}?since=${encodeURIComponent(lastMessageTimestamp)}`)
-            .then(response => response.json())
+        return fetch(`/get_new_messages/${currentGroupId}?since=${encodeURIComponent(lastMessageTimestamp)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(messages => {
                 messages.forEach(displayMessage);
                 if (messages.length > 0) {
@@ -217,7 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateLastMessageTimestamp(lastTimestamp);
                 }
             })
-            .catch(error => console.error('Error polling for new messages:', error));
+            .catch(error => {
+                console.error('Error polling for new messages:', error);
+            });
     }
 
     const displayedMessageIds = new Set();
@@ -275,40 +387,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.sender_id === currentUserId ? 'sent' : 'received'}`;
         
+        const contentElement = document.createElement('div');
+        contentElement.className = 'message-content';
+    
+        if (message.sender_id !== currentUserId) {
+            const userInfo = userInfoMap.get(message.sender_id.toString());
+            const avatarElement = document.createElement('img');
+            avatarElement.className = 'sender-avatar';
+            avatarElement.src = userInfo ? userInfo.avatarUrl : '/static/image/default-avatar.png';
+            avatarElement.alt = userInfo ? userInfo.username : 'Unknown User';
+            contentElement.appendChild(avatarElement);
+    
+            const senderNameElement = document.createElement('div');
+            senderNameElement.className = 'sender-name';
+            senderNameElement.textContent = userInfo ? userInfo.username : 'Unknown User';
+            contentElement.appendChild(senderNameElement);
+        }
+        
+        const bubbleElement = document.createElement('div');
+        bubbleElement.className = 'message-bubble';
+        bubbleElement.textContent = message.content;
+        contentElement.appendChild(bubbleElement);
+    
         const timeElement = document.createElement('div');
         timeElement.className = 'message-time';
         const messageTime = new Date(message.timestamp);
         timeElement.textContent = formatTimeOnly(messageTime);
-        
-        const contentElement = document.createElement('div');
-        contentElement.className = 'message-content';
-        
-        const bubbleElement = document.createElement('div');
-        bubbleElement.className = 'message-bubble';
-        
-        // 添加发送者名称
-        if (message.sender_id !== currentUserId) {
-            const senderNameElement = document.createElement('div');
-            senderNameElement.className = 'sender-name';
-            senderNameElement.textContent = message.sender_name || 'Unknown'; // 使用sender_name或默认值
-            bubbleElement.appendChild(senderNameElement);
-        }
-        
-        const messageTextElement = document.createElement('div');
-        messageTextElement.textContent = message.content;
-        bubbleElement.appendChild(messageTextElement);
-        
-        contentElement.appendChild(bubbleElement);
+        contentElement.appendChild(timeElement);
+    
+        messageElement.appendChild(contentElement);
         messageElement.dataset.timestamp = message.timestamp;
-        
-        // 调整时间元素的位置
-        if (message.sender_id === currentUserId) {
-            messageElement.appendChild(contentElement);
-            messageElement.appendChild(timeElement);
-        } else {
-            messageElement.appendChild(contentElement);
-            contentElement.appendChild(timeElement); // 将时间元素放在内容元素的右侧
-        }
         
         messageList.appendChild(messageElement);
         messageList.scrollTop = messageList.scrollHeight;
@@ -321,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Polling error:', error);
                 // 可以在這裡添加重試邏輯或顯示錯誤消息給用戶
             });
-        }, 5000);
+        }, 1000);
     }
 
     function formatTimeOnly(date) {
@@ -376,4 +484,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 初始化
     initialize();
+    //renderFriendList();
+    //switchRoom('default_room', '聊天室');
 });

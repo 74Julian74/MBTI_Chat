@@ -1,79 +1,298 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新增好友</title>
+    <title>好友系统</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
-        .header {
-            background-color: #f0f0f0;
-            padding: 10px;
+       body {
+          font-size: 14px;
+          background-color: #f5f5f5;
+          margin: 0;
+          font-family: 'Inter', sans-serif; /* 統一字體 */
         }
-        .container {
+        /* 調整主內容，確保不會被header遮擋 */
+        main.main-content {
             display: flex;
+            width: 100%;
+            padding-top: 80px; /* 確保內容在header下方顯示 */
+            height: calc(100vh - 80px); /* 動態調整內容區域的高度 */
+        }
+       .front-page {
+            font-size: 20px;
+            font-weight: normal;
+            text-decoration: none;
+            color: black;
+            cursor: pointer;
+            position: absolute;
+            left: 20px; /* 固定首頁按鈕在左側 */
+            }
+            /* 調整主內容，確保不會被header遮擋 */
+        main.main-content {
+            display: flex;
+            width: 100%;
+            padding-top: 40px; /* 確保內容區不會被header遮住，這裡的60px對應header的高度 */
+            height: calc(100vh - 40px); /* 剩餘的高度 */
+
+        }
+
+        .main_page {
+            position: absolute;
+            left: 20px; /* 將首頁按鈕固定在左上角 */
+            top: 50%;
+            transform: translateY(-50%); /* 垂直居中 */
+            font-size: 24px;
+            font-weight: normal;
+            text-decoration: none;
+            color: black; /* 可調整首頁字體顏色 */
+            cursor: pointer;
+            }
+
+        /* 確保header固定在頂部 */
+        header.frame {
+            background-color: #d3d3d3;
+            padding: 10px 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+            position: fixed; /* 固定在頁面頂部 */
+            top: 0;
+            left: 0;
+            z-index: 100;
+            height: 40px; /* 設定header的固定高度 */
+        }
+        .front-page:hover{
+        color: dodgerblue;
+        }
+        header .title a{
+        text-decoration: none;
+        font-size: 24px; /* 調整字體大小 */
+        color: #000;
+        margin-right: 20px;
+        }
+
+        header .title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            }
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .left-panel {
+            background-color: #858181;
+            border-right: 1px solid #ccc;
+        }
+        .right-panel {
+            background-color: #e0e0e0;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        input, button {
+            margin: 5px 0;
+            padding: 5px;
+            width: 90%; /* 調整input寬度 */
+        }
+        #searchResults, #friendRequests {
             margin-top: 20px;
         }
-        .frame {
-            width: 50%;
-            height: 500px;
-            border: none;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        .home-link {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-        }
-
-        .left-side, .right-side {
-            width: 48%;
+        .user-card {
+            background-color: white;
             border: 1px solid #ddd;
-            padding: 15px;
-            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .user-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            margin-right: 10px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="/" class="home-link">首頁</a>
-        <h1>新增好友</h1>
-    </div>
+<div class="main-page">
+        <!-- 頁首部分，包含導航欄 -->
+        <header class="frame">
+          <div class="front-page" id="text4" href="#">
+            <a class="a">返回</a>
+          </div>
+          <div class="title">
+            <a class="b">MBTI情感分析助手</a>
+          </div>
 
-    <div class="container">
-        <div class="left-side">
-            <h2>搜索好友</h2>
-            {% include 'add-friend-left.html' %}
-        </div>
-        <div class="right-side">
-            <h2>待確認的好友請求</h2>
-            {% include 'add-friend-right.html' %}
-        </div>
-    </div>
+        </header>
 
-    <script src="{{ url_for('static', filename='js/search-friend.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/confirm-friend.js') }}"></script>
+        <!-- 主內容區域 -->
+        <main class="main-content">
+            <div class="left-panel">
+                <h2>搜索好友</h2>
+                <input type="text" id="searchId" placeholder="输入用户ID">
+                <input type="text" id="searchUsername" placeholder="输入用户名">
+                <button onclick="searchFriend()">搜索</button>
+                <div id="searchResults"></div>
+            </div>
+            <div class="right-panel">
+                <h2>好友请求</h2>
+                <div id="friendRequests"></div>
+            </div>
+        </main>
     <script>
-        var main_page = document.getElementById("main_page");
-          if (main_page) {
-            main_page.addEventListener("click", function (e) {
-              window.location.href = "{{ url_for('chat.main_page') }}";
+        // 好友列表
+      var text4 = document.getElementById("text4");
+      if (text4) {
+        text4.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('friend_list') }}";
             });
           }
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
+    function searchFriend() {
+        const id = document.getElementById('searchId').value.trim();
+        const username = document.getElementById('searchUsername').value.trim();
+
+        if (!id || !username) {
+            alert('請同時輸入ID和用戶名');
+            return;
+        }
+
+        console.log(`正在搜索好友 - ID: ${id}, 用户名: ${username}`);
+
+        fetch('/search_friend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: `search_id=${encodeURIComponent(id)}&search_username=${encodeURIComponent(username)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('搜索结果:', data);
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'user-card';
+                    userCard.innerHTML = `
+                        <img src="/uploads/${user.profile_picture}" alt="头像" onerror="this.src='/static/default_avatar.png'">
+                        <span>ID: ${user.id}</span>
+                        <span>用户名: ${user.username}</span>
+                        <button onclick="sendFriendRequest(${user.id})">發送好友請求</button>
+                    `;
+                    resultsDiv.appendChild(userCard);
+                });
+            } else {
+                resultsDiv.innerHTML = '<p>未找到用户</p>';
+            }
+        })
+        .catch(error => {
+            console.error('搜索出錯:', error);
+            alert('搜索時出錯: ' + error.message);
+        });
+    }
+
+    function sendFriendRequest(friendId) {
+        fetch('/send_friend_request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: `friend_id=${friendId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('好友請求已發送');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('發送好友請求時出錯');
+        });
+    }
+
+    function getFriendRequests() {
+        fetch('/get_friend_requests')
+        .then(response => response.json())
+        .then(data => {
+            const requestsDiv = document.getElementById('friendRequests');
+            requestsDiv.innerHTML = '';
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(request => {
+                    const requestCard = document.createElement('div');
+                    requestCard.className = 'user-card';
+                    requestCard.innerHTML = `
+                        <img src="/uploads/${request.profile_picture}" alt="头像" onerror="this.src='/static/default_avatar.png'">
+                        <span>ID: ${request.id}</span>
+                        <span>用户名: ${request.username}</span>
+                        <button onclick="respondToFriendRequest(${request.id}, 'accepted')">接受</button>
+                        <button onclick="respondToFriendRequest(${request.id}, 'rejected')">拒绝</button>
+                    `;
+                    requestsDiv.appendChild(requestCard);
+                });
+            } else {
+                requestsDiv.innerHTML = '<p>暫無好友請求</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('獲取好友請求時出錯');
+        });
+    }
+
+    function respondToFriendRequest(friendId, response) {
+        fetch('/respond_friend_request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ friend_id: friendId, response: response })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('好友請求已處理');
+                getFriendRequests(); // 刷新好友请求列表
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('處理好友請求時出錯');
+        });
+    }
+
+    // 页面加载时获取好友请求
+    window.onload = getFriendRequests;
     </script>
+
 </body>
 </html>

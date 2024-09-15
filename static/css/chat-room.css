@@ -5,6 +5,82 @@ body {
     background-color: #f0f0f0;
 }
 
+.front-page {
+    font-size: 20px;
+    font-weight: normal;
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+    position: absolute;
+    left: 20px; /* 固定首頁按鈕在左側 */
+  }
+header .title a{
+  text-decoration: none;
+  font-size: 24px; /* 調整字體大小 */
+  color: #000;
+  margin-right: 20px;
+}
+.main_page {
+    position: absolute;
+    left: 20px; /* 將首頁按鈕固定在左上角 */
+    top: 50%;
+    transform: translateY(-50%); /* 垂直居中 */
+    font-size: 24px;
+    font-weight: normal;
+    text-decoration: none;
+    color: black; /* 可調整首頁字體顏色 */
+    cursor: pointer;
+}
+/* 右側導航欄 */
+header .parent2 {
+    display: flex;
+    gap: 20px; /* 控制三個按鈕之間的距離 */
+    position: absolute;
+    right: 20px; /* 將右側選項靠右對齊 */
+}
+  
+header .parent2 a {
+    font-size: 20px; /* 統一字體大小 */
+    text-decoration: none;
+    color: black; /* 字體顏色 */
+    font-family: 'Inter', sans-serif; /* 字體樣式 */
+}
+  
+header .parent2 a:hover {
+  color: dodgerblue;
+}
+  
+/* 頁首樣式 */
+header.frame {
+    background-color: #d3d3d3;
+    padding: 10px 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+    position:relative  
+}
+.front-page:hover{
+    color: dodgerblue;
+}
+  
+header .setting {
+    font-size: 24px;
+    font-weight: normal;
+    text-align: center; /* 確保文字在按鈕內居中 */
+}
+  
+  
+/* 增加導航欄與內容區域之間的間距 */
+.main-page-inner {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;  /* 這裡的 padding 增加了上下方向的空間 */
+}
+
 #chat-container {
     display: flex;
     height: 100vh;
@@ -98,12 +174,6 @@ nav ul li.active {
     background-color: #4CAF50;
 }
 
-#message-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 20px;
-}
-
 #message-input-area {
     display: flex;
     padding: 10px;
@@ -128,14 +198,17 @@ nav ul li.active {
 }
 .message {
     margin-bottom: 10px;
-    max-width: 100%;
+    max-width: 70%;
     display: flex;
     flex-direction: column;
 }
 
 .message.sent {
-    margin-left: auto;
-    flex-direction: row-reverse;
+    align-self: flex-end;
+}
+
+.message.received {
+    align-self: flex-start;
 }
 
 .message-content {
@@ -143,28 +216,20 @@ nav ul li.active {
     flex-direction: column;
 }
 
+.message.sent .message-content {
+    align-items: flex-end;
+}
+
+.message.received .message-content {
+    align-items: flex-start;
+}
+
 .message-bubble {
     padding: 10px;
     border-radius: 20px;
-    display: inline-block;
+    max-width: 100%;
+    word-wrap: break-word;
 }
-
-.message-time {
-    font-size: 0.8em;
-    color: #888;
-    margin: 0 8px;
-}
-.message.received .message-time {
-    align-self: flex-end; /* 確保時間靠右對齊 */
-    margin-left: 0; /* 避免左邊距離 */
-    margin-right: 5px; /* 調整右邊距離 */
-}
-.message.sent .message-time {
-    align-self: flex-start; /* 確保時間靠左對齊 */
-    margin-right: 0; /* 避免右邊距離 */
-    margin-left: 5px; /* 調整左邊距離 */
-}
-
 
 .message.sent .message-bubble {
     background-color: #dcf8c6;
@@ -174,18 +239,26 @@ nav ul li.active {
     background-color: #f1f0f0;
 }
 
-.message.received .message-content {
-    align-items: flex-start;
-}
-
-.message.sent .message-content {
-    align-items: flex-end;
+.message-time {
+    font-size: 0.8em;
+    color: #888;
+    margin: 0 8px;
 }
 
 #message-list {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.sender-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+    margin-bottom: 4px;
 }
 
 .sender-name {
@@ -193,6 +266,13 @@ nav ul li.active {
     font-weight: bold;
     margin-bottom: 4px;
     color: #72767d;
+}
+
+
+#message-list {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
 }
 
 .date-separator {
@@ -233,9 +313,27 @@ nav ul li.active {
     margin-bottom: 15px;
 }
 
+.mbti-explanation {
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
 #action-buttons {
     display: flex;
     justify-content: space-between;
+}
+.emotion-reason {
+    padding: 8px;
+    margin-top: 8px;
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
+.emotion-reason span {
+    display: inline-block;
+    margin-top: 4px;
 }
 
 #action-buttons button {

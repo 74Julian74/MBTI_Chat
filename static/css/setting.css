@@ -1,152 +1,187 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-size: 14px;
+  background-color: #f5f5f5;
+  margin: 0;
+  font-family: 'Inter', sans-serif; /* 統一字體 */
 }
-.user_frame {
-  width: 100%;
-  height: 1024px;
-  background: rgba(255,255,255,1);
-  opacity: 1;
+.front-page {
+  font-size: 20px;
+  font-weight: normal;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
   position: absolute;
-  top: 0px;
-  left: 0px;
-  overflow: hidden;
+  left: 20px; /* 固定首頁按鈕在左側 */
 }
-.top_frame {
-  width: 100%;
-  height: 89px;
-  background: rgba(217,217,217,1);
-  opacity: 1;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  border: 1px solid rgba(0,0,0,1);
-  overflow: hidden;
-}
+
 .main_page {
-  display: inline-block;
-  min-width: 101px;
-  color: rgba(0,0,0,1);
   position: absolute;
-  top: 14px;
-  left: 65px;
-  text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  font-weight: bold;
-  font-size: 50px;
-  opacity: 1;
-  text-align: left;
+  left: 20px; /* 將首頁按鈕固定在左上角 */
+  top: 50%;
+  transform: translateY(-50%); /* 垂直居中 */
+  font-size: 24px;
+  font-weight: normal;
+  text-decoration: none;
+  color: black; /* 可調整首頁字體顏色 */
+  cursor: pointer;
 }
-.setting_title {
-  width: 100px;
-  color: rgba(0,0,0,1);
+/* 右側導航欄 */
+header .parent2 {
+  display: flex;
+  gap: 20px; /* 控制三個按鈕之間的距離 */
   position: absolute;
-  top: 14px;
-  left: 670px;
-  text-shadow: 5px 5px 4px rgba(0, 0, 0, 0.25);
-  font-family: Inter;
-  font-weight: bold;
-  font-size: 50px;
-  opacity: 1;
-  text-align: center;
+  right: 20px; /* 將右側選項靠右對齊 */
 }
 
-.user_frame a {
-    text-decoration: none;
-    color: inherit;
+header .parent2 a {
+  font-size: 20px; /* 統一字體大小 */
+  text-decoration: none;
+  color: black; /* 字體顏色 */
+  font-family: 'Inter', sans-serif; /* 字體樣式 */
 }
 
-.user_frame a:hover{
-    color: dodgerblue;
+header .parent2 a:hover {
+  color: dodgerblue;
 }
 
+/* 頁首樣式 */
+header.frame {
+  background-color: #d3d3d3;
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+  position:relative
+}
+.front-page:hover{
+  color: dodgerblue;
+}
+
+header .setting {
+  font-size: 24px;
+  font-weight: normal;
+  text-align: center; /* 確保文字在按鈕內居中 */
+}
+
+
+/* 增加導航欄與內容區域之間的間距 */
+.main-page-inner {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;  /* 這裡的 padding 增加了上下方向的空間 */
+}
+
+/* main 區域樣式 */
+main {
+  margin-top: 150px; /* 確保內容不會與 header 重疊 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* 用戶框架 */
+.user_frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 1);
+  width: 450px;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: none;
+  margin: 150px auto;  /* 增加 margin-top 來避免與其他內容重疊 */
+}
+
+
+
+/* 用戶資料區域 */
 .profile-frame {
-  width: 411px;
-  height: 318px;
-  background: rgba(247,247,247,1);
-  margin: 12px;
-  opacity: 1;
-  position: absolute;
-  top: 128px;
-  left: 514px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-}
-.self-photo {
-  width: 145px;
-  height: 139px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: 1;
-  position: absolute;
-  top: 24px;
-  left: 133px;
-  border: 8px solid rgba(255,255,255,1);
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.10000000149011612);
-  overflow: hidden;
-}
-.self-photo image{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.edit {
-  width: 41px;
-  height: 43px;
-  background: rgba(255,255,255,1);
-  padding: 8px 8px;
-  margin: 10px;
-  opacity: 1;
-  position: absolute;
-  top: 175px;
-  left: 184px;
-  border-top-left-radius: 100px;
-  border-top-right-radius: 100px;
-  border-bottom-left-radius: 100px;
-  border-bottom-right-radius: 100px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1599999964237213);
-  overflow: hidden;
-}
-.name {
-  color: #fff;
-}
-.self-name {
-  width: 411px;
-  color: rgba(0,0,0,1);
-  position: absolute;
-  top: 250px;
-  left: 0px;
-  font-family: Raleway;
-  font-weight: Bold;
-  font-size: 40px;
-  opacity: 1;
+  width: 350px;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
   text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* 頭像框 */
+
+.self-photo {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+
+.self-photo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* 編輯按鈕 */
+
+.edit {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+.edit img {
+  width: 15px;
+  height: 15px;
+}
+
+/* 名稱 */
+
+.self-name {
+  display: block;
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+
+/* 電子郵件 */
+.self-email {
+  display: block;
+  margin-top: 5px;
+  font-size: 16px;
+  color: gray;
 }
 .v114_127 {
-  width: 411px;
-  color: rgba(0,0,0,1);
-  position: absolute;
-  top: 275px;
-  left: 0px;
-  font-family: Raleway;
-  font-weight: bold;
   font-size: 20px;
-  opacity: 1;
-  text-align: center;
+  font-weight: bold;
+  font-family: 'Raleway', sans-serif;
+  color: rgba(0,0,0,1);
+  margin-top: 5px;
 }
+
 .v121_267 {
 
   background-image: url("static/image/v121_267.png");
@@ -236,175 +271,97 @@ body {
   color: #fff;
 }
 
+/* 主容器 */
 .container {
-    display: flex;
-    width: 500px;
-    height:450px;
-    opacity: 1;
-    position: absolute;
-    top: 500px;
-    left: 485px;
-    overflow: hidden;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius:10px
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 500px;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
+
 
 /* 側邊欄樣式 */
 .sidebar {
-    width: 500px;
-    background-color: #f4f4f4;
-    padding: 20px;
+  width: 100%;
 }
 
-/* 主要內容區域樣式 */
-main {
-    flex: 1;
-    padding: 20px;
-}
 
-/* 折疊式選單樣式（保留原有樣式） */
+/* 折疊式選單樣式 */
 .folding-menu {
-    width: 460px;
+    width: 100%;  /* 占據父容器全部寬度 */
 }
 
 .folding-menu ul {
-    list-style-type: none;
+  list-style: none;
+  padding-left: 0;
 }
-
 .folding-menu li {
-    border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
 }
 
-.folding-menu li a{
-    color: #4B0082;
-}
-
-.folding-menu a {
-    display: block;
+.folding-menu li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 10px 15px;
     text-decoration: none;
-    color: #333;
+    color: #4B0082;
     transition: background-color 0.3s;
 }
 
-.folding-menu a:hover {
+.folding-menu li a img {
+    width: 24px;  /* 圖標大小 */
+    height: 24px;
+    margin-right: 10px;  /* 圖片與文字之間的間距 */
+}
+
+.folding-menu li a .arrow {
+    margin-left: auto;  /* 讓箭頭靠右 */
+    transition: transform 0.3s;
+}
+
+/* 子選單隱藏樣式 */
+.folding-menu .acc-options,
+.folding-menu .invite-options,
+.folding-menu .notification-options {
+    display: none;
+    padding-left: 35px;  /* 子選單項目左側間距 */
+}
+
+.folding-menu li.active .acc-options,
+.folding-menu li.active .invite-options,
+.folding-menu li.active .notification-options {
+    display: block;
+}
+
+.folding-menu .acc-options li,
+.folding-menu .invite-options li,
+.folding-menu .notification-options li {
+    border-bottom: none;
+}
+
+/* 折疊箭頭樣式 */
+.folding-menu .arrow {
+    transition: transform 0.3s;
+    color: #4B0082;
+    transform: rotate(-90deg);  /* 初始狀態下箭頭向左 */
+}
+
+/* 主菜單打開時箭頭旋轉 */
+.folding-menu li.active .arrow {
+    transform: rotate(0deg);  /* 當菜單打開時箭頭旋轉到向下 */
+}
+
+/* 菜單懸停樣式 */
+.folding-menu li a:hover {
     background-color: #e0e0e0;
 }
 
-.folding-menu i {
-    margin-right: 10px;
-}
-
-.folding-menu .acc-options {
-    display: none;
-    padding-left: 20px;
-}
-
-.folding-menu .acc.active > .acc-options {
-    display: block;
-}
-
-.folding-menu .acc-options li {
-    border-bottom: none;
-}
-
-.folding-menu .acc > a {
-    position: relative;
-}
-
-.folding-menu .invite-options {
-    display: none;
-    padding-left: 20px;
-}
-
-.folding-menu .invite.active > .invite-options {
-    display: block;
-}
-
-.folding-menu .invite-options li{
-    border-bottom: none;
-}
-
-.folding-menu .invite > a {
-    position: relative;
-}
-
-.folding-menu .notification-options {
-    display: none;
-    padding-left: 35px;
-}
-
-.folding-menu .notification.active > .notification-options {
-    display: block;
-}
-
-.folding-menu .notification-options li{
-    border-bottom: none;
-}
-
-.folding-menu .notification > a {
-    position: relative;
-}
-
-.folding-menu .arrow {
-    position: absolute;
-    right: 30px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
-
-.container .acc.active > a .arrow {
-    transform: rotate(90deg);
-}
-
-.folding-menu .notification .arrow {
-    position: absolute;
-    right: 30px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
-
-.container .notification.active > a .arrow {
-    transform: rotate(90deg);
-}
-
-.folding-menu .friend-list .arrow {
-    position: absolute;
-    right: 50px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
-
-.folding-menu .safety .arrow {
-    position: absolute;
-    right: 50px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
-
-.folding-menu .invite .arrow {
-    position: absolute;
-    right: 30px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
-
-.container .invite.active > a .arrow {
-    transform: rotate(90deg);
-}
-
-.folding-menu .language .arrow {
-    position: absolute;
-    right: 50px;
-    rotate:270deg;
-    transition: transform 0.3s;
-    color: #4B0082;
-}
 
 .circle:before {
   content: "\2022";  /* Unicode 字符代碼,表示實心圓點 */
@@ -502,4 +459,60 @@ input:checked + .slider:before {
 
 .share-popup{
     margin-left: 30px;
+}
+
+.iconlanguage {
+  width: 20px;
+  position: relative;
+  height: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.user-add-alt-fill-icon {
+  position: absolute;
+  top: 328.5px;
+  left: 300px;
+  width: 28px;
+  height: 28.6px;
+}
+/* 左右下角的圖片通用樣式 */
+.corner_image {
+  position: absolute;
+  width: 200px; /* 根據需求調整大小 */
+  height: auto;
+  z-index: 5;
+}
+
+/* 左下角的圖片 */
+.left_image {
+  bottom: 20px;
+  left: 20px;
+  width: 300px;
+  height: auto;
+}
+
+/* 右下角的圖片 */
+.right_image {
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: auto;
+}
+
+.copy-button {
+  padding-left: 20px; /* 讓文字從圓點後開始 */
+  position: relative;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+.copy-button:before {
+  content: "\2022"; /* 使用實心圓點 */
+  color: #4B0082; /* 圓點顏色 */
+  font-weight: bold; /* 加粗圓點 */
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }

@@ -25,8 +25,8 @@ class FormLogin(FlaskForm):
         DataRequired(message='請輸入PASSWORD'),
         Length(min=8, message='密碼長度至少8個字')
     ])
-    remember = BooleanField('保持登陸')
-    submit = SubmitField('登陸')
+    remember = BooleanField('保持登入')
+    submit = SubmitField('登入')
 
 class FormProfile(FlaskForm):
     username = StringField('使用者名稱', validators=[

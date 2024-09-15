@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dbmodels import UserMSG, db
+from flask import current_app
 
 redis_client = redis.Redis(host='192.168.129.128', port=6379, db=0)
 
@@ -48,6 +49,7 @@ def save_to_db(group_id, sender_id, content):
         session.rollback()
     finally:
         session.close()
+
 def get_recent_messages(group_id, limit=50):
     # 先從 Redis 獲取消息
     redis_messages = redis_client.lrange(f'chat:{group_id}', 0, -1)
@@ -90,7 +92,6 @@ def get_messages_from_db(group_id, limit, earliest_timestamp=None):
         return []
     finally:
         session.close()
-
 # 設置 Redis 過期回調
 def setup_redis_expiry_callback():
     def message_expired_callback(key):

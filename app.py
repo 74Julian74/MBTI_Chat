@@ -1,30 +1,32 @@
 from flask import Flask, request, redirect, url_for, jsonify
-from flask import render_template, flash
+from flask import render_template, flash, current_app
+from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
+import os
+import json
+import logging
+from datetime import timedelta, datetime
+
+# Application extensions
+from extensions import db, migrate, bootstrap, csrf, socketio
+
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from flask_migrate import Migrate
 from form import FormRegister, FormLogin
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_bootstrap import Bootstrap
-from flask_wtf.csrf import CSRFProtect
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from celery_config import Celery
 from datetime import datetime
 from redis_utils import save_message_to_cache, get_recent_messages
-import json
 from config import Config
 from celery_config import make_celery
 from celery_app import celery
 from tasks import save_message_to_db, send_notification
-from extensions import db, migrate, bootstrap, csrf, socketio
-from flask_login import LoginManager
 from dbmodels import UserACC
-import os
-from datetime import timedelta
-import logging
-from flask import current_app
-
-csrf= CSRFProtect()
+#csrf= CSRFProtect()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -50,6 +52,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'your_secret_key'
 
     # 初始化扩展
+    csrf = CSRFProtect(app)
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)

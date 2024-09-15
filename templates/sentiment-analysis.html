@@ -24,220 +24,46 @@
     />
   </head>
   <body>
-    <div class="sentiment-analysis">
-      <header class="rectangle-parent2">
-        <div class="frame-child3"></div>
-        <h1 class="h16">情感分析室</h1>
+    <div class="main-page">
+      <!-- 頁首部分，包含導航欄 -->
+      <header class="frame">
+        <div class="front-page" id="main_page" href="#">
+          <a class="a">返回</a>
+        </div>
+        <div class="setting">
+          <a class="a">MBTI情感分析助手</a>
+        </div>
       </header>
-      <main class="chatbot">
-        <div class="sidebar">
-          <div class="frame-parent6">
-            <div class="frame-parent7">
-              <img class="frame-icon" alt="" src="{{url_for('static', filename='image/frame-668.svg')}}" />
+        <!-- 使用流程與特色介紹部分 -->
+    <div class="content">
+      <h2>使用流程：</h2>
+      <ul>
+          <li>進入「設定」頁面，點擊頭像來設置個人信息。</li>
+          <li>新增好友，確保彼此已互為好友。</li>
+          <li>回到首頁並點擊「聊天」進入聊天界面。</li>
+          <li>在聊天界面中，先選擇聊天風格，系統將分析對方最近的 20 句話。</li>
+          <li>點擊「情緒分析」來查看分析結果。如需輔助回應，點擊右下角的「建議回應」，即可複製回應內容。</li>
+      </ul>
 
-              <button class="frame-button">
-                <div class="div19">分析結果</div>
-              </button>
-            </div>
-            <div class="frame-wrapper6">
-              <div class="frame-parent8">
-                <form class="add-chat-components-parent">
-                  <div class="add-chat-components">
-                    <img class="bg-icon" alt="" src="{{url_for('static', filename='image/bg@2x.png')}}" />
+      <div class="note">
+          <strong>注意事項：</strong><br>
+          進行分析時，系統會根據雙方的 MBTI（性格類型）來進行，因此您的 MBTI 也會向對方公開。
+      </div>
 
-                    <button class="frame-parent9">
-                      <div class="bold-duotone-essentional-ui-wrapper">
-                        <img
-                          class="bold-duotone-essentional-ui"
-                          alt=""
-                          src="{{url_for('static', filename='bold-duotone--essentional-ui--add-square.svg')}}"
-                        />
-                      </div>
-                      <div class="new-chat">New Chat</div>
-                    </button>
-                  </div>
-                  <div class="add-chat-components1">
-                    <div class="bold-duotone-arrows-round-wrapper">
-                      <img
-                        class="bold-duotone-arrows-round"
-                        loading="lazy"
-                        alt=""
-                        src="{{url_for('static', filename='image/bold-duotone--arrows--round-alt-arrow-down.svg')}}"
-                      />
-                    </div>
-                    <div class="recent-chats">Recent Chats</div>
-                  </div>
-                  <div class="add-chat-components2">
-                    <div class="rephrase-text">Rephrase text...</div>
-                  </div>
-                  <input
-                    class="add-chat-components3"
-                    placeholder="Fix this code ne..."
-                    type="text"
-                  />
-                </form>
-                <div class="outline-messages-coversatio-wrapper">
-                  <img
-                    class="outline-messages-coversatio"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/outline--messages-coversation--square-forward.svg')}}"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="frame-wrapper7">
-              <div class="frame-parent10">
-                <div class="frame-wrapper8">
-                  <img
-                    class="frame-child4"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/frame-435@2x.png')}}"
-                  />
-                </div>
-                <div class="welcome-back-parent">
-                  <div class="welcome-back">Welcome back,</div>
-                  <div class="suvigya">Suvigya</div>
-                </div>
-                <div class="arrow-down-2-wrapper">
-                  <img
-                    class="arrow-down-2"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/arrow--down-2.svg')}}"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="frame-parent11">
-          <div class="frame-wrapper9">
-            <div class="frame-parent12">
-              <div class="bold-duotone-essentional-ui-container">
-                <img
-                  class="bold-duotone-essentional-ui1"
-                  loading="lazy"
-                  alt=""
-
-                  src="{{url_for('static', filename='image/bold-duotone--essentional-ui--danger-triangle.svg')}}"
-                />
-              </div>
-              <div class="delete-icon">
-                <img
-                  class="bold-duotone-essentional-ui2"
-                  loading="lazy"
-                  alt=""
-
-                  src="{{url_for('static', filename='image/bold-duotone--essentional-ui--trash-bin-2.svg')}}"
-                />
-              </div>
-              <div class="search-container">
-                <div class="search2">
-                  <div class="search-child"></div>
-                  <img
-                    class="search-1-icon"
-                    alt=""
-
-                    src="{{url_for('static', filename='image/search-11.svg')}}"
-                  />
-
-                  <input class="search-item" placeholder="Search" type="text" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="message-box-container-parent">
-            <div class="message-box-container">
-              <div class="main-message-box">
-                <div class="user-message-content">
-                  <div class="rephrase-this-is-an-ai-chatbo-parent">
-                    <div class="rephrase-this-is">
-                      Rephrase ‘This is an ai chatbot generated for better
-                      communication and simpler work flows’
-                    </div>
-                    <img
-                      class="frame-child5"
-                      alt=""
-
-                      src="{{url_for('static', filename='image/frame-435-1@2x.png')}}"
-                    />
-
-                    <img
-                      class="outline-messages-coversatio1"
-                      alt=""
-
-                      src="{{url_for('static', filename='image/outline--messages-coversation--square-forward-1.svg')}}"
-                    />
-                  </div>
-                </div>
-                <div class="border-bottom"></div>
-              </div>
-            </div>
-            <div class="response-message-container">
-              <div class="response-message-box">
-                <div class="response-content">
-                  <img
-                    class="main-message-box1"
-                    alt=""
-
-                    src="{{url_for('static', filename='image/main-message-box@2x.png')}}"
-                  />
-
-                  <img
-                    class="outline-messages-coversatio2"
-                    alt=""
-
-                    src="{{url_for('static', filename='image/outline--messages-coversation--square-forward-2.svg')}}"
-                  />
-                </div>
-              </div>
-              <div class="main-message-box2">
-                <div class="thank-you">Thank You :)</div>
-                <div class="border-bottom-parent">
-                  <div class="border-bottom1"></div>
-                  <img
-                    class="frame-child6"
-                    loading="lazy"
-                    alt=""
-
-                    src="{{url_for('static', filename='image/frame-437@2x.png')}}"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="outer">
-              <div class="main-message-box3">
-                <div class="border-bottom2"></div>
-                <div class="body-parent">
-                    <textarea class="body" placeholder="Type a new message here"></textarea>
-                  <img
-                    class="send-icon"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/send.svg')}}"
-                  />
-
-                  <img
-                    class="emojis-icon"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/emojis.svg')}}"
-                  />
-
-                  <img
-                    class="outline-messages-coversatio3"
-                    loading="lazy"
-                    alt=""
-                    src="{{url_for('static', filename='image/outline--messages-coversation--paperclip.svg')}}"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <div class="feature">
+          <h3>特色介紹：</h3>
+          <p><strong>輔助聊天：</strong>使用 OpenAI API 作為聊天輔助工具，結合 MBTI 分析系統，針對 16 種人格類型進行深度分析。</p>
+          <p><strong>特定回話風格：</strong>系統根據雙方的 MBTI 類型，提供特定的回話風格選項，讓您能夠根據對話需求靈活應對。</p>
+      </div>
+  </div>
     </div>
+    <script>
+      var main_page = document.getElementById("main_page");
+        if (main_page) {
+          main_page.addEventListener("click", function (e) {
+            window.location.href = "{{ url_for('chat.main_page') }}";
+          });
+        }
+        </script>
   </body>
 </html>

@@ -12,7 +12,7 @@ from langchain.schema import HumanMessage
 #with open('key.txt', 'r') as file:
 #   key = file.readline().strip()
 
-key= 'e67e05c67d424ef1b7ffbbc14e589b32'
+key= 'e6sk-proj-SquMmGT-EvQ_YJ5_q4vhXSeE_yH5MzPUPvNoexOc9c59TYE71q2kwk_sKabOiqoQDodfmiu7bTT3BlbkFJk9Wnpevjjd0Km_rCOKNGcgXB6iyScESh2rL4pZD0AhjS65POw0BdlLReeKU8H6mmvwWc3GlT8A'
 llm35 = AzureOpenAI(
     deployment_name='ETHCI',
     openai_api_version='2023-05-15',

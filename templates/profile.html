@@ -12,11 +12,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"/>
   </head>
   <body>
-    <div class="profile">
-      <header class="rectangle-container">
-        <div class="rectangle-div"></div>
-        <a class="a3">個人資料</a>
-      </header>
+    <div class="user_frame">
+      <div class="top_frame">
+      <a class="main_page" id="main_page" href="#">首頁</a>
+          <span class="setting_title">個人資料</span>
+      </div>
       <main class="profile-inner">
         <section class="frame-parent5">
           <div class="pxl-20210309-203454756-1-parent">
@@ -145,4 +145,12 @@
       </main>
     </div>
   </body>
+  <script>
+    var main_page = document.getElementById("main_page");
+      if (main_page) {
+        main_page.addEventListener("click", function (e) {
+          window.location.href = "{{ url_for('chat.main_page') }}";
+        });
+      }
+</script>
 </html>

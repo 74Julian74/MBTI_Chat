@@ -8,17 +8,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-room.css') }}">
 </head>
 <body>
+    <div class="main-page"></div>
+        <!-- 頁首部分，包含導航欄 -->
+        <header class="frame">
+            <div class="front-page" id="main_page" href="#">
+                <a class="a">首頁</a>
+              </div>
+          <div class="title">
+            <a class="b">MBTI情感分析助手</a>
+          </div>
+          <div class="parent2">
+            <a class="a1" id="text1" href="#">設定</a>
+            <a class="a2" id="text2" href="#">MBTI測驗</a>
+            <a class="a3" id="text3" href="#">聊天室</a>
+            <a class="a4" id="text4" href="#">好友列表</a>
+          </div>
+        </header>
+    
     <div id="chat-container">
         <div id="sidebar">
-          <input type="text" id="search-friend" placeholder="搜尋聊天和訊息">
-            <nav>
-                <ul>
-                    <li class="active">全部</li>
-                    <li>好友</li>
-                    <li>群組</li>
-                    <li>社群</li>
-                </ul>
-            </nav>
             <div id="friend-list">
                 <!-- 好友列表將在這裡動態生成 -->
             </div>
@@ -33,9 +41,6 @@
             <div id="message-input-area">
                 <textarea id="message-input" placeholder="輸入訊息..."></textarea>
                 <button id="send-button">發送</button>
-                <img class="mic-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/mic.svg')}}" />
-                <img class="smile-icon" loading="lazy" alt="" src="{{url_for('static', filename='image/smile.svg')}}" />
-                <img class="image-icon1" loading="lazy" alt="" src="{{url_for('static', filename='image/image-1.svg')}}" />
             </div>
         </div>
         <!-- 新增的右邊部分 -->
@@ -53,6 +58,9 @@
                 <label>對方的MBTI為:</label>
                 <span id="person-mbti"></span>
             </div>
+            <div id="mbti-explanation" class="mbti-explanation">
+                <!-- MBTI解釋將在這裡顯示 -->
+            </div>
             
             <button id="emotion-analysis-button">情緒分析</button>
             
@@ -66,13 +74,17 @@
                 </select>
             </div>
 
+            <div class="emotion-reason">
+                情緒原因: <span id="emotion-reason"></span>
+            </div>
+
             <div class="suggestion">
-                <button id="replyone">建議回應1</button>
-                <textarea id ="suggestion-1"placeholder="輸入建議回應1"></textarea>
+                <button id="replyone">使用此建議</button>
+                <textarea id ="suggestion-1" readonly></textarea>
             </div>
             <div class="suggestion">
-                <button id="relpytwo">建議回應2</button>
-                <textarea id= "suggestion-2"placeholder="輸入建議回應2"></textarea>
+                <button id="relpytwo">使用此建議</button>
+                <textarea id= "suggestion-2" readonly></textarea>
             </div>
             <p id="analysis-error"></p>
         </div>
@@ -80,5 +92,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/emotionAnalysis.js') }}"></script>
+    <script>
+        // 設定按鈕
+        var text1 = document.getElementById("text1");
+        if (text1) {
+          text1.addEventListener("click", function (e) {
+            window.location.href = "{{ url_for('setting') }}";
+          });
+        }
+  
+        // MBTI測驗
+        var text2 = document.getElementById("text2");
+        if (text2) {
+          text2.addEventListener("click", function (e) {
+            window.open(
+              "https://www.16personalities.com/tw/%E6%80%A7%E6%A0%BC%E6%B8%AC%E8%A9%A6",
+              "_blank"
+            );
+          });
+        }
+  
+        // 聊天室
+        var text3 = document.getElementById("text3");
+        if (text3) {
+          text3.addEventListener("click", function (e) {
+            window.location.href = "{{ url_for('chat.chat_room') }}";
+          });
+        }
+        // 好友列表
+        var text4 = document.getElementById("text4");
+        if (text4) {
+          text4.addEventListener("click", function (e) {
+                window.location.href = "{{ url_for('friend_list') }}";
+              });
+            }
+            var main_page = document.getElementById("main_page");
+          if (main_page) {
+            main_page.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('chat.main_page') }}";
+            });
+          }
+    
+      </script>
 </body>
 </html>
