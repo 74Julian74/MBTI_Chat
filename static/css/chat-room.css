@@ -196,6 +196,7 @@ nav ul li.active {
     border-radius: 4px;
     cursor: pointer;
 }
+
 .message {
     margin-bottom: 10px;
     max-width: 70%;
@@ -224,6 +225,15 @@ nav ul li.active {
     align-items: flex-start;
 }
 
+.bubble-wrapper {
+    display: flex;
+    align-items: flex-end;
+}
+
+.message.sent .bubble-wrapper {
+    flex-direction: row-reverse;
+}
+
 .message-bubble {
     padding: 10px;
     border-radius: 20px;
@@ -239,10 +249,25 @@ nav ul li.active {
     background-color: #f1f0f0;
 }
 
+.read-status {
+    font-size: 0.7em;
+    color: #888;
+    align-self: flex-end;
+    margin-bottom: 2px;
+}
+
 .message-time {
     font-size: 0.8em;
     color: #888;
-    margin: 0 8px;
+    margin-top: 2px;
+}
+
+.message.sent .message-time {
+    align-self: flex-end;
+}
+
+.message.received .message-time {
+    align-self: flex-start;
 }
 
 #message-list {
@@ -300,6 +325,7 @@ nav ul li.active {
     background-color: #fff;
     border-left: 1px solid #ddd;
     padding: 20px;
+    overflow-y: auto;
 }
 
 #analysis-section h3 {

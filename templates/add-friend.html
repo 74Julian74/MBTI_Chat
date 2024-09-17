@@ -167,12 +167,16 @@
         const id = document.getElementById('searchId').value.trim();
         const username = document.getElementById('searchUsername').value.trim();
 
-        if (!id || !username) {
-            alert('請同時輸入ID和用戶名');
+        if (!id && !username) {
+            alert('请至少输入ID或用户名中的一个');
             return;
         }
 
-        console.log(`正在搜索好友 - ID: ${id}, 用户名: ${username}`);
+        console.log(`正在搜索好友 - ID: ${id || '未提供'}, 用户名: ${username || '未提供'}`);
+
+        const searchParams = new URLSearchParams();
+        if (id) searchParams.append('search_id', id);
+        if (username) searchParams.append('search_username', username);
 
         fetch('/search_friend', {
             method: 'POST',
@@ -180,7 +184,7 @@
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': getCsrfToken()
             },
-            body: `search_id=${encodeURIComponent(id)}&search_username=${encodeURIComponent(username)}`
+            body: searchParams.toString()
         })
         .then(response => {
             if (!response.ok) {
@@ -200,7 +204,7 @@
                         <img src="/uploads/${user.profile_picture}" alt="头像" onerror="this.src='/static/default_avatar.png'">
                         <span>ID: ${user.id}</span>
                         <span>用户名: ${user.username}</span>
-                        <button onclick="sendFriendRequest(${user.id})">發送好友請求</button>
+                        <button onclick="sendFriendRequest(${user.id})">发送好友请求</button>
                     `;
                     resultsDiv.appendChild(userCard);
                 });
@@ -209,8 +213,8 @@
             }
         })
         .catch(error => {
-            console.error('搜索出錯:', error);
-            alert('搜索時出錯: ' + error.message);
+            console.error('搜索出错:', error);
+            alert('搜索时出错: ' + error.message);
         });
     }
 

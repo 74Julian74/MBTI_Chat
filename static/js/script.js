@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let userIdPromise= null;
 
     const userInfoMap = new Map();
+    const userInfoCache = new Map();
+    const displayedMessageIds = new Set();
     
     // Socket.IO 設置
     const socket = io();
@@ -66,20 +68,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 friends.forEach(friend => {
                     const friendElement = document.createElement('div');
                     friendElement.className = 'friend-item';
-                    // 生成 GroupID
                     const groupId = `${Math.min(currentUserId, friend.id)}_${Math.max(currentUserId, friend.id)}`;
                     friendElement.dataset.id = groupId;
+    
+                    // 確認是否有頭像，否則使用默認頭像
+                    const avatarUrl = friend.profile_picture ? `/uploads/${friend.profile_picture}` : '/static/image/default-avatar.png';
+    
                     friendElement.innerHTML = `
-                        <img src="/uploads/${friend.profile_picture}" alt="${friend.username}" class="friend-avatar">
+                        <img src="${avatarUrl}" alt="${friend.username}" class="friend-avatar">
                         <div class="friend-info">
                             <div class="friend-name">${friend.username}</div>
                         </div>
                     `;
                     friendList.appendChild(friendElement);
+    
                     // 將用戶信息添加到映射中
                     userInfoMap.set(friend.id.toString(), {
                         username: friend.username,
-                        avatarUrl: `/uploads/${friend.profile_picture}`
+                        avatarUrl: avatarUrl
                     });
                 });
     
@@ -94,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error loading friend list:', error));
     }
+    
     
     function createOrSwitchChat(groupId, friendName) {
         // 首先嘗試切換到現有聊天
@@ -156,7 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchRoom(groupId, name) {
         currentGroupId = groupId;
         chatTitle.textContent = name;
-        loadMessages(groupId);
+        loadMessages(groupId).then(() => {
+            markAllMessagesAsRead(groupId);
+            updateReadStatus(groupId);
+        });
         // 更新分析部分的名称
         document.getElementById('person-name').textContent = name;
         // 清空分析内容
@@ -181,15 +191,103 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadMessages(groupId) {
-        fetch(`/get_recent_messages/${groupId}`)
-            .then(response => response.json())
+        return fetch(`/get_recent_messages/${groupId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(messages => {
                 messageList.innerHTML = '';
                 displayedMessageIds.clear();  // 清空已顯示消息的集合
                 messages.forEach(displayMessage);
+                return messages;  // 返回消息數組，以便後續處理
             })
-            .catch(error => console.error('Error loading messages:', error));
+            .catch(error => {
+                console.error('Error loading messages:', error);
+                throw error;  // 重新拋出錯誤，以便調用者可以捕獲
+            });
     }
+    
+    function updateMessageReadStatus(timestamp) {
+        const messageElements = document.querySelectorAll(`.message[data-timestamp="${timestamp}"]`);
+        messageElements.forEach(element => {
+            element.classList.add('read');
+            const readStatusElement = element.querySelector('.read-status');
+            if (readStatusElement) {
+                readStatusElement.textContent = '已讀';
+            }
+        });
+    }
+
+    function updateReadStatus(groupId) {
+        const lastMessage = messageList.lastElementChild;
+        if (lastMessage) {
+            const lastReadTimestamp = lastMessage.dataset.timestamp;
+            fetch('/update_read_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    group_id: groupId,
+                    last_read_timestamp: lastReadTimestamp
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 更新所有未讀消息的狀態
+                    const unreadMessages = document.querySelectorAll('.message.received:not(.read)');
+                    unreadMessages.forEach(msg => {
+                        const timestamp = msg.dataset.timestamp;
+                        if (timestamp <= lastReadTimestamp) {
+                            updateMessageReadStatus(timestamp);
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error updating read status:', error));
+        }
+    }
+
+    function markAllMessagesAsRead(groupId) {
+        const unreadMessages = document.querySelectorAll('.message.received:not(.read)');
+        unreadMessages.forEach(messageElement => {
+            const timestamp = messageElement.dataset.timestamp;
+            markMessageAsRead(groupId, timestamp);
+        });
+    }
+
+    function markMessageAsRead(groupId, messageTimestamp) {
+        //console.log("Marking message as read:", groupId, messageTimestamp);
+        fetch('/mark_as_read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ group_id: groupId, message_timestamp: messageTimestamp })
+        })
+        .then(response => response.json())
+        .then(data => {
+            //console.log("Mark as read response:", data);
+            if (data.status === 'success') {
+                updateMessageReadStatus(messageTimestamp);
+                // 發送 Socket.IO 事件通知其他客戶端
+                socket.emit('message_read', { group_id: groupId, timestamp: messageTimestamp });
+            }
+        })
+        .catch(error => console.error("Error marking message as read:", error));
+    }
+
+    messageList.addEventListener('scroll', () => {
+        if (messageList.scrollTop + messageList.clientHeight >= messageList.scrollHeight - 100) {
+            updateReadStatus(currentGroupId);
+        }
+    });
 
     //function loadMessages(groupId) {
         // 这里应该从服务器加载消息
@@ -214,7 +312,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const message = {
                     sender_id: currentUserId,
                     content: content,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    is_read: false
                 };
 
                 return fetch('/send_message', {
@@ -239,13 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.status === 'success') {
                     messageInput.value = '';
-                    const newMessage = {
-                        sender_id: currentUserId,
-                        content: content,
-                        timestamp: new Date().toISOString()
-                    };
-                    //displayMessage(newMessage);
-                    updateLastMessageTimestamp(newMessage.timestamp);
+                    updateReadStatus(currentGroupId);
                 } else {
                     throw new Error(data.message || '發送消息失敗');
                 }
@@ -310,9 +403,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function pollForNewMessages() {
         if (!currentGroupId) return;
-
+    
         const lastMessageTimestamp = getLastMessageTimestamp();
-
+    
         return fetch(`/get_new_messages/${currentGroupId}?since=${encodeURIComponent(lastMessageTimestamp)}`)
             .then(response => {
                 if (!response.ok) {
@@ -321,7 +414,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(messages => {
-                messages.forEach(displayMessage);
+                let newMessagesReceived = false;
+                messages.forEach(message => {
+                    if (!message.hasOwnProperty('is_read')) {
+                        message.is_read = false;
+                    }
+                    if (!isMessageDisplayed(message)) {
+                        displayMessage(message);
+                        newMessagesReceived = true;
+                        // 如果消息不是由當前用戶發送的，立即標記為已讀
+                        if (message.sender_id !== currentUserId) {
+                            markMessageAsRead(currentGroupId, message.timestamp);
+                        }
+                    }
+                });
+                if (newMessagesReceived) {
+                    // 滾動到最新消息
+                    messageList.scrollTop = messageList.scrollHeight;
+                }
                 if (messages.length > 0) {
                     const lastTimestamp = messages[messages.length - 1].timestamp;
                     updateLastMessageTimestamp(lastTimestamp);
@@ -332,15 +442,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    const displayedMessageIds = new Set();
-
     function isMessageDisplayed(message) {
         const messageId = `${message.sender_id}-${message.timestamp}`;
-        if (displayedMessageIds.has(messageId)) {
-            return true;
-        }
-        displayedMessageIds.add(messageId);
-        return false;
+        return displayedMessageIds.has(messageId);
     }
 
     function getLastMessageTimestamp() {
@@ -367,11 +471,42 @@ document.addEventListener('DOMContentLoaded', () => {
         return lastMessage ? lastMessage.dataset.timestamp : getLocalISOString(new Date(0));
     }
 
+    function getUserInfo(userId) {
+        if (userInfoCache.has(userId)) {
+            return Promise.resolve(userInfoCache.get(userId));
+        }
+    
+        return fetch(`/get_user_info/${userId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user info');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                userInfoCache.set(userId, data);
+                return data;
+            })
+            .catch(error => {
+                console.error('Error fetching user info:', error);
+                return {
+                    username: 'Unknown User',
+                    avatar: '/static/image/default-avatar.png'
+                };
+            });
+    }
+
     let lastMessageDate = null;
     function displayMessage(message) {
+        console.log("Displaying message:", message);
         const messageDate = new Date(message.timestamp).toDateString();
         
+        // 檢查消息是否已經顯示
         if (isMessageDisplayed(message)) {
+            console.log("Message already displayed, skipping:", message);
             return;
         }
     
@@ -389,37 +524,62 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const contentElement = document.createElement('div');
         contentElement.className = 'message-content';
-    
+
         if (message.sender_id !== currentUserId) {
-            const userInfo = userInfoMap.get(message.sender_id.toString());
             const avatarElement = document.createElement('img');
             avatarElement.className = 'sender-avatar';
-            avatarElement.src = userInfo ? userInfo.avatarUrl : '/static/image/default-avatar.png';
-            avatarElement.alt = userInfo ? userInfo.username : 'Unknown User';
+            avatarElement.src = '/static/image/default-avatar.png'; // 默認頭像
             contentElement.appendChild(avatarElement);
     
             const senderNameElement = document.createElement('div');
             senderNameElement.className = 'sender-name';
-            senderNameElement.textContent = userInfo ? userInfo.username : 'Unknown User';
+            senderNameElement.textContent = 'Loading...';
             contentElement.appendChild(senderNameElement);
+    
+            // 異步加載用戶信息
+            getUserInfo(message.sender_id).then(userInfo => {
+                avatarElement.src = userInfo.avatar;
+                avatarElement.alt = userInfo.username;
+                senderNameElement.textContent = userInfo.username;
+            });
         }
-        
+
+        const bubbleWrapper = document.createElement('div');
+        bubbleWrapper.className = 'bubble-wrapper';
+
         const bubbleElement = document.createElement('div');
         bubbleElement.className = 'message-bubble';
         bubbleElement.textContent = message.content;
-        contentElement.appendChild(bubbleElement);
-    
+        bubbleWrapper.appendChild(bubbleElement);
+
+        const readStatusElement = document.createElement('span');
+        readStatusElement.className = 'read-status';
+        readStatusElement.textContent = message.is_read ? '已讀' : '';
+        bubbleWrapper.appendChild(readStatusElement);
+
+        contentElement.appendChild(bubbleWrapper);
+
         const timeElement = document.createElement('div');
         timeElement.className = 'message-time';
         const messageTime = new Date(message.timestamp);
         timeElement.textContent = formatTimeOnly(messageTime);
         contentElement.appendChild(timeElement);
+        
     
         messageElement.appendChild(contentElement);
         messageElement.dataset.timestamp = message.timestamp;
         
         messageList.appendChild(messageElement);
         messageList.scrollTop = messageList.scrollHeight;
+
+        // 將消息標記為已顯示
+        const messageId = `${message.sender_id}-${message.timestamp}`;
+        displayedMessageIds.add(messageId);
+    
+        // 如果消息是由當前用戶發送的,且未讀,則設置一個檢查間隔
+        if (message.sender_id === currentUserId && !message.is_read) {
+            setInterval(() => checkMessageStatus(currentGroupId, message.timestamp), 5000);
+        }
     }
 
     // 設置定期輪詢，並添加錯誤處理
@@ -430,6 +590,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 可以在這裡添加重試邏輯或顯示錯誤消息給用戶
             });
         }, 1000);
+    }
+
+    function checkMessageStatus(groupId, messageTimestamp) {
+        fetch(`/check_message_status?group_id=${groupId}&timestamp=${messageTimestamp}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.is_read) {
+                    const messageElement = document.querySelector(`[data-timestamp="${messageTimestamp}"]`);
+                    if (messageElement) {
+                        const readStatusElement = messageElement.querySelector('.read-status');
+                        if (readStatusElement) {
+                            readStatusElement.textContent = '已讀';
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error checking message status:', error);
+            });
     }
 
     function formatTimeOnly(date) {
@@ -458,6 +642,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('load_messages', (messages) => {
         messages.forEach(displayMessage);
+    });
+
+    socket.on('messages_read', (data) => {
+        if (data.group_id === currentGroupId) {
+            data.timestamps.forEach(timestamp => {
+                updateMessageReadStatus(timestamp);
+            });
+        }
+    });
+
+    socket.on('message_read', (data) => {
+        if (data.group_id === currentGroupId) {
+            updateMessageReadStatus(data.timestamp);
+        }
+    });
+    
+    socket.on('new_message', (message) => {
+        console.log("Received new message:", message);
+        if (!message.hasOwnProperty('is_read')) {
+            message.is_read = false;  // 如果新消息沒有 is_read 字段，設置為 false
+        }
+        displayMessage(message);
+        if (message.sender_id !== currentUserId) {
+            markMessageAsRead(currentGroupId, message.timestamp);
+        }
     });
 
     // 事件監聽器

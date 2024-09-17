@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>驗證您的電子郵件</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verify-email.css') }}">
+</head>
+<body>
+    <h1>驗證</h1>
+    <form id="register-form" method="POST">
+        <button type="button" id="register-button">註冊</button>
+    </form>
+
+    <!-- 驗證碼輸入彈窗 -->
+    <div id="verification-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" data-modal="verification-modal">&times;</span>
+            <h1>驗證您的電子郵件</h1>
+            <form id="verification-form" method="POST" action="{{ url_for('auth.verify_email') }}">
+                <label for="verification_code">請輸入您收到的驗證碼:</label>
+                <input type="text" id="verification_code" name="verification_code" required>
+                <button type="submit">提交</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 註冊成功彈窗 -->
+    <div id="success-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" data-modal="success-modal">&times;</span>
+            <h1>註冊成功</h1>
+            <p id="success-message"></p>
+            <button id="confirm-button">確定</button>
+        </div>
+    </div>
+
+    <!-- 註冊失敗彈窗 -->
+    <div id="error-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" data-modal="error-modal">&times;</span>
+            <h1>錯誤</h1>
+            <p id="error-message"></p>
+            <button id="error-confirm-button">確定</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const verificationModal = document.getElementById('verification-modal');
+        const successModal = document.getElementById('success-modal');  // 正確引用 success modal
+        const errorModal = document.getElementById('error-modal');
+
+        function openModal(modal) {  // 接收的是元素本身
+            modal.style.display = 'block';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        // 打開註冊按鈕的彈出窗口
+        document.getElementById('register-button').addEventListener('click', function() {
+            openModal(verificationModal);  // 打開驗證碼輸入窗口
+        });
+
+        // 關閉彈出窗口
+        document.querySelectorAll('.close').forEach(function(closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                closeModal(this.closest('.modal'));
+            });
+        });
+
+        // 驗證碼表單提交處理
+        document.getElementById('verification-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const verificationCode = document.getElementById('verification_code').value;
+            const formData = new FormData();
+            formData.append('verification_code', verificationCode);
+
+            fetch('/auth/verify-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'verification_code': verificationCode
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    openModal(successModal);
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('auth.login_page') }}";
+                    }, 5000);
+                } else {
+                    document.getElementById('error-message').innerText = data.message;
+                    openModal(errorModal);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("發生錯誤，請稍後再試。");
+            });
+        });
+
+        // 成功彈窗的確定按鈕
+        document.getElementById('confirm-button').addEventListener('click', function() {
+            closeModal(successModal);
+            window.location.href = "{{ url_for('auth.login_page') }}";  // 跳轉到 login_page
+        });
+
+        // 錯誤彈窗的確定按鈕
+        document.getElementById('error-confirm-button').addEventListener('click', function() {
+            closeModal(errorModal);
+        });
+
+        // 點擊模態框外部時關閉
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target);
+            }
+        };
+    });
+    </script>
+</body>
+</html>

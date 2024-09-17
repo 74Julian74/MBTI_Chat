@@ -22,7 +22,8 @@ def save_message_to_cache(group_id, sender_id, content):
     message = {
         'sender_id': sender_id,
         'content': content,
-        'timestamp': datetime.now().isoformat()
+        'timestamp': datetime.now().isoformat(),
+        'is_read': False
     }
     redis_client.lpush(f'chat:{group_id}', json.dumps(message))
     redis_client.ltrim(f'chat:{group_id}', 0, 49)  # 只保留最近50條消息
@@ -51,31 +52,19 @@ def save_to_db(group_id, sender_id, content):
         session.close()
 
 def get_recent_messages(group_id, limit=50):
-    # 先從 Redis 獲取消息
+    # 從 Redis 獲取消息
     redis_messages = redis_client.lrange(f'chat:{group_id}', 0, -1)
-    parsed_messages = [json.loads(message) for message in reversed(redis_messages)]
+    parsed_messages = []
+    for message in reversed(redis_messages):
+        msg_data = json.loads(message)
+        parsed_messages.append({
+            'sender_id': msg_data['sender_id'],
+            'content': msg_data['content'],
+            'timestamp': msg_data['timestamp'],
+            'is_read': msg_data.get('is_read', False)
+        })
     
-    # 如果 Redis 中的消息數量不足，從數據庫補充
-    if len(parsed_messages) < limit:
-        # 獲取 Redis 中最早消息的時間戳
-        earliest_redis_timestamp = parsed_messages[-1]['timestamp'] if parsed_messages else None
-        # 從數據庫獲取剩餘消息，確保不與 Redis 中的消息重複
-        db_messages = get_messages_from_db(group_id, limit - len(parsed_messages), earliest_redis_timestamp)
-        
-        seen_timestamps = set(msg['timestamp'] for msg in parsed_messages)
-
-        parsed_messages = [{
-            'sender_id': json.loads(message)['sender_id'],
-            'content': json.loads(message)['content'],
-            'timestamp': json.loads(message)['timestamp']
-        } for message in reversed(redis_messages)]
-
-        # Sort all messages by timestamp
-        all_messages = sorted(parsed_messages, key=lambda x: x['timestamp'], reverse=False)
-        
-        # 只返回限制數量的消息
-        return all_messages[:limit]
-
+    # 只返回限制數量的消息
     return parsed_messages[:limit]
 
 def get_messages_from_db(group_id, limit, earliest_timestamp=None):
@@ -92,6 +81,18 @@ def get_messages_from_db(group_id, limit, earliest_timestamp=None):
         return []
     finally:
         session.close()
+
+def mark_message_as_read(group_id, message_timestamp):
+    messages = redis_client.lrange(f'chat:{group_id}', 0, -1)
+    updated = False
+    for i, msg_bytes in enumerate(messages):
+        msg = json.loads(msg_bytes)
+        if msg['timestamp'] <= message_timestamp and not msg.get('is_read', False):
+            msg['is_read'] = True
+            redis_client.lset(f'chat:{group_id}', i, json.dumps(msg))
+            updated = True
+    return updated
+
 # 設置 Redis 過期回調
 def setup_redis_expiry_callback():
     def message_expired_callback(key):

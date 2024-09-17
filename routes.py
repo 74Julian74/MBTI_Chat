@@ -11,12 +11,13 @@ from dbmodels import *
 import datetime
 from datetime import datetime
 from flask_wtf.csrf import CSRFProtect
-from redis_utils import save_message_to_cache, get_recent_messages
+from redis_utils import save_message_to_cache, get_recent_messages, mark_message_as_read, redis_client
 from sentiment_analysis import analyze_sentiment
 from flask_socketio import join_room
 from sqlalchemy.exc import SQLAlchemyError
 import uuid
 from sentiment_analysis import get_opponent_user_info
+import json
 
 csrf= CSRFProtect()
 
@@ -83,25 +84,29 @@ def register_routes(app, socketio):
         search_id = request.form.get('search_id')
         search_username = request.form.get('search_username')
 
-        if not search_id or not search_username:
-            return jsonify({'error': '請同時提供ID和用戶名'}), 400
+        if not search_id and not search_username:
+            return jsonify({'error': '請至少提供ID或用戶名中的一個'}), 400
 
-        try:
-            search_id = int(search_id)
-        except ValueError:
-            return jsonify({'error': 'ID必須為數字'}), 400
+        query = UserACC.query
 
-        user = UserACC.query.filter(
-            UserACC.UserID == search_id,
-            UserACC.username == search_username
-        ).first()
+        if search_id:
+            try:
+                search_id = int(search_id)
+                query = query.filter(UserACC.UserID == search_id)
+            except ValueError:
+                return jsonify({'error': 'ID必須為數字'}), 400
 
-        if user:
+        if search_username:
+            query = query.filter(UserACC.username.ilike(f'%{search_username}%'))
+
+        users = query.all()
+
+        if users:
             return jsonify([{
                 'id': user.UserID,
                 'username': user.username,
                 'profile_picture': user.ProfilePicture or 'default.png'
-            }])
+            } for user in users])
         else:
             return jsonify([])
 
@@ -422,17 +427,20 @@ def register_routes(app, socketio):
         content = data['content']
         sender_id = data['sender_id']
 
+        # 創建新消息時包含 is_read 字段
+        new_message = {
+            'sender_id': sender_id,
+            'content': content,
+            'timestamp': datetime.utcnow().isoformat(),
+            'is_read': False  # 新消息初始設置為未讀
+        }
+
         save_message_to_cache(group_id, sender_id, content)
 
         return jsonify({
-        'status': 'success',
-        'message': {
-            'sender_id': sender_id,
-            'sender_name': current_user.username,
-            'content': content,
-            'timestamp': datetime.utcnow().isoformat()
-        }
-    })
+            'status': 'success',
+            'message': new_message
+        })
 
     @app.route('/get_current_user_id')
     @login_required
@@ -447,6 +455,8 @@ def register_routes(app, socketio):
         # 動態添加發送者的用戶名
         for message in messages:
             message['sender_name'] = get_username(message['sender_id'])
+            if 'is_read' not in message:
+                message['is_read'] = False
         
         return jsonify(messages)
     
@@ -501,6 +511,8 @@ def register_routes(app, socketio):
         # 動態添加發送者的用戶名
         for message in new_messages:
             message['sender_name'] = get_username(message['sender_id'])
+            if 'is_read' not in message:
+                message['is_read'] = False
         
         return jsonify(new_messages)
     
@@ -620,5 +632,82 @@ def register_routes(app, socketio):
         except Exception as e:
             db.session.rollback()
             return jsonify({'error': f'添加成員失敗: {str(e)}'}), 500
+        
+    @app.route('/mark_as_read', methods=['POST'])
+    @login_required
+    def mark_as_read():
+        data = request.json
+        group_id = data['group_id']
+        message_timestamp = data['message_timestamp']
+        
+        updated = mark_message_as_read(group_id, message_timestamp)
+        
+        if updated:
+            # 立即发送 Socket.IO 事件
+            socketio.emit('message_read', {
+                'group_id': group_id,
+                'timestamp': message_timestamp,
+                'reader_id': current_user.UserID
+            }, room=group_id)
+    
+        return jsonify({'status': 'success', 'updated': updated})
+    
+    @app.route('/check_message_status', methods=['GET'])
+    def check_message_status():
+        group_id = request.args.get('group_id')
+        timestamp = request.args.get('timestamp')
+        
+        # 從 Redis 中獲取消息
+        messages = redis_client.lrange(f'chat:{group_id}', 0, -1)
+        for msg_bytes in messages:
+            msg = json.loads(msg_bytes)
+            if msg['timestamp'] == timestamp:
+                return jsonify({'is_read': msg.get('is_read', False)})
+        
+        return jsonify({'is_read': False})
+    
+    @app.route('/update_read_status', methods=['POST'])
+    @login_required
+    def update_read_status():
+        data = request.json
+        group_id = data.get('group_id')
+        last_read_timestamp = data.get('last_read_timestamp')
+        
+        if not group_id or not last_read_timestamp:
+            return jsonify({'error': 'Missing required parameters'}), 400
+        
+        try:
+            messages = get_recent_messages(group_id)
+            updated_messages = []
+            for message in messages:
+                if message['timestamp'] <= last_read_timestamp and message['sender_id'] != current_user.UserID:
+                    mark_message_as_read(group_id, message['timestamp'])
+                    updated_messages.append(message['timestamp'])
+            
+            # 發送 Socket.IO 事件通知所有客戶端更新已讀狀態
+            socketio.emit('messages_read', {'group_id': group_id, 'timestamps': updated_messages}, room=group_id)
+            
+            return jsonify({'status': 'success', 'updated_messages': updated_messages}), 200
+        except Exception as e:
+            app.logger.error(f"Error updating read status: {str(e)}")
+            return jsonify({'error': 'Failed to update read status'}), 500
+    
+    @app.route('/get_user_avatar/<int:user_id>')
+    def get_user_avatar(user_id):
+        user = UserACC.query.get(user_id)
+        if user and user.ProfilePicture:
+            return jsonify({'avatar_url': f"/uploads/{user.ProfilePicture}"})
+        return jsonify({'avatar_url': '/static/image/default-avatar.png'})
+    
+    @app.route('/get_user_info/<int:user_id>')
+    def get_user_info(user_id):
+        user = UserACC.query.get(user_id)
+        if user:
+            return jsonify({
+                'id': user.UserID,
+                'username': user.username,
+                'avatar': f"/uploads/{user.ProfilePicture}" if user.ProfilePicture else "/static/image/default-avatar.png"
+            })
+        return jsonify({'error': 'User not found'}), 404
     
     return app

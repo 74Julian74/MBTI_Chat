@@ -1,54 +1,58 @@
 {% extends "bootstrap4/base.html" %}
 {% block title %}註冊{% endblock %}
+
 {% block styles %}
-    {{super()}}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
+
 {% block content %}
 <div class="BG-group">
-        <img
-          class="BG-icon1"
-          loading="lazy"
-          alt=""
-          src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
-        />
+    <img
+      class="BG-icon1"
+      loading="lazy"
+      alt=""
+      src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
+    />
     <div class="register-container">
         <h1>註冊</h1>
         <div class="register-form">
-            <h2>Sign in</h2>
-            <form method="POST" action="{{ url_for('auth.register') }}">
-                {{ form.hidden_tag() }}
+            <h2>Sign up</h2>
+            <form method="POST" action="{{ url_for('auth.register') }}" id="register-form">
                 <div class="form-group">
                     {{ form.email.label(class="form-label") }}
-                    {{ form.email(class="form-input", placeholder="Email") }}
+                    {{ form.email(class="form-input", placeholder="Email", autocomplete="email") }}
                 </div>
                 <div class="form-group">
                     {{ form.password.label(class="form-label") }}
-                    {{ form.password(class="form-input", placeholder="密碼") }}
+                    {{ form.password(class="form-input", placeholder="密碼", autocomplete="new-password") }}
                 </div>
                 <div class="form-group">
                     {{ form.password2.label(class="form-label") }}
-                    {{ form.password2(class="form-input", placeholder="確認密碼") }}
+                    {{ form.password2(class="form-input", placeholder="確認密碼", autocomplete="new-password") }}
                 </div>
                 {{ form.submit(class="submit-button") }}
             </form>
         </div>
     </div>
 </div>
+
+<div id="verification-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+      <h2>驗證您的電子郵件</h2>
+      <p>請輸入您收到的驗證碼：</p>
+      <input type="text" id="verification-code">
+      <button onclick="submitVerificationCode()">提交</button>
+      <p>驗證碼將在 <span id="countdown">10:00</span> 後過期</p>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-{{super()}}
-<script>
-  var registerBackground = document.getElementById("registerBackground");
-  if (registerBackground) {
-    registerBackground.addEventListener("click", function (e) {
-      window.location.href = "{{ url_for('auth.login_page') }}";
-    });
-  }
-</script>
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <script>
+        // 將 CSRF 令牌作為全局變量
+        var csrfToken = "{{ csrf_token() }}";
+    </script>
 {% endblock %}
-
-
-
-
