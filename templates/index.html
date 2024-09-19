@@ -1,53 +1,185 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1, width=device-width" />
-  <title>情感分析聊天對話助手</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:ital,wght@1,700&display=swap"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&display=swap"/>
+    <title>情感分析聊天對話助手</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="initial-scale=1, width=device-width"/>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"/>
+
 </head>
 <body>
-  <div class="header">
-    <div class="header-title">情感分析聊天對話助手</div>
-    <button class="header-login-button" id="headerLoginButton">登入</button>
-  </div>
-  <div class="home">
-    <div class="home-inner">
-      <div class="e355dc75c2e90373cb295-hero20v-parent">
-        <img
-          class="e355dc75c2e90373cb295-hero20v-icon"
-          loading="lazy"
-          alt=""
-          src="{{ url_for('static', filename='image/627e355dc75c2e90373cb295-hero20visualp1600png@2x.png') }}"
-        />
-        <section class="frame-wrapper">
-          <div class="frame-parent">
-            <div class="figtext-wrapper">
+<header class="header">
+    <div class="header-inner">
+        <h1 class="title">情感分析聊天對話助手</h1>
+        <div class="right-container">
+            <nav class="nav-menu">
+                <a href="#home">首頁</a>
+                <a href="#introduction">網站介紹</a>
+                <a href="#team">開發團隊</a>
+                <a href="#contact">聯繫我們</a>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginButtonContainer">登入</button>
+                <button id="registerButtonContainer">註冊</button>
             </div>
-            <div class="description-container">
-              我們的平台旨在結合MBTI人格類型理論和先進的情感分析技術，為用戶提供個性化的支持和交流體驗。
-            </div>
-
-          </div>
-        </section>
-      </div>
+        </div>
     </div>
-    <img
-      class="home-child"
-      loading="lazy"
-      alt=""
-      src="{{url_for('static', filename='image/group-2077.svg')}}"
-    />
-  </div>
-  <script>
-    document.getElementById("headerLoginButton").addEventListener("click", function() {
-      window.location.href = "{{ url_for('login_page') }}";
+</header>
+<main class="content">
+    <section id="home" class="home">
+        <div class="home-inner">
+            <img
+                    class="center-image"
+                    loading="lazy"
+                    alt="MBTI"
+                    src="{{ url_for('static', filename='image/main.png') }}"
+            />
+            <div class="description">
+                <h2>歡迎來到情感分析聊天對話助手!</h2>
+                <p>
+                    發掘對話背後的情感真相，提升你的交流智慧！我們將對話紀內容進行MBTI人格分析，幫助你了解對方的情緒表達，並提供最合適的回應建議。</p>
+            </div>
+        </div>
+        <img
+                class="left-image"
+                loading="lazy"
+                alt="index1"
+                src="{{ url_for('static', filename='image/index1.png') }}"
+        />
+        <img
+                class="right-image"
+                loading="lazy"
+                alt="index2"
+                src="{{ url_for('static', filename='image/index2.png') }}"
+        />
+    </section>
+
+    <section id="introduction" class="introduction">
+        <h2>網站介紹</h2>
+        <div class="intro-content">
+            <div class="intro-item">
+                <div class="bubble-container">
+                    <img
+                            class="bubble"
+                            loading="lazy"
+                            alt="bubble"
+                            src="{{ url_for('static', filename='image/bubble.png') }}"
+                    />
+                    <div class="text-overlay">
+                        <h3>簡介</h3>
+                        <p>
+                            情感分析聊天對話助手是一個先進的對話分析平台，致力於利用MBTI人格理論解析對話中的情感表達。我們的目標是幫助使用者更加清楚地了解對方的情緒和個性特徵，從而改善交流效果，促進更有效的溝通。我們提供的工具和建議，將讓每一次對話都更具意義和深度。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="intro-item">
+                <div class="bubble-container">
+                    <img
+                            class="bubble"
+                            loading="lazy"
+                            alt="bubble"
+                            src="{{ url_for('static', filename='image/bubble.png') }}"
+                    />
+                    <div class="text-overlay">
+                        <h3>功能</h3>
+                        <p>對話紀錄分析：
+                            透過MBTI人格理論分析雙方的聊天內容，對對方的情緒表達進行精確解讀，提供詳細的情感分析報告。</p>
+                        <p>建議回應選擇：
+                            根據情感分析結果，系統將給予多種希望回覆情緒供用戶選擇，進而推薦適合的回覆。</p>
+                        <p>公共交誼廳：
+                            提供一個交流平台，讓所有使用者可以在這裡進行互動，分享經驗，討論話題，增進彼此了解。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="intro-item">
+                <div class="bubble-container">
+                    <img
+                            class="bubble"
+                            loading="lazy"
+                            alt="bubble"
+                            src="{{ url_for('static', filename='image/bubble.png') }}"
+                    />
+                    <div class="text-overlay">
+                        <h3>特色</h3>
+                        <p>基於MBTI的人格分析：
+                            利用MBTI理論對對話進行深入分析，提供對方情感狀態的全面了解，讓你在交流中能夠更具洞察力。</p>
+                        <p>智慧回應建議：
+                            系統智能生成的回應建議，幫助使用者在對話中更好地控制情感表達，做出適合的反應。</p>
+                        <p>直觀易用的介面：
+                            簡潔明瞭的使用介面設計，讓使用者能夠輕鬆操作，迅速獲得所需的情感分析與建議。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="team">
+        <h2>開發團隊</h2>
+        <div class="team-members">
+            <div class="team-member-top">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 1">
+                <h3>謝程安</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-top">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 2">
+                <h3>陳俊諺</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-top">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 3">
+                <h3>陳俊劭</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-top">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 4">
+                <h3>張櫻珊</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-bottom">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 5">
+                <h3>李嘉馨</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-bottom">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 6">
+                <h3>郭奕漢</h3>
+                <p>淡江大學資管系</p>
+            </div>
+            <div class="team-member-bottom">
+                <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 7">
+                <h3>張珈豪</h3>
+                <p>淡江大學資管系</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>聯繫我們</h2>
+        <div class="contact-info">
+            <img src="{{ url_for('static', filename='image/chat1.png') }}" alt="Contact us">
+            <div>
+                <p>電話: (02)0240921</p>
+                <p>電子郵件: sentimentanalysischat@gmail.com</p>
+                <p>地址: 新北市淡水區英專路151號</p>
+            </div>
+        </div>
+    </section>
+</main>
+<footer class="footer">
+    <p>@copyright D2 Enterprise. All Rights Reserved.</p>
+</footer>
+
+<script>
+    document.getElementById("loginButtonContainer").addEventListener("click", function () {
+        window.location.href = "{{ url_for('auth.login_page') }}";
     });
-  </script>
+    document.getElementById("registerButtonContainer").addEventListener("click", function () {
+        window.location.href = "{{ url_for('auth.register') }}";
+    });
+</script>
 </body>
 </html>
