@@ -1,0 +1,316 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans TC', sans-serif;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2vw; /* 使用相對單位，讓字體隨螢幕大小自適應 */
+    margin: 3vh 0; /* 可以調整上下的間距 */
+    color: #333;
+}
+
+p {
+    text-align: center;
+    font-size: 1.3vw; /* 使用相對單位讓字體大小自適應 */
+    margin: 3vh 0; /* 上下間距，根據需要調整 */
+    line-height: 1.5; /* 調整行間距，讓文字更易讀 */
+    max-width: 600px; /* 限制段落的最大寬度 */
+}
+
+.header {
+    background-color: #d3d3d3;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between; /* 左右分散排列 */
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #666;
+}
+
+.right-container {
+    display: flex;
+    align-items: center;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    margin-right: 15px; /* 調整導航欄與按鈕之間的間距 */
+}
+
+.nav-menu a {
+    margin-left: 15px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #666;
+}
+
+.nav-menu a:hover {
+    color: #333;
+}
+
+.auth-buttons button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.auth-buttons button:hover {
+    background-color: #ddd;
+}
+
+.home {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--palette-white);
+    padding: 5vh 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90vw;
+    max-width: 1200px; /* 讓內容在大螢幕上有最大寬度限制 */
+    padding-top: 80px; /* 增加頂部內邊距，確保內容不被頂部欄遮擋 */
+}
+
+.center-image {
+    width: 80%;
+    max-width: 600px;
+    margin-bottom: 20px;
+    margin-top: 20px; /* 添加頂部邊距 */
+}
+
+.description {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.left-image, .right-image {
+    position: absolute;
+    bottom: 0;
+    width: 25%;
+}
+
+.left-image {
+    left: 0;
+}
+
+.right-image {
+    right: 0;
+}
+
+/* 圖片和文字容器 */
+.bubble-container {
+    position: relative;
+    width: 100%;
+    max-width: 410px;
+    text-align: center;
+    margin: 10px auto;
+}
+
+/* 使圖片適應容器大小 */
+.bubble {
+    width: 100%;
+    max-width: 410px; /* 根據需求調整最大寬度 */
+    height: auto;
+}
+
+/* 文字疊加效果 */
+.text-overlay {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    max-width: 90%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.text-overlay h3 {
+    margin: 0;
+    font-size: 2vw; /* 根據需求調整字體大小 */
+}
+
+.text-overlay p {
+    margin: 5px 0 0;
+    font-size: 1.2vw; /* 根據需求調整字體大小 */
+    padding: 0 10px;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    font-size: 12px;
+}
+
+.footer p {
+    text-align: center;
+    margin: 0;
+}
+
+.introduction, .team, .contact {
+    padding: 40px 0;
+}
+
+.intro-content, .team-members {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.intro-item, .team-member-top, .team-member-bottom {
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.team-member-top {
+    width: 22%; /* 调整为适应四个团队成员的宽度 */
+    min-width: 200px;
+    margin: 10px;
+}
+
+.team-member-bottom {
+    width: 30%;
+    min-width: 200px;
+    margin: 10px;
+}
+
+.team-member-top img, .team-member-bottom img {
+    width: 100%;
+    max-width: 120px;
+    border-radius: 50%;
+}
+
+.contact-info {
+    display: flex;
+    justify-content: center; /* 讓整體居中 */
+    align-items: center;
+    width: 100%; /* 確保佔滿整個寬度 */
+    text-align: center; /* 讓文本和圖片在行內居中 */
+    margin: 0 auto; /* 保證父容器的內容可以在頁面居中 */
+}
+
+.contact-info img {
+    width: 30%;
+    max-width: 300px;
+    margin-right: 30px;
+}
+
+@media screen and (max-width: 750px) {
+    .header-inner {
+        flex-direction: column;
+    }
+
+    .nav-menu, .auth-buttons {
+        margin-top: 10px;
+    }
+
+    h2 {
+        font-size: 4vw;
+    }
+
+    p {
+        font-size: 3vw;
+    }
+
+    .text-overlay h3 {
+        font-size: 4vw;
+    }
+
+    .text-overlay p {
+        font-size: 3vw;
+    }
+
+    .bubble {
+        max-width: 150px;
+    }
+
+    .intro-item, .team-member-top, .team-member-bottom {
+        width: 100%;
+    }
+
+    .contact-info {
+        flex-direction: column;
+    }
+
+    .contact-info img {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .div {
+        font-size: 5vw;
+    }
+
+    .div1 {
+        font-size: 4vw;
+    }
+
+    .login-button-container, .register-button-container {
+        padding: 5vw;
+    }
+
+    .left-image, .right-image {
+        width: 15vw; /* 在小螢幕上，圖片比例調整 */
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .div {
+        font-size: 6vw;
+    }
+
+    .div1 {
+        font-size: 5vw;
+    }
+
+    .login-button-container, .register-button-container {
+        padding: 8vw;
+    }
+
+    .left-image, .right-image {
+        width: 18vw; /* 在非常小的螢幕上，圖片比例調整 */
+    }
+
+    .team-member-top, .team-member-bottom {
+        width: 100%; /* 在更小的屏幕上，每个成员占满一整行 */
+    }
+}
