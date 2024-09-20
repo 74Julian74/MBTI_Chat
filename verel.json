@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py", //須視情況修改正確路徑與檔名
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py" //須視情況修改正確路徑與檔名
+    }
+  ]
+}
