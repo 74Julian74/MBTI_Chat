@@ -58,16 +58,10 @@
     </section>
 
     <section id="introduction" class="introduction">
-        <h2>網站介紹</h2>
+        <h2>網站介紹 INTRODUCION</h2>
         <div class="intro-content">
             <div class="intro-item">
                 <div class="bubble-container">
-                    <img
-                            class="bubble"
-                            loading="lazy"
-                            alt="bubble"
-                            src="{{ url_for('static', filename='image/bubble.png') }}"
-                    />
                     <div class="text-overlay">
                         <h3>簡介</h3>
                         <p>
@@ -77,12 +71,6 @@
             </div>
             <div class="intro-item">
                 <div class="bubble-container">
-                    <img
-                            class="bubble"
-                            loading="lazy"
-                            alt="bubble"
-                            src="{{ url_for('static', filename='image/bubble.png') }}"
-                    />
                     <div class="text-overlay">
                         <h3>功能</h3>
                         <p>對話紀錄分析：
@@ -96,12 +84,6 @@
             </div>
             <div class="intro-item">
                 <div class="bubble-container">
-                    <img
-                            class="bubble"
-                            loading="lazy"
-                            alt="bubble"
-                            src="{{ url_for('static', filename='image/bubble.png') }}"
-                    />
                     <div class="text-overlay">
                         <h3>特色</h3>
                         <p>基於MBTI的人格分析：
@@ -109,7 +91,7 @@
                         <p>智慧回應建議：
                             系統智能生成的回應建議，幫助使用者在對話中更好地控制情感表達，做出適合的反應。</p>
                         <p>直觀易用的介面：
-                            簡潔明瞭的使用介面設計，讓使用者能夠輕鬆操作，迅速獲得所需的情感分析與建議。</p>
+                            簡潔明瞭的使用介面設計，讓使用者能輕鬆操作，迅速獲得所需的情感分析與建議。</p>
                     </div>
                 </div>
             </div>
@@ -117,7 +99,7 @@
     </section>
 
     <section id="team" class="team">
-        <h2>開發團隊</h2>
+        <h2>開發團隊 TEAMS</h2>
         <div class="team-members">
             <div class="team-member-top">
                 <img src="{{ url_for('static', filename='image/dog.jpg') }}" alt="Team member 1">
@@ -158,10 +140,15 @@
     </section>
 
     <section id="contact" class="contact">
-        <h2>聯繫我們</h2>
+        <h2>聯繫我們 CONTACT US</h2>
         <div class="contact-info">
             <img src="{{ url_for('static', filename='image/chat1.png') }}" alt="Contact us">
             <div>
+                <h3>常見問題</h3>
+                <p>1.註冊時若沒收到電子郵件，可能是Gmail系統擋信所致，可到垃圾信件匣查看喔!</p>
+                <p>2.有時郵箱服務提供商會遇到短暫的郵件延遲，請稍候幾分鐘再檢查。</p>
+                <p>---------------------------------------------------------------------</p>
+                <h3>聯絡方式</h3>
                 <p>電話: (02)0240921</p>
                 <p>電子郵件: sentimentanalysischat@gmail.com</p>
                 <p>地址: 新北市淡水區英專路151號</p>
@@ -169,9 +156,6 @@
         </div>
     </section>
 </main>
-<footer class="footer">
-    <p>@copyright D2 Enterprise. All Rights Reserved.</p>
-</footer>
 
 <script>
     document.getElementById("loginButtonContainer").addEventListener("click", function () {
