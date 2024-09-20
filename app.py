@@ -117,3 +117,5 @@ if __name__=="__main__":  # 如果以主程式執行
     with app.app_context():
         db.create_all()
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True) # 立刻啟動伺服器
+
+export default app;
