@@ -1,15 +1,20 @@
+# requirements.txt
+flask
+openai
+
+# vercel.json
 {
   "version": 2,
   "builds": [
     {
-      "src": "app.py", //須視情況修改正確路徑與檔名
-      "use": "@vercel/node"
+      "src": "app.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app.py" //須視情況修改正確路徑與檔名
+      "dest": "app.py"
     }
   ]
 }
