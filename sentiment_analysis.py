@@ -5,12 +5,14 @@ from redis_utils import get_recent_messages
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from typing import List
 from langchain.output_parsers import PydanticOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
+#from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from dbmodels import db, UserACC, UserMSG
 from openai_client import get_chat_completion
 import logging
 from flask import current_app
+from pydantic import BaseModel, Field
+
 
 logger = logging.getLogger(__name__)
 
@@ -48,23 +50,40 @@ def get_user_info(user_id):
 
 def get_opponent_user_info(group_id, my_user_id):
     try:
-        opponent = UserMSG.query.filter(
-            UserMSG.GroupID == group_id, 
-            UserMSG.SenderID != my_user_id
-        ).order_by(UserMSG.TimeStamp.desc()).first()
+        # 處理交誼廳的情況
+        if group_id == 'default_group':
+            return {
+                'id': 'default_group',
+                'name': '交誼廳',
+                'mbti': 'Unknown'
+            }
+            
+        # 從群組ID解析用戶ID
+        user_ids = group_id.split('_')
+        if len(user_ids) != 2:
+            raise ValueError(f"Invalid group ID format: {group_id}")
 
+        # 找到對手ID
+        opponent_id = int(user_ids[0]) if str(user_ids[0]) != str(my_user_id) else int(user_ids[1])
+        
+        # 直接從 UserACC 表獲取用戶信息
+        opponent = UserACC.query.get(opponent_id)
         if opponent:
-            opponent_user = UserACC.query.get(opponent.SenderID)
-            if opponent_user:
-                return {
-                    'id': opponent_user.UserID,
-                    'name': opponent_user.username,
-                    'mbti': opponent_user.MBTI
-                }
+            return {
+                'id': opponent.UserID,
+                'name': opponent.username,
+                'mbti': opponent.MBTI or 'Unknown'
+            }
+            
     except Exception as e:
         logger.error(f"Error in get_opponent_user_info: {str(e)}", exc_info=True)
-    
-    return None
+
+    # 如果出現任何錯誤，返回默認值
+    return {
+        'id': 'Unknown',
+        'name': 'Unknown',
+        'mbti': 'Unknown'
+    }
 
 mbti_explanations = {
     'E': '外向型 (Extraversion): 從外部世界獲取能量，喜歡社交互動',
