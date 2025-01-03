@@ -51,10 +51,6 @@
                 <span id="person-name"></span>
             </div>
             <div class="emotion-label">
-                <label>對方的情緒為:</label>
-                <span id="person-emotion"></span>
-            </div>
-            <div class="emotion-label">
                 <label>對方的MBTI為:</label>
                 <span id="person-mbti"></span>
             </div>
@@ -62,7 +58,10 @@
                 <!-- MBTI解釋將在這裡顯示 -->
             </div>
             
-            <button id="emotion-analysis-button">情緒分析</button>
+            <div class="analysis-buttons">
+              <button id="emotion-analysis-button">情緒分析</button>
+              <button id="reply-suggestion-button">回復建議</button>
+            </div>
             
             <div class="preference-label">
                 <label>您的回話風格偏好</label>
@@ -74,8 +73,20 @@
                 </select>
             </div>
 
-            <div class="emotion-reason">
-                情緒原因: <span id="emotion-reason"></span>
+            <div class="emotion-analysis-results">
+              <h4>情緒分析結果</h4>
+              <!-- 添加缺失的元素 -->
+              <div class="emotion-item">
+                  <label>當前情緒:</label>
+                  <span id="person-emotion"></span>
+              </div>
+              <div class="emotion-item">
+                  <label>分析原因:</label>
+                  <span id="emotion-reason"></span>
+              </div>
+              <div class="emotion-scores">
+                  <!-- 原有的情緒分數顯示 -->
+              </div>
             </div>
 
             <div class="suggestion">
