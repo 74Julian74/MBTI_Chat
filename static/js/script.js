@@ -499,6 +499,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
+    function handleAvatarClick(userId) {
+        // 確認是否要發送好友請求
+        if (confirm('是否要向此用戶發送好友請求？')) {
+            // 發送好友請求
+            fetch('/send_direct_friend_request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ friend_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('好友請求已發送！');
+                } else {
+                    alert('發送好友請求失敗：' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發送好友請求時出錯');
+            });
+        }
+    }
+
     let lastMessageDate = null;
     function displayMessage(message) {
         console.log("Displaying message:", message);
@@ -525,24 +552,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentElement = document.createElement('div');
         contentElement.className = 'message-content';
 
-        if (message.sender_id !== currentUserId) {
-            const avatarElement = document.createElement('img');
-            avatarElement.className = 'sender-avatar';
-            avatarElement.src = '/static/image/default-avatar.png'; // 默認頭像
-            contentElement.appendChild(avatarElement);
+        const avatarElement = document.createElement('img');
+        avatarElement.className = 'sender-avatar';
+        avatarElement.src = '/static/image/default-avatar.png'; // 默認頭像
+        avatarElement.onclick = () => handleAvatarClick(message.sender_id);
+        contentElement.appendChild(avatarElement);
     
-            const senderNameElement = document.createElement('div');
-            senderNameElement.className = 'sender-name';
-            senderNameElement.textContent = 'Loading...';
-            contentElement.appendChild(senderNameElement);
+        const senderNameElement = document.createElement('div');
+        senderNameElement.className = 'sender-name';
+        senderNameElement.textContent = 'Loading...';
+        contentElement.appendChild(senderNameElement);
     
-            // 異步加載用戶信息
-            getUserInfo(message.sender_id).then(userInfo => {
-                avatarElement.src = userInfo.avatar;
-                avatarElement.alt = userInfo.username;
-                senderNameElement.textContent = userInfo.username;
-            });
-        }
+        // 異步加載用戶信息
+        getUserInfo(message.sender_id).then(userInfo => {
+            avatarElement.src = userInfo.avatar;
+            avatarElement.alt = userInfo.username;
+            senderNameElement.textContent = userInfo.username;
+        });
 
         const bubbleWrapper = document.createElement('div');
         bubbleWrapper.className = 'bubble-wrapper';
@@ -589,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Polling error:', error);
                 // 可以在這裡添加重試邏輯或顯示錯誤消息給用戶
             });
-        }, 1000);
+        }, 5000);
     }
 
     function checkMessageStatus(groupId, messageTimestamp) {
