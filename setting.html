@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}"/>
+        <link rel="icon" href="data:,">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+        <!-- 設定頁面標題 -->
+        <title>Setting</title>
+    </head>
+    <div class="main-page">
+        <!-- 頁首部分，包含導航欄 -->
+        <header class="frame">
+          <div class="front-page" id="main_page" href="#">
+            <a class="a">首頁</a>
+          </div>
+          <div class="setting">
+            <a class="a">MBTI情感分析助手</a>
+          </div>
+
+          <div class="parent2">
+            <a class="a2" id="text2" href="#">MBTI測驗</a>
+            <a class="a3" id="text3" href="#">聊天室</a>
+            <a class="a4" id="text4" href="#">好友列表</a>
+          </div>
+
+        </header>
+
+        <!-- 包含用戶資料和設定選項的主區域 -->
+        <main>
+            <!-- 用戶個人資料區塊 -->
+            <div class="profile-frame">
+                <!-- 用戶頭像 -->
+                <div class="self-photo">
+                    <!-- 判斷用戶是否有個人頭像，如果有則顯示，否則顯示預設頭像 -->
+                    {% if current_user.ProfilePicture %}
+                        <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
+                    {% else %}
+                        <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
+                    {% endif %}
+                    <!-- 編輯頭像的按鈕 -->
+                    <a href="#">
+                        <div class="edit" id="edit">
+                            <img src="{{ url_for('static', filename='image/edit-icon.png') }}" alt="Edit Icon">
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 用戶名和電子郵件 -->
+                <span class="self-name" id="username">{{ current_user.username }}</span>
+                <span class="self-email">{{ current_user.email }}</span>
+            </div>
+
+            <!-- 設定選項的容器 -->
+            <div class="container">
+                <!-- 側邊欄導航選單 -->
+                <nav class="sidebar">
+                    <div class="folding-menu">
+                        <ul>
+                            <!-- 帳號設定主選單 -->
+                            <li class="acc">
+                                <a href="#">
+                                    <img src="{{ url_for('static', filename='image/account-icon.png') }}" alt="Account Icon">
+                                    帳號
+                                    <span class="arrow">▼</span>
+                                </a>
+                                <!-- 帳號相關的子選單 -->
+                                <ul class="acc-options">
+                                    <li><a href="#" class="circle copy-button">帳號 : {{ current_user.email }}<span id="email"></span></a></li>
+                                    <li><a href="#" class="circle copy-button" id="password-change">更改密碼</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- 通知設定主選單 -->
+                            <li class="notification">
+                                <a href="#">
+                                    <img src="{{ url_for('static', filename='image/notification-icon.png') }}" alt="Notification Icon">
+                                    通知
+                                    <span class="arrow">▼</span>
+                                </a>
+                                <!-- 通知相關的子選單 -->
+                                <ul class="notification-options">
+                                    <li class="toggle-option">
+                                        <span class="circle copy-button">選項名稱</span>
+                                        <label class="switch">
+                                            <input type="checkbox">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- 好友列表主選單 -->
+                            <li class="friend-list">
+                                <a href="#" id="friend-list">
+                                    <img src="{{ url_for('static', filename='image/friends-icon.png') }}" alt="Friends Icon">
+                                    好友列表
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
+
+                            <!-- 隱私與安全主選單 -->
+                            <li class="safety">
+                                <a href="javascript:void(0)">
+                                    <img src="{{ url_for('static', filename='image/security-icon.png') }}" alt="Privacy Icon">
+                                    隱私 & 安全
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
+
+                            <!-- 邀請功能主選單 -->
+                            <li class="invite"><a href="#"><i class="icon-invite"></i>邀請<span class="arrow">▼</span></a>
+                            <ul class="invite-options">
+                                <li><a href="javascript:void(0)" class="circle copy-button" id="copyButton" onclick="copyInviteLink()">複製連結</a></li>
+                                <li><a href="javascript:void(0)" class="circle copy-button" id="shareButton" onclick="showSharePopup()">分享</a></li>
+                            </ul>
+                              <div id="sharePopup" class="share-popup" style="display:none;">
+                                <div class="share-content">
+                                    <h3>在貼文中分享</h3>
+                                    <div id="shareMessage"></div>
+                                    <div class="share-icons">
+                                        <button onclick="share('whatsapp')"><img src="/static/image/whatsapp-icon.png" alt="WhatsApp" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('facebook')"><img src="/static/image/facebook.png" alt="Facebook" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('x')"><img src="/static/image/x.jpg" alt="X" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('email')"><img src="/static/image/email.jpg" alt="透過電子郵件分享" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <button onclick="share('kakaotalk')"><img src="/static/image/Kakao.png" alt="KakaoTalk" style="width: 25px; height: 25px; object-fit: cover;"></button>
+                                        <a onclick="closeSharePopup()"  href="javascript:void(0)">關閉</a>
+                                    </div>
+
+                                </div>
+                              </div>
+                            </li>
+                            <!-- 語言設定主選單 -->
+                            <li class="language">
+                                <a href="javascript:void(0)">
+                                    <img src="{{ url_for('static', filename='image/language-icon.png') }}" alt="Language Icon">
+                                    語言
+                                    <span class="arrow">▼</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- 左右角落插畫 -->
+                <img src="{{ url_for('static', filename='image/11.png') }}" alt="Left Image" class="corner_image left_image">
+                <img src="{{ url_for('static', filename='image/18.png') }}" alt="Right Image" class="corner_image right_image">
+            </div>
+        </main>
+    </div>
+    </body>
+</html>
+
+
+
+    <script>
+        var main_page = document.getElementById("main_page");
+          if (main_page) {
+            main_page.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('chat.main_page') }}";
+            });
+          }
+
+          var friend_list = document.getElementById("friend-list");
+          if (friend_list) {
+            friend_list.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('friend_list') }}";
+            });
+          }
+
+          var edit = document.getElementById("edit");
+          if (edit) {
+            edit.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('auth.profile_setting') }}";
+            });
+          }
+            // MBTI測驗
+         var text2 = document.getElementById("text2");
+        if (text2) {
+            text2.addEventListener("click", function (e) {
+              window.open(
+            "https://www.16personalities.com/tw/%E6%80%A7%E6%A0%BC%E6%B8%AC%E8%A9%A6",
+            "_blank"
+          );
+        });
+      }
+
+      // 聊天室
+      var text3 = document.getElementById("text3");
+      if (text3) {
+        text3.addEventListener("click", function (e) {
+          window.location.href = "{{ url_for('chat.chat_room') }}";
+        });
+      }
+      // 好友列表
+      var text4 = document.getElementById("text4");
+      if (text4) {
+        text4.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('friend_list') }}";
+            });
+          }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .acc > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.acc-options > a');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        var password_change = document.getElementById("password-change");
+        if (password_change) {
+            password_change.addEventListener("click", function (e) {
+              window.location.href = "{{ url_for('auth.password_change') }}";
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .invite > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.invite-options');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var menuItems = document.querySelectorAll('.folding-menu .notification > a');
+
+            menuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var parent = this.parentElement;
+                    var submenu = parent.querySelector('.notification-options');
+
+                    parent.classList.toggle('active');
+
+                    // 關閉其他打開的子菜單
+                    menuItems.forEach(function(otherItem) {
+                        if (otherItem !== item) {
+                            otherItem.parentElement.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            // Toggle switches 邏輯
+            $('.toggle-option input[type="checkbox"]').change(function() {
+                var $this = $(this);
+                var optionName = $this.closest('.toggle-option').find('span.circle').text();
+                var isChecked = $this.is(':checked');
+
+                console.log("選項 '" + optionName + "' 已" + (isChecked ? "開啟" : "關閉"));
+
+                // 這裡可以添加您的邏輯，例如發送 AJAX 請求
+                // updateOptionStatus(optionName, isChecked);
+            });
+        });
+
+        function resizeImage(file, maxWidth, maxHeight, callback) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+              let width = img.width;
+              let height = img.height;
+              if (width > height) {
+                if (width > maxWidth) {
+                  height *= maxWidth / width;
+                  width = maxWidth;
+                }
+              } else {
+                if (height > maxHeight) {
+                  width *= maxHeight / height;
+                  height = maxHeight;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+              callback(canvas.toDataURL());
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          fetch('/api/user_info')
+             .then(response => response.json())
+             .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('email').textContent = data.email;
+             })
+             .catch(error => console.error('Error:', error));
+       });
+
+      function copyInviteLink() {
+        const inviteLink = "http://127.0.0.1:5000"; // 替換為您的實際邀請連結
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(inviteLink)
+                .then(() => alert('邀請連結已複製到剪貼板!'))
+                .catch(() => alert('複製失敗，請手動複製。'));
+        } else {
+            const tempInput = document.createElement('input');
+            tempInput.value = inviteLink;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('邀請連結已複製到剪貼板!');
+        }
+    }
+
+    function showSharePopup() {
+    document.getElementById('sharePopup').style.display = 'block';
+    }
+
+    function closeSharePopup() {
+        document.getElementById('sharePopup').style.display = 'none';
+    }
+
+    function share(platform) {
+        var message = "test123";
+        var link = "http://127.0.0.1:5000"; // 替換為實際的邀請連結
+        var shareText = encodeURIComponent(message + " " + link);
+
+        switch(platform) {
+            case 'whatsapp':
+                window.open('https://wa.me/?text=' + shareText);
+                break;
+            case 'facebook':
+                window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link));
+                break;
+            case 'twitter':
+                window.open('https://twitter.com/intent/tweet?text=' + shareText);
+                break;
+            case 'email':
+                window.location.href = 'mailto:?body=' + shareText;
+                break;
+            case 'kakaotalk':
+                // KakaoTalk的分享API可能需要額外設置
+                alert('KakaoTalk分享功能需要整合KakaoTalk SDK');
+                break;
+        }
+        closeSharePopup();
+    }
+      </script>
+    </body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人資料</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-setting.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="#" id="main_page" class="home-link">首頁</a>
+        <h1>個人資料</h1>
+    </header>
+
+    <main role="main">
+        <div class="container">
+            <form method="POST" action="{{ url_for('auth.profile_setting') }}" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                <div class="photo-upload">
+                    <div class="photo-placeholder">
+                        {% if current_user.ProfilePicture %}
+                            <img src="{{ url_for('uploaded_file', filename=current_user.ProfilePicture) }}" alt="Profile Picture">
+                        {% else %}
+                            <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
+                        {% endif %}
+                    </div>
+                    {{ form.profile_picture(class="file-input", style="display: none;") }}
+                    <label for="{{ form.profile_picture.id }}" class="upload-btn">個人照片</label>
+                </div>
+
+                <div class="info-form">
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control") }}
+
+                    <div class="mbti-zodiac-container">
+                        <div class="group1">
+                            {{ form.mbti.label }}
+                            {{ form.mbti(class="form-control") }}
+                        </div>
+
+                        <div class="group1">
+                            {{ form.zodiac.label }}
+                            {{ form.zodiac(class="form-control") }}
+                        </div>
+                    </div>
+
+                    {{ form.gender.label }}
+                    {{ form.gender(class="form-control") }}
+
+                    <a href="https://www.16personalities.com/tw/%E6%80%A7%E6%A0%BC%E6%B8%AC%E8%A9%A6" class="btn">不知道人格特質嗎,點我就對了!!!</a>
+
+                    {{ form.birthday.label }}
+                    {{ form.birthday(class="form-control") }}
+
+                    <div class="form-buttons">
+                        <button type="button" class="cancel-btn" id="cancel">取消更改</button>
+                        {{ form.submit(class="confirm-btn" ,id='confirm') }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+            var main_page = document.getElementById("main_page");
+              if (main_page) {
+                main_page.addEventListener("click", function (e) {
+                  window.location.href = "{{ url_for('chat.main_page') }}";
+                });
+              }
+
+            var cancel = document.getElementById("cancel");
+              if (cancel) {
+                cancel.addEventListener("click", function (e) {
+                  window.location.href = "{{ url_for('setting') }}";
+                });
+              }
+
+            var confirmButton = document.getElementById("confirm");
+            var form = document.querySelector("form");  // 假设按钮在表单内
+
+            if (confirmButton && form) {
+              confirmButton.addEventListener("click", function (e) {
+                //e.preventDefault();  // 阻止默認的提交行為
+
+                // 獲取表單字段
+                var username = document.getElementById("username").value;
+                var mbti = document.getElementById("mbti").value;
+                var zodiac = document.getElementById("zodiac").value;
+                var gender = document.getElementById("gender").value;
+                var birthday = document.getElementById("birthday").value;
+                var profilePicture = document.getElementById("profile_picture").files[0];
+
+                // 驗證邏輯
+                var isValid = true;
+                var errorMessage = "";
+
+                // 驗證用戶名
+                if (username.trim() === "") {
+                  isValid = false;
+                  errorMessage += "請輸入使用者名稱。\n";
+                } else if (username.length > 20) {
+                  isValid = false;
+                  errorMessage += "使用者名稱不應超過20個字符。\n";
+                }
+
+                // 驗證 MBTI
+                if (mbti === "") {
+                  isValid = false;
+                  errorMessage += "請選擇MBTI類型。\n";
+                }
+
+                // 驗證星座
+                if (zodiac === "") {
+                  isValid = false;
+                  errorMessage += "請選擇星座。\n";
+                }
+
+                // 驗證性別
+                if (gender === "") {
+                  isValid = false;
+                  errorMessage += "請選擇性別。\n";
+                }
+
+                // 驗證生日
+                if (birthday === "") {
+                  isValid = false;
+                  errorMessage += "請輸入生日。\n";
+                }
+
+                // 驗證頭像（如果有上傳）
+                if (profilePicture) {
+                  var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                  if (!allowedExtensions.exec(profilePicture.name)) {
+                    isValid = false;
+                    errorMessage += "只允許上傳 jpg 或 png 格式的圖片。\n";
+                  }
+                }
+
+                // 如果驗證通過,提交表單;否則顯示錯誤信息
+                if (isValid) {
+                  form.submit();
+                } else {
+                  alert(errorMessage);
+                }
+              });
+            }
+    </script>
+    </body>
+</html>

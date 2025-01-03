@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sentiment-analysis.css') }}" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <div class="main-page">
+      <!-- 頁首部分，包含導航欄 -->
+      <header class="frame">
+        <div class="front-page" id="main_page" href="#">
+          <a class="a">返回</a>
+        </div>
+        <div class="setting">
+          <a class="a">MBTI情感分析助手</a>
+        </div>
+      </header>
+        <!-- 使用流程與特色介紹部分 -->
+    <div class="content">
+      <h2>使用流程：</h2>
+      <ul>
+          <li>進入「設定」頁面，點擊頭像來設置個人信息。</li>
+          <li>新增好友，確保彼此已互為好友。</li>
+          <li>回到首頁並點擊「聊天」進入聊天界面。</li>
+          <li>在聊天界面中，先選擇聊天風格，系統將分析對方最近的 20 句話。</li>
+          <li>點擊「情緒分析」來查看分析結果。如需輔助回應，點擊右下角的「建議回應」，即可複製回應內容。</li>
+      </ul>
+
+      <div class="note">
+          <strong>注意事項：</strong><br>
+          進行分析時，系統會根據雙方的 MBTI（性格類型）來進行，因此您的 MBTI 也會向對方公開。
+      </div>
+
+      <div class="feature">
+          <h3>特色介紹：</h3>
+          <p><strong>輔助聊天：</strong>使用 OpenAI API 作為聊天輔助工具，結合 MBTI 分析系統，針對 16 種人格類型進行深度分析。</p>
+          <p><strong>特定回話風格：</strong>系統根據雙方的 MBTI 類型，提供特定的回話風格選項，讓您能夠根據對話需求靈活應對。</p>
+      </div>
+  </div>
+    </div>
+    <script>
+      var main_page = document.getElementById("main_page");
+        if (main_page) {
+          main_page.addEventListener("click", function (e) {
+            window.location.href = "{{ url_for('chat.main_page') }}";
+          });
+        }
+        </script>
+  </body>
+</html>
