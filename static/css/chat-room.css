@@ -174,6 +174,62 @@ nav ul li.active {
     background-color: #4CAF50;
 }
 
+.emotion-analysis-results {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.emotion-analysis-results h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1em;
+}
+
+.emotion-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.emotion-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+}
+
+.emotion-score:hover {
+    background-color: #f5f5f5;
+}
+
+.emotion-score label {
+    color: #555;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.emotion-score span {
+    color: #6395d4;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.analysis-timestamp {
+    margin-top: 12px;
+    font-size: 0.8em;
+    color: #888;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+}
+
 #message-input-area {
     display: flex;
     padding: 10px;
@@ -374,4 +430,23 @@ nav ul li.active {
 }
 #action-buttons :hover {
     background-color: #4CAF50;
+}
+.analysis-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.analysis-buttons button {
+    flex: 1;
+    padding: 10px;
+    background-color: #6395d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.analysis-buttons button:hover {
+    background-color: #4a76b8;
 }
