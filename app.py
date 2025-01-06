@@ -20,12 +20,14 @@ from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from celery_config import Celery
 from datetime import datetime
-from redis_utils import save_message_to_cache, get_recent_messages
+from redis_utils import save_message_to_cache, get_recent_messages, init_redis_callback, cleanup_redis_callback
 from config import Config
 from celery_config import make_celery
 from celery_app import celery
 from tasks import save_message_to_db, send_notification
+from main import EmotionPredictor
 from dbmodels import UserACC
+from retry import retry
 #csrf= CSRFProtect()
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -59,6 +61,33 @@ def create_app():
     csrf.init_app(app)
     socketio.init_app(app)
 
+    # 在應用啟動時初始化 Redis 回調
+    init_redis_callback()
+
+    # 註冊應用關閉時的清理函數
+    @app.teardown_appcontext
+    def cleanup_on_shutdown(exception=None):
+        cleanup_redis_callback()
+
+    with app.app_context():
+        try:
+            app.emotion_predictor = EmotionPredictor()
+            app.emotion_predictor.load_models()  # 添加這行
+            app.logger.info("情緒預測器初始化成功")
+        except Exception as e:
+            app.logger.error(f"情緒預測器初始化失敗: {e}")
+            app.emotion_predictor = None
+
+    @retry(tries=3, delay=2)
+    async def init_predictor():
+        try:
+            predictor = EmotionPredictor()
+            app.emotion_predictor = predictor
+            app.logger.info("情緒預測器初始化成功")
+        except Exception as e:
+            app.logger.error(f"情緒預測器初始化失敗: {e}")
+            raise
+
     # 注册蓝图
     from auth import auth_bp
     from chat import chat_bp
@@ -71,6 +100,9 @@ def create_app():
 
     logging.basicConfig(level=logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
+
+    for rule in app.url_map.iter_rules():
+        app.logger.debug(f"Registered route: {rule.endpoint} -> {rule.rule}")
 
     return app
 app = create_app()
@@ -117,5 +149,3 @@ if __name__=="__main__":  # 如果以主程式執行
     with app.app_context():
         db.create_all()
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True) # 立刻啟動伺服器
-
-export default app;
