@@ -1,204 +1,353 @@
-.e355dc75c2e90373cb295-hero20v-icon {
-  height: 225px;
-  flex: 1;
-  position: relative;
-  max-width: 100%;
-  overflow: hidden;
-  object-fit: cover;
-}
-.figtext {
-  align-self: stretch;
-  width: 319.7px;
-  position: relative;
-}
-.figtext-wrapper {
-  width: 539.7px;
-  height: 135.9px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0 var(--padding-xl);
+body, html {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  max-width: 100%;
+  font-family: 'Noto Sans TC', sans-serif;
+  height: 100%;
+  overflow-x: hidden;
 }
-.div,
-.div1 {
-  position: relative;
+
+h2 {
+  text-align: center;
+  font-size: 2vw; /* 使用相對單位，讓字體隨螢幕大小自適應 */
+  margin: 3vh 0; /* 可以調整上下的間距 */
+  color: #333;
 }
-.div {
-  align-self: stretch;
-  font-weight: 600;
+
+p {
+  text-align: center;
+  font-size: 1.3vw; /* 使用相對單位讓字體大小自適應 */
+  margin: 3vh 0; /* 上下間距，根據需要調整 */
+  line-height: 1.5; /* 調整行間距，讓文字更易讀 */
+  max-width: 600px; /* 限制段落的最大寬度 */
 }
-.div1 {
-  font-size: var(--font-size-13xl);
-  font-weight: 500;
-  font-family: 'Poppins', sans-serif;
-  color: var(--palette-white);
-  text-align: left;
-  display: inline-block;
-  min-width: 64px;
-}
-.login-button-container {
-  cursor: pointer;
-  border: 0;
-  padding: 20.5px var(--padding-xl);
-  background-color: var(--color-black);
-  flex: 1;
-  border-radius: var(--br-3xs);
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  box-sizing: border-box;
-  max-width: 100%;
-}
-.login-button-container:hover {
-  background-color: var(--color-darkslategray-200);
-}
-.login-button-container-wrapper,
-.login-container {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-.login-button-container-wrapper {
-  align-self: stretch;
-  flex-direction: row;
-  padding: 0 7px 0 var(--padding-5xs);
-  box-sizing: border-box;
-  max-width: 100%;
-  cursor: pointer;
-}
-.login-container {
-  width: 540px;
-  flex-direction: column;
-  gap: 71px;
-  max-width: calc(100% - 22px);
-}
-.vector-icon,
-.vector-icon1 {
-  position: absolute;
-  top: 22px;
-  left: 0;
-  width: 0;
-  height: 0;
-}
-.vector-icon1 {
+
+.header {
+  background-color: #d3d3d3;
+  position: fixed;
   top: 0;
-  left: 1px;
-  width: 1px;
-  height: 2px;
-}
-.vector-parent {
-  width: 2px;
-  height: 22px;
-  position: relative;
-}
-.frame-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: var(--padding-5xl) 0 0;
-}
-.login-container-parent {
-  align-self: stretch;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  max-width: 100%;
-  gap: var(--gap-xl);
-}
-.frame-parent,
-.frame-wrapper {
-  display: flex;
-  justify-content: flex-start;
-}
-.frame-parent {
-  width: 950px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20.1px;
-  max-width: 100%;
-}
-.frame-wrapper {
-  width: 1010px;
-  margin: 0 !important;
-  position: absolute;
-  right: -391px;
-  bottom: -283px;
-  flex-direction: row;
-  align-items: center;
-  z-index: 1;
-  text-align: left;
-  font-size: var(--font-size-17xl);
-  color: var(--color-black);
-  font-family: 'Poppins', sans-serif;
-}
-.e355dc75c2e90373cb295-hero20v-parent,
-.home-inner {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  max-width: 100%;
-}
-.e355dc75c2e90373cb295-hero20v-parent {
-  width: 698px;
-  justify-content: flex-start;
-  position: relative;
-}
-.home-inner {
-  align-self: stretch;
-  justify-content: center;
-  padding: 0 var(--padding-41xl) 0 var(--padding-xl);
-  box-sizing: border-box;
-}
-.home-child {
-  width: 350px;
-  position: relative;
-  max-height: 100%;
-  max-width: 100%;
-}
-.home {
   width: 100%;
-  position: relative;
-  background-color: var(--palette-white);
-  overflow: hidden;
+  z-index: 1000;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between; /* 左右分散排列 */
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #666;
+}
+
+.right-container {
+  display: flex;
+  align-items: center;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  margin-right: 15px; /* 調整導航欄與按鈕之間的間距 */
+}
+
+.nav-menu a {
+  margin-left: 15px;
+  text-decoration: none;
+  font-size: 16px;
+  color: #666;
+}
+
+.nav-menu a:hover {
+  color: #333;
+}
+
+.auth-buttons button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.auth-buttons button:hover {
+  background-color: #ddd;
+}
+
+.home {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 164px 0 0;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--palette-white);
+  padding: 5vh 0;
   box-sizing: border-box;
-  gap: 410px;
-  letter-spacing: normal;
-  line-height: normal;
+  position: relative;
+  overflow: hidden;
 }
+
+.home-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90vw;
+  max-width: 1200px; /* 讓內容在大螢幕上有最大寬度限制 */
+  padding-top: 80px; /* 增加頂部內邊距，確保內容不被頂部欄遮擋 */
+}
+
+.center-image {
+  width: 80%;
+  max-width: 600px;
+  margin-bottom: 20px;
+  margin-top: 20px; /* 添加頂部邊距 */
+}
+
+.description {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.left-image, .right-image {
+  position: absolute;
+  bottom: 0;
+  width: 25%;
+}
+
+.left-image {
+  left: 0;
+}
+
+.right-image {
+  right: 0;
+}
+
+/* 圖片和文字容器 */
+.bubble-container {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  margin: 20px auto;
+}
+
+/* 使圖片適應容器大小 */
+.bubble {
+  width: 100%;
+  max-width: 400px; /* 根據需求調整最大寬度 */
+  height: auto;
+}
+
+/* 文字疊加效果 */
+.text-overlay {
+  background-image: url("../image/bubble.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  top: -5%;
+  left: -5%;
+  max-width: 100%;
+  width: 100%;
+  height: 33em;
+  flex-direction: column;
+  text-align: center;
+  color: #333;
+  padding: 4em;
+  padding-top: 8em;
+  padding-left: 4.5em;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.text-overlay h3 {
+  margin: 0;
+  font-size: 2vw; /* 根據需求調整字體大小 */
+}
+
+.text-overlay p {
+  margin: 5px 0 0;
+  font-size: 1.1vw; /* 根據需求調整字體大小 */
+  padding: 0 10px;
+  text-align: start;
+}
+
+.intro-content {
+  margin-top: 2em;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.introduction, .team, .contact {
+  padding: 40px 0;
+}
+
+.intro-content, .team-members {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.intro-item, .team-member-top, .team-member-bottom {
+  text-align: center;
+  box-sizing: border-box;
+}
+
+
+
+.team-member-top {
+  width: 22%; /* 调整为适应四个团队成员的宽度 */
+  min-width: 200px;
+  margin: 10px;
+}
+
+.team-member-bottom {
+  width: 30%;
+  min-width: 200px;
+  margin: 10px;
+}
+
+.team-member-top img, .team-member-bottom img {
+  width: 100%;
+  max-width: 120px;
+  border-radius: 50%;
+}
+
+/* 添加这个新的选择器 */
+.professor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0; /* 可以根据需要调整上下间距 */
+}
+
+/* 修改现有的 .team-member-top2 选择器 */
+.team-member-top2 {
+  min-width: 200px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.team-member-top2 img {
+  width: 100%;
+  max-width: 120px;
+  border-radius: 50%;
+  margin-bottom: 10px; /* 在图片和文字之间添加一些间距 */
+}
+
+.contact-info {
+  display: flex;
+  justify-content: center; /* 讓整體居中 */
+  align-items: center;
+  width: 100%; /* 確保佔滿整個寬度 */
+  text-align: center; /* 讓文本和圖片在行內居中 */
+  margin: 0 auto; /* 保證父容器的內容可以在頁面居中 */
+}
+
+.contact-info img {
+  width: 30%;
+  max-width: 300px;
+  margin-right: 30px;
+}
+
+.contact-info p {
+  text-align: center;
+  font-size: 1.3vw; /* 使用相對單位讓字體大小自適應 */
+  margin: 3vh 0; /* 上下間距，根據需要調整 */
+  line-height: 1.5; /* 調整行間距，讓文字更易讀 */
+  max-width: 800px; /* 限制段落的最大寬度 */
+}
+
 @media screen and (max-width: 750px) {
+  .header-inner {
+      flex-direction: column;
+  }
+
+  .nav-menu, .auth-buttons {
+      margin-top: 10px;
+  }
+
+  h2 {
+      font-size: 4vw;
+  }
+
+  p {
+      font-size: 3vw;
+  }
+
+  .text-overlay h3 {
+      font-size: 4vw;
+  }
+
+  .text-overlay p {
+      font-size: 3vw;
+  }
+
+  .bubble {
+      max-width: 150px;
+  }
+
+  .intro-item, .team-member-top, .team-member-bottom {
+      width: 100%;
+  }
+
+  .contact-info {
+      flex-direction: column;
+  }
+
+  .contact-info img {
+      margin-right: 0;
+      margin-bottom: 20px;
+  }
+
   .div {
-    font-size: var(--font-size-10xl);
+      font-size: 5vw;
   }
+
   .div1 {
-    font-size: var(--font-size-7xl);
+      font-size: 4vw;
   }
-  .home-inner {
-    padding-right: var(--padding-11xl);
-    box-sizing: border-box;
+
+  .login-button-container, .register-button-container {
+      padding: 5vw;
   }
-  .home {
-    gap: 205px;
+
+  .left-image, .right-image {
+      width: 15vw; /* 在小螢幕上，圖片比例調整 */
   }
 }
+
 @media screen and (max-width: 450px) {
   .div {
-    font-size: var(--font-size-3xl);
+      font-size: 6vw;
   }
+
   .div1 {
-    font-size: var(--font-size-lgi);
+      font-size: 5vw;
   }
-  .home {
-    gap: 102px;
+
+  .login-button-container, .register-button-container {
+      padding: 8vw;
+  }
+
+  .left-image, .right-image {
+      width: 18vw; /* 在非常小的螢幕上，圖片比例調整 */
+  }
+
+  .team-member-top, .team-member-bottom {
+      width: 100%; /* 在更小的屏幕上，每个成员占满一整行 */
   }
 }
