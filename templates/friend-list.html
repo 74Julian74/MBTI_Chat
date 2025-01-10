@@ -66,17 +66,13 @@
                 {% else %}
                     <img id="image" src="{{ url_for('static', filename='下載.jpg') }}" alt="Default Profile Picture">
                 {% endif %}
-                <p class="user-name">{{ current_user.username }}</p>
+                <p class="user-name">姓名:{{ current_user.username }}</p>
             </div>
 
             <div class="task-card">
-                <h3>Wash dog</h3>
-                <p>Wash the dog with correct shampoo.</p>
-            </div>
-
-            <div class="task-card">
-                <h3>Task</h3>
-                <p>Description</p>
+                <p class="user-id">您的ID: {{ current_user.UserID }}</p>
+                <p class="user-MBTI">您的MBTI: {{ current_user.MBTI }}</p>
+                <p class="user-BD">您的生日: {{ current_user.BD }}</p>
             </div>
         </div>
 
