@@ -605,7 +605,7 @@ def main():
     }
 
     # 設定檔案路徑和輸出目錄
-    file_path = r"D:\test1.xlsx"
+    file_path = r"C:\MBTI_Chat\test1.xlsx"
     output_dir = 'emotion_models'
     os.makedirs(output_dir, exist_ok=True)
 

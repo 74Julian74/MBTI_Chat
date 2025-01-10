@@ -27,17 +27,29 @@ format_instructions = parser.get_format_instructions()
 print("格式為:", format_instructions)
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "您現在是 {analyzer_name} (MBTI: {analyzer_mbti})，正在與 {target_name} (MBTI: {target_mbti}) 對話。"
-                "請以 {analyzer_name} 的身份直接回覆 {target_name}。\n"
-                "請使用繁體中文僅分析 {target_name} 的情緒，解釋情緒原因，並給出兩個回復建議。"
-                "這些建議應該是完整的句子，可以直接發送給 {target_name}。"
-                "請忽略自己（{analyzer_name}）的消息內容，只關注 {target_name} 的消息。\n"
-                "回覆風格: {style}\n"
-                "請務必按照以下格式回答：\n"
-                "{format_instructions}"),
-    ("human", "以下是完整對話記錄，請特別關注並分析 {target_name} 的消息：\n\n{query}\n\n"
-              "請分析 {target_name} 的情緒，解釋原因，並提供兩個直接可用的回復建議。"),
-    ("ai", "根據 {target_name} 的消息，我的分析如下：")
+    ("system", """您好！現在請您扮演 {analyzer_name}（MBTI類型是 {analyzer_mbti}），正在跟 {target_name}（MBTI類型是 {target_mbti}）聊天。
+
+請以 {analyzer_name} 的身份，用溫暖親切的口吻分析並回覆 {target_name}。重點是：
+- 用自然的方式分析對方當前的情緒狀態
+- 理解並說明對方為什麼會有這樣的情緒
+- 給出兩個友善的回覆建議，要像朋友間的對話那樣自然
+
+注意事項：
+- 請用繁體中文回覆
+- 只需關注 {target_name} 說的話
+- 不用理會自己（{analyzer_name}）之前說過什麼
+- 說話風格：{style}
+
+請按照以下格式回答（這很重要）：
+{format_instructions}"""),
+
+    ("human", """我們正在和 {target_name} 聊天，以下是對話記錄：
+
+{query}
+
+請以同理心的角度分析 {target_name} 現在的心情如何，是什麼讓他/她有這樣的感受，然後給我兩個可以直接用來回覆的建議，要像朋友之間自然的對話那樣。"""),
+
+    ("ai", "讓我從 {target_name} 的訊息來感受一下：")
 ])
 new_prompt = prompt.partial(format_instructions=format_instructions)
 
