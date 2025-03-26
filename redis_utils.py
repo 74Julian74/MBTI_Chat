@@ -8,6 +8,18 @@ from flask import current_app
 
 redis_client = redis.Redis(host='192.168.129.128', port=6379, db=0)
 
+expiry_callback_thread = None
+
+def init_redis_callback():
+    global expiry_callback_thread
+    expiry_callback_thread = setup_redis_expiry_callback()
+
+def cleanup_redis_callback():
+    global expiry_callback_thread
+    if expiry_callback_thread:
+        expiry_callback_thread.stop()
+        expiry_callback_thread = None
+
 # 數據庫設置
 HOSTNAME = "127.0.0.1"
 PORT = 3306
@@ -27,6 +39,8 @@ def save_message_to_cache(group_id, sender_id, content):
     }
     redis_client.lpush(f'chat:{group_id}', json.dumps(message))
     redis_client.ltrim(f'chat:{group_id}', 0, 49)  # 只保留最近50條消息
+    # 進行情緒分析
+    
     # 同時保存到數據庫
     save_to_db(group_id, sender_id, content)
     
@@ -95,17 +109,46 @@ def mark_message_as_read(group_id, message_timestamp):
 
 # 設置 Redis 過期回調
 def setup_redis_expiry_callback():
-    def message_expired_callback(key):
-        group_id = key.decode().split(':')[1]
-        messages = get_messages_from_db(group_id, 50)
-        for msg in messages:
-            redis_client.lpush(f'chat:{group_id}', json.dumps(msg))
-        redis_client.ltrim(f'chat:{group_id}', 0, 49)
+    try:
+        def message_expired_callback(message):
+            try:
+                # 檢查 message 的類型和內容
+                if isinstance(message, dict):
+                    # 如果是字典，直接獲取 key
+                    key = message.get('key', '')
+                    if isinstance(key, bytes):
+                        key = key.decode()
+                else:
+                    # 如果不是字典，假設是 bytes
+                    key = message.decode() if isinstance(message, bytes) else str(message)
+                    
+                if ':' in key:
+                    group_id = key.split(':')[1]
+                    # 從數據庫獲取並恢復消息到 Redis
+                    messages = get_messages_from_db(group_id, 50)
+                    for msg in messages:
+                        redis_client.lpush(f'chat:{group_id}', json.dumps(msg))
+                    redis_client.ltrim(f'chat:{group_id}', 0, 49)
+                    print(f"Restored messages for group {group_id} after expiry")
+                
+            except Exception as e:
+                print(f"處理過期消息時出錯: {str(e)}")
     
-    redis_client.config_set('notify-keyspace-events', 'Ex')
-    pubsub = redis_client.pubsub()
-    pubsub.psubscribe(**{'__keyevent@0__:expired': message_expired_callback})
-    pubsub.run_in_thread(sleep_time=0.01)    
+        # 設置 Redis 配置以啟用鍵空間事件通知
+        redis_client.config_set('notify-keyspace-events', 'Ex')
+        
+        # 創建並設置 pubsub
+        pubsub = redis_client.pubsub()
+        pubsub.psubscribe(**{'__keyevent@0__:expired': message_expired_callback})
+        
+        # 在後台線程中運行 pubsub
+        thread = pubsub.run_in_thread(sleep_time=0.01)
+        print("Redis expiry callback setup completed successfully")
+        return thread
+        
+    except Exception as e:
+        print(f"設置 Redis 過期回調時出錯: {str(e)}")
+        return None 
 
 # 在應用啟動時調用這個函數
 setup_redis_expiry_callback()

@@ -5,12 +5,14 @@ from redis_utils import get_recent_messages
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from typing import List
 from langchain.output_parsers import PydanticOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
+#from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from dbmodels import db, UserACC, UserMSG
 from openai_client import get_chat_completion
 import logging
 from flask import current_app
+from pydantic import BaseModel, Field
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +27,29 @@ format_instructions = parser.get_format_instructions()
 print("格式為:", format_instructions)
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "您現在是 {analyzer_name} (MBTI: {analyzer_mbti})，正在與 {target_name} (MBTI: {target_mbti}) 對話。"
-                "請以 {analyzer_name} 的身份直接回覆 {target_name}。\n"
-                "請使用繁體中文僅分析 {target_name} 的情緒，解釋情緒原因，並給出兩個回復建議。"
-                "這些建議應該是完整的句子，可以直接發送給 {target_name}。"
-                "請忽略自己（{analyzer_name}）的消息內容，只關注 {target_name} 的消息。\n"
-                "回覆風格: {style}\n"
-                "請務必按照以下格式回答：\n"
-                "{format_instructions}"),
-    ("human", "以下是完整對話記錄，請特別關注並分析 {target_name} 的消息：\n\n{query}\n\n"
-              "請分析 {target_name} 的情緒，解釋原因，並提供兩個直接可用的回復建議。"),
-    ("ai", "根據 {target_name} 的消息，我的分析如下：")
+    ("system", """您好！現在請您扮演 {analyzer_name}（MBTI類型是 {analyzer_mbti}），正在跟 {target_name}（MBTI類型是 {target_mbti}）聊天。
+
+請以 {analyzer_name} 的身份，用溫暖親切的口吻分析並回覆 {target_name}。重點是：
+- 用自然的方式分析對方當前的情緒狀態
+- 理解並說明對方為什麼會有這樣的情緒
+- 給出兩個友善的回覆建議，要像朋友間的對話那樣自然
+
+注意事項：
+- 請用繁體中文回覆
+- 只需關注 {target_name} 說的話
+- 不用理會自己（{analyzer_name}）之前說過什麼
+- 說話風格：{style}
+
+請按照以下格式回答（這很重要）：
+{format_instructions}"""),
+
+    ("human", """我們正在和 {target_name} 聊天，以下是對話記錄：
+
+{query}
+
+請以同理心的角度分析 {target_name} 現在的心情如何，是什麼讓他/她有這樣的感受，然後給我兩個可以直接用來回覆的建議，要像朋友之間自然的對話那樣。"""),
+
+    ("ai", "讓我從 {target_name} 的訊息來感受一下：")
 ])
 new_prompt = prompt.partial(format_instructions=format_instructions)
 
@@ -48,23 +62,40 @@ def get_user_info(user_id):
 
 def get_opponent_user_info(group_id, my_user_id):
     try:
-        opponent = UserMSG.query.filter(
-            UserMSG.GroupID == group_id, 
-            UserMSG.SenderID != my_user_id
-        ).order_by(UserMSG.TimeStamp.desc()).first()
+        # 處理交誼廳的情況
+        if group_id == 'default_group':
+            return {
+                'id': 'default_group',
+                'name': '交誼廳',
+                'mbti': 'Unknown'
+            }
+            
+        # 從群組ID解析用戶ID
+        user_ids = group_id.split('_')
+        if len(user_ids) != 2:
+            raise ValueError(f"Invalid group ID format: {group_id}")
 
+        # 找到對手ID
+        opponent_id = int(user_ids[0]) if str(user_ids[0]) != str(my_user_id) else int(user_ids[1])
+        
+        # 直接從 UserACC 表獲取用戶信息
+        opponent = UserACC.query.get(opponent_id)
         if opponent:
-            opponent_user = UserACC.query.get(opponent.SenderID)
-            if opponent_user:
-                return {
-                    'id': opponent_user.UserID,
-                    'name': opponent_user.username,
-                    'mbti': opponent_user.MBTI
-                }
+            return {
+                'id': opponent.UserID,
+                'name': opponent.username,
+                'mbti': opponent.MBTI or 'Unknown'
+            }
+            
     except Exception as e:
         logger.error(f"Error in get_opponent_user_info: {str(e)}", exc_info=True)
-    
-    return None
+
+    # 如果出現任何錯誤，返回默認值
+    return {
+        'id': 'Unknown',
+        'name': 'Unknown',
+        'mbti': 'Unknown'
+    }
 
 mbti_explanations = {
     'E': '外向型 (Extraversion): 從外部世界獲取能量，喜歡社交互動',
@@ -157,33 +188,55 @@ def analyze_sentiment(group_id, my_user_id, opponent_info, reply_style, limit=20
         {"role": "assistant", "content": user_prompt.messages[2].content}
     ]
     
-    response_content = get_chat_completion(messages)
+    try:
+        response_content = get_chat_completion(messages)
+        if not response_content:
+            raise Exception("無法獲取 OpenAI 回應")
 
-    if response_content:
         print("原始回答為:", response_content)
-        # 嘗試提取 JSON
-        json_start = response_content.find('{')
-        json_end = response_content.rfind('}') + 1
-        if json_start != -1 and json_end != -1:
-            json_content = response_content[json_start:json_end]
-            analysis = parser.parse(json_content)
+
+        # 如果回應包含 JSON 標記，提取 JSON 部分
+        if '```json' in response_content:
+            json_text = response_content.split('```json')[1].split('```')[0]
         else:
-            raise ValueError("无法找到有效的JSON内容")
+            # 嘗試找到 JSON 開始和結束的位置
+            json_start = response_content.find('{')
+            json_end = response_content.rfind('}') + 1
+            if json_start != -1 and json_end != -1:
+                json_text = response_content[json_start:json_end]
+            else:
+                raise ValueError("無法在回應中找到有效的 JSON")
+
+        # 解析 JSON
+        import json
+        analysis = json.loads(json_text)
 
         return {
             "name": target_name,
             "mbti": target_mbti,
             "mbti_explanation": mbti_explanation,
-            "emotion": analysis.emotion,
-            "emotion_reason": analysis.emotion_reason,
-            "suggestions": analysis.reply_suggestions
+            "emotion": analysis.get('emotion', 'Unknown'),
+            "emotion_reason": analysis.get('emotion_reason', 'Unknown'),
+            "suggestions": analysis.get('reply_suggestions', ["分析時出錯", "無法取得建議"])
         }
-    else:
+        
+    except json.JSONDecodeError as e:
+        print(f"JSON 解析錯誤: {str(e)}")
         return {
             "name": target_name,
             "mbti": target_mbti,
             "emotion": "Error",
-            "suggestions": ["分析時出錯", "無法取得OpenAI回應"]
+            "emotion_reason": "JSON 解析錯誤",
+            "suggestions": ["JSON 解析時出錯", str(e)]
+        }
+    except Exception as e:
+        print(f"分析過程中出錯: {str(e)}")
+        return {
+            "name": target_name,
+            "mbti": target_mbti,
+            "emotion": "Error",
+            "emotion_reason": str(e),
+            "suggestions": ["分析時出錯", "請稍後重試"]
         }
 
 '''

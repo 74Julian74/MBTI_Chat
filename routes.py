@@ -1,5 +1,5 @@
 from flask import (render_template, flash, redirect, url_for, request,
-                   send_from_directory,jsonify)
+                   send_from_directory,jsonify, current_app)
 from PIL import Image
 import os
 from werkzeug.utils import secure_filename
@@ -17,7 +17,10 @@ from flask_socketio import join_room
 from sqlalchemy.exc import SQLAlchemyError
 import uuid
 from sentiment_analysis import get_opponent_user_info
+from main import EmotionPredictor
 import json
+import hashlib
+#import asyncio
 
 csrf= CSRFProtect()
 
@@ -465,34 +468,150 @@ def register_routes(app, socketio):
         group = data['group']  # 將 'room' 改為 'group'
         join_room(group)
 
+    # routes.py
     @app.route('/analyze_emotion', methods=['POST'])
     @login_required
-    def analyze_emotion_route():
+    def analyze_emotion():
         try:
-            data = request.json
+            data = request.get_json()
+            group_id = data.get('group_id')
+            
+            if not group_id:
+                return jsonify({'error': '未提供群組ID'}), 400
+            
+            opponent_info = get_opponent_user_info(group_id, current_user.UserID)
+            if not opponent_info:
+                opponent_info = {
+                    'id': 'Unknown',
+                    'name': 'Unknown',
+                    'mbti': 'Unknown'
+                }
+                    
+            messages = get_recent_messages(group_id)
+            if not messages:
+                return jsonify({
+                    'name': opponent_info['name'],
+                    'mbti': opponent_info['mbti'],
+                    'emotions': {
+                        'anger': 0.0, 'disgust': 0.0, 'fear': 0.0,
+                        'sadness': 0.0, 'surprise': 0.0, 'happiness': 0.0
+                    },
+                    'person_emotion': 'Unknown (0%)',
+                    'emotion_reason': '無可分析的消息',
+                    'mbti_explanation': get_mbti_explanation(opponent_info['mbti'])
+                })
+                    
+            emotion_predictor = current_app.emotion_predictor
+            if not emotion_predictor:
+                return jsonify({'error': '情緒分析器未初始化'}), 500
+                        
+            last_message = messages[-1]['content']
+            emotion_scores = emotion_predictor.predict_message(last_message)
+            
+            app.logger.info(f"原始分析結果: {emotion_scores}")
+            
+            # 直接使用回傳的情緒分數，因為它已經是正確的格式
+            if not isinstance(emotion_scores, dict):
+                emotion_scores = {
+                    'anger': 0.0, 'disgust': 0.0, 'fear': 0.0,
+                    'sadness': 0.0, 'surprise': 0.0, 'happiness': 0.0
+                }
+                
+            app.logger.info(f"處理後的情緒分數: {emotion_scores}")
+            
+            # 找出所有超過 0.5 的情緒
+            significant_emotions = {k: v for k, v in emotion_scores.items() if float(v) > 0.5}
+            app.logger.info(f"顯著情緒: {significant_emotions}")
+
+            # 選擇主導情緒
+            if significant_emotions:
+                emotion_name, emotion_score = max(significant_emotions.items(), key=lambda x: float(x[1]))
+            else:
+                emotion_name, emotion_score = max(emotion_scores.items(), key=lambda x: float(x[1]))
+
+            # 中文情緒名稱映射
+            emotion_names = {
+                'anger': '憤怒',
+                'disgust': '厭惡',
+                'fear': '恐懼',
+                'sadness': '悲傷',
+                'surprise': '驚訝',
+                'happiness': '開心'
+            }
+            chinese_emotion = emotion_names.get(emotion_name, emotion_name)
+            
+            result = {
+                'name': opponent_info['name'],
+                'mbti': opponent_info['mbti'],
+                'emotions': emotion_scores,
+                'person_emotion': f"{chinese_emotion} ({float(emotion_score) * 100:.1f}%)",
+                'emotion_reason': f"檢測到主要情緒為{chinese_emotion}，信心度為 {float(emotion_score) * 100:.1f}%",
+                'mbti_explanation': get_mbti_explanation(opponent_info['mbti'])
+            }
+            
+            app.logger.info(f"返回結果: {result}")
+            return jsonify(result)
+
+        except Exception as e:
+            app.logger.error(f"情緒分析發生錯誤: {str(e)}", exc_info=True)
+            return jsonify({
+                'error': '情緒分析過程中發生錯誤，請稍後重試',
+                'details': str(e)
+            }), 500
+    @app.route('/get_reply_suggestions', methods=['POST'])
+    @login_required
+    def get_reply_suggestions():
+        try:
+            data = request.get_json()
             group_id = data.get('group_id')
             reply_style = data.get('reply_style', '正式')
-
+            
             if not group_id:
-                return jsonify({'error': '缺少 group_id'}), 400
+                return jsonify({'error': '未提供群組ID'}), 400
+                
+            opponent_info = get_opponent_user_info(group_id, current_user.UserID)
+            analysis_result = analyze_sentiment(group_id, current_user.UserID, opponent_info, reply_style)
             
-            my_user_id = current_user.UserID
-            if my_user_id is None:
-                return jsonify({'error': '用戶未認證'}), 401
-
-            app.logger.info(f"Analyzing emotion with group_id: {group_id}, user_id: {my_user_id}, reply_style: {reply_style}")
+            return jsonify({
+                'suggestions': analysis_result.get('suggestions', [])
+            })
             
-            # 在这里获取对方的信息
-            opponent_info = get_opponent_user_info(group_id, my_user_id)
-            if not opponent_info:
-                return jsonify({'error': '無法獲取對方信息'}), 400
-
-            analysis = analyze_sentiment(group_id, my_user_id, opponent_info, reply_style)
-            return jsonify(analysis)
         except Exception as e:
-            app.logger.error(f"Error in analyze_emotion: {str(e)}", exc_info=True)
-            return jsonify({'error': '分析過程中發生錯誤', 'details': str(e)}), 500
-    
+            app.logger.error(f"獲取回覆建議時發生錯誤: {str(e)}", exc_info=True)
+            return jsonify({'error': '獲取建議過程中發生錯誤，請稍後重試'}), 500
+    def get_dominant_emotion(emotions):
+        """獲取主要情緒"""
+        if not emotions:
+            return 'Unknown'
+        return max(emotions.items(), key=lambda x: x[1])[0]
+
+    def get_mbti_explanation(mbti):
+        """獲取MBTI類型解釋"""
+        mbti_explanations = {
+            'INTJ': '獨立思考者，具有戰略性思維',
+            'INTP': '邏輯思考者，喜歡分析複雜問題',
+            'ENTJ': '天生領導者，目標導向',
+            'ENTP': '創新者，喜歡挑戰傳統',
+            # ... 可以加入其他MBTI類型的解釋
+        }
+        return mbti_explanations.get(mbti, '暫無該MBTI類型的詳細解釋')
+
+    def generate_suggestions(emotions, mbti, style):
+        """生成回覆建議"""
+        # 根據情緒分數、MBTI類型和回覆風格生成建議
+        suggestions = []
+        dominant_emotion = get_dominant_emotion(emotions)
+        
+        if style == '正式':
+            suggestions.append(f'我理解您現在感到{dominant_emotion}，讓我們一起討論解決方案。')
+            suggestions.append('感謝您的分享，我會認真考慮您的觀點。')
+        elif style == '輕鬆':
+            suggestions.append('心情不好的時候，要記得保持微笑喔！')
+            suggestions.append('讓我們換個輕鬆的話題吧！')
+        # ... 可以加入更多風格的建議
+
+        return suggestions
+
     @app.route('/get_new_messages/<group_id>')
     @login_required
     def get_new_messages_route(group_id):
@@ -710,4 +829,44 @@ def register_routes(app, socketio):
             })
         return jsonify({'error': 'User not found'}), 404
     
+    @app.route('/send_direct_friend_request', methods=['POST'])
+    @login_required
+    def send_direct_friend_request():
+        data = request.json
+        friend_id = data.get('friend_id')
+
+        if not friend_id:
+            return jsonify({'status': 'error', 'message': '缺少好友ID'})
+
+        try:
+            friend_id = int(friend_id)
+            relation_id = f"{min(current_user.UserID, friend_id)}-{max(current_user.UserID, friend_id)}"
+
+            # 檢查是否已經是好友或存在待處理的請求
+            existing_relation = Relation.query.filter_by(RelationID=relation_id).first()
+            if existing_relation:
+                if existing_relation.Status == 'accepted':
+                    return jsonify({'status': 'error', 'message': '你們已經是好友了'})
+                elif existing_relation.Status in ['pending', 'waiting']:
+                    return jsonify({'status': 'error', 'message': '已經存在一個待處理的好友請求'})
+
+            # 創建新的好友請求
+            new_relation = Relation(
+                RelationID=relation_id,
+                UserID1=current_user.UserID,
+                UserID2=friend_id,
+                Status='pending',
+                TimeStamp=datetime.utcnow()
+            )
+
+            db.session.add(new_relation)
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'message': '好友請求已發送'})
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error sending direct friend request: {str(e)}")
+            return jsonify({'status': 'error', 'message': '發送好友請求時發生錯誤'})
+        
     return app
