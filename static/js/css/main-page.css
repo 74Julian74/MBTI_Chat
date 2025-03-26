@@ -45,6 +45,7 @@
   padding: var(--padding-12xs) 0 0;
   box-sizing: border-box;
 }
+
 .frame-inner,
 .group-parent,
 .search-wrapper {

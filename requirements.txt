@@ -1,0 +1,6 @@
+pip install werkzeug
+pip install flask_sqlalchemy
+pip install pymysql
+pip install Flask-WTF
+pip install wtforms
+pip install flask-bootstrap

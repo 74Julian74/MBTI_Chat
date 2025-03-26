@@ -16,7 +16,7 @@
         <h1>註冊</h1>
         <div class="register-form">
             <h2>Sign in</h2>
-            <form method="POST" action="{{ url_for('register') }}">
+            <form method="POST" action="{{ url_for('auth.register') }}">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     {{ form.email.label(class="form-label") }}
@@ -43,7 +43,7 @@
   var registerBackground = document.getElementById("registerBackground");
   if (registerBackground) {
     registerBackground.addEventListener("click", function (e) {
-      window.location.href = "{{ url_for('login_page') }}";
+      window.location.href = "{{ url_for('auth.login_page') }}";
     });
   }
 </script>
